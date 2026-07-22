@@ -52,4 +52,6 @@ Until `web/` lands, UX ships as `demo/*.html` + `demo/js/store.js` + `demo/css/c
 - **Nav**: `NAV_PRIMARY` includes「游戏」→ `games.html`.
 - **Scores**: `companion_demo_v2.gameScores` via `getGameHigh` / `submitGameScore` (puzzle is lower-better / `null` = no record).
 - **Nested paths**: pages under `demo/games/` must use `../` for css/js/assets; `DemoStore.demoRootPrefix()` prefixes injected nav/favicon.
+- **Chat layout**: `body:has(.page-chat)` is a flex column filling the viewport; `.chat-shell` stretches; `.chat-messages` is the only scrolling pane (`flex:1; min-height:0; overflow:auto`). Do not let bubbles grow document height.
+- **Free chat**: local heuristic replies in `chat.html` (`freeReply`) — expand intent matches for topic chips; never rely on one default line. Guard concurrent sends with a busy lock and `cancelStream()` on stop/clear/exit.
 - **User text in DOM**: prefer `textContent` / `createElement` for nickname, memory lines, and history titles (avoid raw `innerHTML` with user data).

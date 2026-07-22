@@ -41,4 +41,6 @@
 | Soft-clear only (delete some keys) for「重置演示」 | Stale fields remain in `companion_demo_v2` | Full replace via `setItem(JSON.stringify(defaults))` after confirm |
 | Hardcode root-relative `css/` / `js/` / `assets/` inside `demo/games/*.html` | Nested pages break styles, store, and brand mark | Use `../css/…`, `../js/…`; rely on `demoRootPrefix()` for injected header links |
 | Store game high scores outside `companion_demo_v2` |「重置演示」won't clear them; two sources of truth | Keep scores in `defaults.gameScores` + `submitGameScore` |
-| `innerHTML` user nickname / memory / history titles | XSS if crafted strings land in localStorage | Use `textContent` or `createElement` |
+| Let `.chat-messages` grow the page (`min-height` only, no locked shell height) | Browser page scrolls forever; composer drifts down | `body:has(.page-chat)` flex column + `.chat-shell`/`messages` `flex:1; min-height:0; overflow:auto` |
+| Single default free-chat reply for all unmatched lines | Topic chips feel broken (same line forever) | Match story/sky/space/interest intents; rotate fallbacks |
+| Allow send/topic clicks while a bot stream is in flight | Overlapping streams / orphaned typing nodes | `chatBusy` lock + `cancelStream()` on stop/clear/exit |
