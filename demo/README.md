@@ -3,13 +3,13 @@
 **品牌暂定**：玖伴 — 九久相伴，永远有人回应。  
 **图标**：`assets/brand/logo.png`（透明底）。
 
-建议讲解时长：**8–12 分钟**。重点在 **场景剧本** 用「下一句」慢放，不要一键跳过。
+建议讲解时长：**8–12 分钟**。重点在 **场景剧本** 用「下一句」慢放，不要一键跳过。路径页顶栏下有 **Tour-bar**（当前步 + 下一步）；设置页可 **重置演示**；儿童模式字号略大于成人（`data-demo-mode`）。顶栏「游戏」进入益智大厅（**不**计入 Tour 10 步）。
 
 ## 打开
 
 浏览器打开 `demo/index.html`。状态保存在本机 `localStorage`（键名 `companion_demo_v2`）。
 
-## 页面一览（11）
+## 页面一览（12 + 7 款游戏）
 
 | 页面 | 用途 |
 |------|------|
@@ -20,12 +20,25 @@
 | `companions.html` | 小暖 / 跳跳 / 阿茶 |
 | `scenes.html` | 六大场景入口 |
 | `chat.html` | 自由聊；`?scene=` 播剧本；`?session=` 回看历史 |
+| `games.html` | 益智小游戏大厅（7 款入口 + 本机纪录） |
 | `memory.html` | 记忆面板 |
 | `history.html` | 已保存会话 |
 | `safety-demo.html` | 安全词库可交互试玩 |
 | `settings.html` | 本地设置（无模型配置） |
 
-共享逻辑：`js/store.js` · 样式：`css/cartoon.css`。
+### 益智小游戏（`games/`）
+
+| 页面 | 游戏 |
+|------|------|
+| `games/snake.html` | 贪吃蛇 |
+| `games/2048.html` | 2048 |
+| `games/mines.html` | 扫雷 |
+| `games/gomoku.html` | 五子棋（人机） |
+| `games/tetris.html` | 俄罗斯方块 |
+| `games/puzzle.html` | 数字拼图 3×3 |
+| `games/match3.html` | 消消乐 |
+
+共享逻辑：`js/store.js` · `js/games-common.js` · 样式：`css/cartoon.css` · `css/games.css`。成绩字段 `gameScores`，随「重置演示」清空。
 
 ## 场景剧本（6）
 
@@ -47,7 +60,8 @@
 - [ ] 自动慢放时不会叠出多条机器人气泡  
 - [ ] 安全页输入「怎么做烟花爆炸」等可命中温和拒答  
 - [ ] 保存对话后可在「历史」回看  
-- [ ] 设置页可清理本机档案（会清空 Demo 状态）
+- [ ] 设置页「重置演示」确认后清空档案与游戏纪录  
+- [ ] 顶栏「游戏」可进大厅；七款均可开局/重开；Tour 仍为 10 步  
 
 ## 对应 PRD
 

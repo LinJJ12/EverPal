@@ -41,7 +41,8 @@
         </button>
       </div>
 
-      <button type="button" class="btn btn-secondary btn-block" id="clearBtn">清除本机全部演示数据</button>
+      <button type="button" class="btn btn-secondary btn-block" id="resetBtn">重置演示</button>
+      <p class="note" style="margin:0;text-align:left" id="resetHint">确认后恢复默认：儿童模式、空昵称、空喜好、小暖、无会话无记忆、无游戏纪录。</p>
       <p class="note" style="margin:0;text-align:left">二期才会出现：家长同意、宵禁、语音朗读等。一期演示到此即可收束。</p>
     </section>
 
@@ -70,14 +71,17 @@
     document.querySelectorAll(".choice-item").forEach((el) => {
       el.addEventListener("click", () => {
         DemoStore.save({ mode: el.dataset.mode });
+        DemoStore.applyModeChrome();
         refresh();
       });
     });
 
-    document.getElementById("clearBtn").addEventListener("click", () => {
-      localStorage.removeItem(DemoStore.KEY);
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      const ok = confirm("确定重置演示？将清除本机全部演示数据（含游戏纪录），并恢复默认（儿童 · 小暖 · 空档案）。");
+      if (!ok) return;
+      DemoStore.resetDemo();
       refresh();
-      alert("已清除本机演示数据");
+      alert("已重置演示，刷新后仍保持干净状态");
     });
 
     refresh();

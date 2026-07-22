@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>益智小游戏 · 玖伴 Demo</title>
+  <link rel="icon" type="image/png" href="assets/brand/logo.png" />
+  <link rel="stylesheet" href="css/cartoon.css" />
+  <link rel="stylesheet" href="css/games.css" />
+</head>
+<body>
+  <header class="site-header" data-demo-header data-brand="玖伴"></header>
+
+  <main class="page">
+    <div class="page-head">
+      <div>
+        <h1>益智小游戏</h1>
+        <p class="games-hub-lead">
+          七款本地小游戏，专为小朋友准备：触控优先、难度固定、成绩记在本机。
+          不联网、不接外链游戏。可随时回大厅换一款。
+        </p>
+      </div>
+      <span class="chip">离线可玩</span>
+    </div>
+
+    <div class="games-grid" id="gamesGrid" aria-label="游戏列表"></div>
+
+    <div class="footer-actions">
+      <a class="btn btn-secondary" href="index.html">回导览</a>
+      <a class="btn btn-primary" href="chat.html">去聊天</a>
+    </div>
+  </main>
+
+  <script src="js/store.js"></script>
+  <script src="js/games-common.js"></script>
+  <script>
+    GamesCommon.renderHub(document.getElementById("gamesGrid"));
+  </script>
+</body>
+</html>

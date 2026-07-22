@@ -1,0 +1,3 @@
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Review checklist: mobile, mode chrome, no tooling UI"}
+{"file": ".trellis/spec/guides/product-constraints.md", "reason": "Ensure polish stays companionship demo, not workbench"}
+{"file": ".trellis/spec/frontend/index.md", "reason": "Product UI hard rules for AC verification"}

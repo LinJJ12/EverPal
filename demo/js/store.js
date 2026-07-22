@@ -9,7 +9,22 @@
     likes: [],
     memories: [],
     sessions: [],
+    gameScores: {
+      snake: 0,
+      "2048": 0,
+      mines: 0,
+      gomoku: 0,
+      tetris: 0,
+      puzzle: null,
+      match3: 0,
+    },
   };
+
+  const GAME_LOWER_BETTER = { puzzle: true };
+
+  function cloneDefaults() {
+    return JSON.parse(JSON.stringify(defaults));
+  }
 
   const companions = {
     nuan: {
@@ -284,15 +299,45 @@
 
   function load() {
     try {
-      return { ...defaults, ...JSON.parse(localStorage.getItem(KEY) || "{}") };
+      const raw = { ...defaults, ...JSON.parse(localStorage.getItem(KEY) || "{}") };
+      raw.gameScores = { ...defaults.gameScores, ...(raw.gameScores || {}) };
+      return raw;
     } catch {
-      return { ...defaults };
+      return cloneDefaults();
     }
+  }
+
+  function getGameHigh(id) {
+    const scores = load().gameScores || {};
+    if (Object.prototype.hasOwnProperty.call(scores, id)) return scores[id];
+    return defaults.gameScores[id];
+  }
+
+  /** Update high score when better. Higher wins except puzzle (lower moves). */
+  function submitGameScore(id, value) {
+    const scores = { ...defaults.gameScores, ...(load().gameScores || {}) };
+    const prev = scores[id];
+    let next = prev;
+    if (GAME_LOWER_BETTER[id]) {
+      if (typeof value !== "number" || !Number.isFinite(value)) return prev;
+      if (prev == null || value < prev) next = value;
+    } else {
+      if (typeof value !== "number" || !Number.isFinite(value)) return prev;
+      if (value > (prev || 0)) next = value;
+    }
+    if (next !== prev) {
+      scores[id] = next;
+      save({ gameScores: scores });
+    }
+    return scores[id];
   }
 
   function save(patch) {
     const next = { ...load(), ...patch };
     localStorage.setItem(KEY, JSON.stringify(next));
+    if (patch && Object.prototype.hasOwnProperty.call(patch, "mode")) {
+      applyModeChrome();
+    }
     return next;
   }
 
@@ -334,6 +379,99 @@
     };
   }
 
+  /** Memory-aware opening line for companions / chat empty state */
+  function companionOpener(c) {
+    const comp = c || companion();
+    const s = load();
+    const name = displayName();
+    const likes = likeLabels();
+    if (s.nickname && likes.length) {
+      return `${comp.name}在这儿。${name}好呀，还喜欢${likes[0]}吗？今天想聊点什么？`;
+    }
+    if (s.nickname) {
+      return `${comp.name}在这儿。${name}，我记得你～今天想聊点什么？`;
+    }
+    if (likes.length) {
+      return `${comp.name}在这儿。还喜欢${likes[0]}吗？今天想聊点什么？`;
+    }
+    return comp.sample;
+  }
+
+  function resetDemo() {
+    const clean = cloneDefaults();
+    localStorage.setItem(KEY, JSON.stringify(clean));
+    applyModeChrome();
+    return clean;
+  }
+
+  /** Prefix for links/assets when page lives under demo/games/ */
+  function demoRootPrefix() {
+    const path = (location.pathname || "").replace(/\\/g, "/");
+    const segs = path.split("/").filter(Boolean);
+    if (segs.length >= 2 && segs[segs.length - 2].toLowerCase() === "games") {
+      return "../";
+    }
+    return "";
+  }
+
+  function applyModeChrome() {
+    const s = load();
+    const mode = s.mode === "adult" ? "adult" : "child";
+    document.documentElement.setAttribute("data-demo-mode", mode);
+  }
+
+  /** Recommended walkthrough path (index 01–10); index.html itself has no fine bar */
+  const TOUR_STEPS = [
+    { file: "welcome.html", title: "欢迎" },
+    { file: "mode.html", title: "模式" },
+    { file: "nickname.html", title: "档案" },
+    { file: "companions.html", title: "角色" },
+    { file: "scenes.html", title: "场景" },
+    { file: "chat.html", title: "聊天" },
+    { file: "memory.html", title: "记忆" },
+    { file: "history.html", title: "历史" },
+    { file: "safety-demo.html", title: "安全" },
+    { file: "settings.html", title: "设置" },
+  ];
+
+  function currentTourFile() {
+    return (location.pathname.split("/").pop() || "index.html").toLowerCase();
+  }
+
+  function mountTourBar() {
+    const file = currentTourFile();
+    if (file === "index.html" || file === "") return;
+    const idx = TOUR_STEPS.findIndex((s) => s.file === file);
+    if (idx < 0) return;
+
+    let bar = document.querySelector("[data-tour-bar]");
+    if (!bar) {
+      bar = document.createElement("div");
+      bar.className = "tour-bar";
+      bar.setAttribute("data-tour-bar", "");
+      const header = document.querySelector("[data-demo-header]");
+      if (header && header.parentNode) {
+        header.insertAdjacentElement("afterend", bar);
+      } else {
+        document.body.prepend(bar);
+      }
+    }
+
+    const step = TOUR_STEPS[idx];
+    const n = TOUR_STEPS.length;
+    const i = idx + 1;
+    const isLast = idx >= n - 1;
+    const next = isLast ? null : TOUR_STEPS[idx + 1];
+    const nextHref = isLast ? "index.html" : next.file;
+    const nextLabel = isLast ? "完成 · 回导览" : `下一步：${next.title}`;
+
+    bar.innerHTML = `
+      <div class="tour-bar-inner">
+        <span class="tour-bar-status">第 ${i}/${n} 步 · ${step.title}</span>
+        <a class="tour-bar-next" href="${nextHref}">${nextLabel}</a>
+      </div>`;
+  }
+
   function addMemory(text) {
     const s = load();
     const memories = [{ ts: Date.now(), text }, ...(s.memories || [])].slice(0, 8);
@@ -363,6 +501,7 @@
     ["welcome.html", "欢迎"],
     ["scenes.html", "场景"],
     ["chat.html", "聊天"],
+    ["games.html", "游戏"],
     ["safety-demo.html", "安全"],
   ];
 
@@ -377,10 +516,11 @@
 
   function injectFavicon() {
     if (document.querySelector('link[rel="icon"][data-brand-icon]')) return;
+    const prefix = demoRootPrefix();
     const link = document.createElement("link");
     link.rel = "icon";
     link.type = "image/png";
-    link.href = "assets/brand/logo.png";
+    link.href = prefix + "assets/brand/logo.png";
     link.setAttribute("data-brand-icon", "1");
     document.head.appendChild(link);
   }
@@ -389,23 +529,23 @@
     const header = document.querySelector("[data-demo-header]");
     if (!header) return;
     const brand = header.getAttribute("data-brand") || "玖伴";
+    const prefix = demoRootPrefix();
     header.innerHTML = `
       <div class="site-header-inner">
-        <a class="brand-lockup" href="index.html">
-          <img class="brand-mark" src="assets/brand/logo.png" width="36" height="36" alt="" />
+        <a class="brand-lockup" href="${prefix}index.html">
+          <img class="brand-mark" src="${prefix}assets/brand/logo.png" width="36" height="36" alt="" />
           <span>${brand}</span>
         </a>
         <nav class="nav-links" aria-label="演示页面">
-          ${NAV_PRIMARY.map(([href, label]) => `<a href="${href}">${label}</a>`).join("")}
+          ${NAV_PRIMARY.map(([href, label]) => `<a href="${prefix}${href}">${label}</a>`).join("")}
           <div class="nav-more">
             <button type="button" class="nav-more-btn" aria-expanded="false" aria-haspopup="true">更多</button>
             <div class="nav-more-panel" hidden>
-              ${NAV_MORE.map(([href, label]) => `<a href="${href}">${label}</a>`).join("")}
+              ${NAV_MORE.map(([href, label]) => `<a href="${prefix}${href}">${label}</a>`).join("")}
             </div>
           </div>
         </nav>
       </div>`;
-    const wrap = header.querySelector(".nav-more");
     const btn = header.querySelector(".nav-more-btn");
     const panel = header.querySelector(".nav-more-panel");
     btn.addEventListener("click", (e) => {
@@ -423,9 +563,15 @@
 
   function markNav() {
     const file = (location.pathname.split("/").pop() || "index.html").toLowerCase();
+    const underGames = !!demoRootPrefix();
     document.querySelectorAll(".nav-links a").forEach((a) => {
       const href = (a.getAttribute("href") || "").toLowerCase();
-      if (href === file || (file === "" && href === "index.html")) {
+      const bare = href.replace(/^\.\.\//, "").split("/").pop();
+      const isHere =
+        bare === file ||
+        (file === "" && bare === "index.html") ||
+        (underGames && bare === "games.html");
+      if (isHere) {
         a.classList.add("here");
         a.setAttribute("aria-current", "page");
       }
@@ -433,10 +579,37 @@
   }
 
   function avatarSvg(kind) {
+    /* Richer faces: hair / blush / props — same viewBox, shared with companions + chat */
     const faces = {
-      nuan: '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="18" cy="20" r="3" fill="#2a3140"/><circle cx="30" cy="20" r="3" fill="#2a3140"/><path d="M18 28c2.5 3 9.5 3 12 0" stroke="#2a3140" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>',
-      tiao: '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="18" cy="22" r="3" fill="#2a3140"/><circle cx="30" cy="22" r="3" fill="#2a3140"/><circle cx="24" cy="30" r="3" fill="#2a3140"/></svg>',
-      cha: '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="18" cy="20" r="3" fill="#2a3140"/><circle cx="30" cy="20" r="3" fill="#2a3140"/><path d="M17 29h14" stroke="#2a3140" stroke-width="2.5" stroke-linecap="round"/></svg>',
+      nuan:
+        '<svg viewBox="0 0 48 48" aria-hidden="true">' +
+        '<path d="M10 22c0-10 6-16 14-16s14 6 14 16" fill="#f4a574" opacity=".9"/>' +
+        '<ellipse cx="14" cy="26" rx="3.2" ry="2.2" fill="#ff8fab" opacity=".55"/>' +
+        '<ellipse cx="34" cy="26" rx="3.2" ry="2.2" fill="#ff8fab" opacity=".55"/>' +
+        '<circle cx="18" cy="22" r="2.6" fill="#2a3140"/>' +
+        '<circle cx="30" cy="22" r="2.6" fill="#2a3140"/>' +
+        '<path d="M18 30c2.8 3.2 9.2 3.2 12 0" stroke="#2a3140" stroke-width="2.4" fill="none" stroke-linecap="round"/>' +
+        '<path d="M34 14c2-1 4-.5 5 1.5" stroke="#e85d4c" stroke-width="1.8" fill="none" stroke-linecap="round"/>' +
+        "</svg>",
+      tiao:
+        '<svg viewBox="0 0 48 48" aria-hidden="true">' +
+        '<path d="M12 18c2-8 8-12 12-12 4 0 10 4 12 12l-2 4H14l-2-4z" fill="#2bb3a3" opacity=".85"/>' +
+        '<circle cx="24" cy="8" r="2.5" fill="#f0b429"/>' +
+        '<circle cx="17" cy="23" r="2.8" fill="#2a3140"/>' +
+        '<circle cx="31" cy="23" r="2.8" fill="#2a3140"/>' +
+        '<circle cx="24" cy="31" r="3.2" fill="#2a3140"/>' +
+        '<path d="M8 36c4-2 8-1 10 2M40 36c-4-2-8-1-10 2" stroke="#2bb3a3" stroke-width="2" fill="none" stroke-linecap="round"/>' +
+        "</svg>",
+      cha:
+        '<svg viewBox="0 0 48 48" aria-hidden="true">' +
+        '<path d="M14 16c0-7 4.5-11 10-11s10 4 10 11v2H14v-2z" fill="#4f9fd8" opacity=".75"/>' +
+        '<rect x="20" y="6" width="8" height="3" rx="1.5" fill="#2a3140" opacity=".35"/>' +
+        '<circle cx="18" cy="22" r="2.5" fill="#2a3140"/>' +
+        '<circle cx="30" cy="22" r="2.5" fill="#2a3140"/>' +
+        '<path d="M17 30h14" stroke="#2a3140" stroke-width="2.4" stroke-linecap="round"/>' +
+        '<path d="M36 28c3 1 5 4 5 7" stroke="#4f9fd8" stroke-width="2" fill="none" stroke-linecap="round"/>' +
+        '<ellipse cx="41" cy="36" rx="3.5" ry="2.5" fill="#c9e4ff" stroke="#4f9fd8" stroke-width="1.5"/>' +
+        "</svg>",
     };
     return faces[kind] || faces.nuan;
   }
@@ -480,6 +653,7 @@
 
   window.DemoStore = {
     KEY,
+    defaults,
     load,
     save,
     companion,
@@ -489,10 +663,20 @@
     safetySamples,
     matchSafety,
     welcomeGreeting,
+    companionOpener,
+    resetDemo,
+    applyModeChrome,
+    TOUR_STEPS,
+    mountTourBar,
     displayName,
     likeLabels,
     addMemory,
     saveSession,
+    getGameHigh,
+    submitGameScore,
+    demoRootPrefix,
+    NAV_PRIMARY,
+    NAV_MORE,
     injectNav,
     injectFavicon,
     markNav,
@@ -506,5 +690,7 @@
     injectFavicon();
     injectNav();
     markNav();
+    applyModeChrome();
+    mountTourBar();
   });
 })();

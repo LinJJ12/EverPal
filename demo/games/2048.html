@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>2048 · 玖伴</title>
+  <link rel="stylesheet" href="../css/cartoon.css" />
+  <link rel="stylesheet" href="../css/games.css" />
+</head>
+<body>
+  <header class="site-header" data-demo-header data-brand="玖伴"></header>
+  <main class="page game-page">
+    <div class="game-toolbar">
+      <a class="btn btn-secondary" href="../games.html">回大厅</a>
+      <h1>2048</h1>
+      <button type="button" class="btn btn-primary" id="restartBtn">再来一局</button>
+    </div>
+    <div class="game-scores">
+      <span>本局：<strong id="scoreNow">0</strong></span>
+      <span>纪录：<strong id="scoreBest">0</strong></span>
+    </div>
+    <p class="game-hint">手指滑动或用方向键合并相同数字</p>
+    <div id="gameMsg" class="game-msg" hidden></div>
+    <div class="game-board-wrap">
+      <div id="board" class="board-grid g2048" style="grid-template-columns:repeat(4,1fr)" aria-label="2048 棋盘"></div>
+    </div>
+    <div class="game-controls">
+      <div class="pad" id="pad">
+        <span class="ghost"></span>
+        <button type="button" class="btn btn-secondary" data-dir="up" aria-label="上">↑</button>
+        <span class="ghost"></span>
+        <button type="button" class="btn btn-secondary" data-dir="left" aria-label="左">←</button>
+        <button type="button" class="btn btn-secondary" data-dir="down" aria-label="下">↓</button>
+        <button type="button" class="btn btn-secondary" data-dir="right" aria-label="右">→</button>
+      </div>
+    </div>
+  </main>
+  <script src="../js/store.js"></script>
+  <script src="../js/games-common.js"></script>
+  <script src="../js/games/2048.js"></script>
+</body>
+</html>

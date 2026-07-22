@@ -18,8 +18,8 @@
       <span class="chip mode-badge" id="modeBadge">儿童模式</span>
     </div>
 
-    <div class="chat-layout">
-      <aside class="chat-side" aria-label="伙伴与记忆">
+    <div class="chat-layout" id="chatLayout">
+      <aside class="chat-side" id="chatSide" aria-label="伙伴与记忆">
         <h2>我的伙伴</h2>
         <div class="side-list" id="sideList"></div>
         <h2>本机记忆快照</h2>
@@ -31,6 +31,9 @@
       </aside>
 
       <section class="chat-shell">
+        <button type="button" class="btn btn-secondary chat-side-toggle" id="sideToggle" aria-expanded="false" aria-controls="chatSide">
+          伙伴 / 记忆
+        </button>
         <div class="pace-bar" id="paceBar" hidden>
           <div>
             <strong id="paceTitle">场景播放</strong>
@@ -98,6 +101,21 @@
     const autoPlayBtn = document.getElementById("autoPlayBtn");
     const stopBtn = document.getElementById("stopBtn");
     const regenBtn = document.getElementById("regenBtn");
+    const chatLayout = document.getElementById("chatLayout");
+    const sideToggle = document.getElementById("sideToggle");
+
+    sideToggle.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const open = !chatLayout.classList.contains("side-open");
+      chatLayout.classList.toggle("side-open", open);
+      sideToggle.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+    document.addEventListener("click", (e) => {
+      if (!chatLayout.classList.contains("side-open")) return;
+      if (e.target.closest(".chat-side") || e.target.closest("#sideToggle")) return;
+      chatLayout.classList.remove("side-open");
+      sideToggle.setAttribute("aria-expanded", "false");
+    });
 
     function refreshChrome() {
       state = DemoStore.load();
@@ -106,6 +124,7 @@
       const modeBadge = document.getElementById("modeBadge");
       modeBadge.textContent = state.mode === "child" ? "儿童模式" : "成人模式";
       modeBadge.className = "chip mode-badge " + state.mode;
+      document.getElementById("headerAvatar").className = "mini-avatar avatar " + companion.id;
       document.getElementById("headerAvatar").innerHTML = DemoStore.avatarSvg(companion.id);
       document.getElementById("headerName").textContent = companion.name;
       const likes = DemoStore.likeLabels();
@@ -139,6 +158,7 @@
     function addBubble(text, who, opts) {
       const div = document.createElement("div");
       div.className = "bubble " + who;
+      if (opts && opts.turnEnter) div.classList.add("turn-enter");
       messagesEl.appendChild(div);
       const scroll = () => {
         messagesEl.scrollTop = messagesEl.scrollHeight;
@@ -152,10 +172,12 @@
         setTimeout(() => {
           typing.remove();
           stopBtn.disabled = false;
+          div.classList.add("streaming");
           stopStream = DemoStore.streamText(div, text, {
             speed: state.mode === "child" ? 28 : 18,
             onTick: scroll,
             onDone: () => {
+              div.classList.remove("streaming");
               stopBtn.disabled = true;
               stopStream = null;
               lastBotText = text;
@@ -269,11 +291,19 @@
     });
 
     function seedGreeting() {
+      const opener = DemoStore.companionOpener(companion);
+      const emptyHint = document.createElement("p");
+      emptyHint.className = "note chat-empty-hint";
+      emptyHint.style.cssText = "margin:0 0 4px;align-self:flex-start;max-width:90%";
       const likes = DemoStore.likeLabels();
-      const hi = likes.length
-        ? `我是${companion.name}。${nick}好呀，还喜欢${likes[0]}吗？今天想聊点什么？`
-        : companion.sample.replace(/你/g, nick);
-      addBubble(hi, "bot", { stream: true });
+      const s = DemoStore.load();
+      if (s.nickname || likes.length) {
+        emptyHint.textContent = likes.length
+          ? `记得你：${DemoStore.displayName()} · 喜欢${likes.slice(0, 2).join("、")}`
+          : `记得你：${DemoStore.displayName()}`;
+        messagesEl.appendChild(emptyHint);
+      }
+      addBubble(opener, "bot", { stream: true });
     }
 
     /* ——— Scene pacing with branches ——— */
@@ -357,7 +387,7 @@
       played += 1;
       updatePace();
       if (turn.role === "user") {
-        addBubble(turn.text, "user");
+        addBubble(turn.text, "user", { turnEnter: true });
         if (!queue.length) {
           DemoStore.addMemory(`完成场景「${scene.title}」`);
           updatePace();
@@ -368,6 +398,7 @@
       updatePace();
       addBubble(turn.text, "bot", {
         stream: true,
+        turnEnter: true,
         onDone: () => {
           sceneStreaming = false;
           if (turn.choices && turn.choices.length) {

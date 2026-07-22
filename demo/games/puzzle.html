@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>数字拼图 · 玖伴</title>
+  <link rel="stylesheet" href="../css/cartoon.css" />
+  <link rel="stylesheet" href="../css/games.css" />
+</head>
+<body>
+  <header class="site-header" data-demo-header data-brand="玖伴"></header>
+  <main class="page game-page">
+    <div class="game-toolbar">
+      <a class="btn btn-secondary" href="../games.html">回大厅</a>
+      <h1>数字拼图</h1>
+      <button type="button" class="btn btn-primary" id="restartBtn">再来一局</button>
+    </div>
+    <div class="game-scores">
+      <span>本局步数：<strong id="scoreNow">0</strong></span>
+      <span>最佳步数：<strong id="scoreBest">暂无</strong></span>
+    </div>
+    <p class="game-hint">点空格旁边的数字，把 1–8 排整齐；步数越少越好</p>
+    <div id="gameMsg" class="game-msg" hidden></div>
+    <div class="game-board-wrap">
+      <div id="board" class="board-grid puzzle-grid" style="grid-template-columns:repeat(3,1fr);max-width:300px" aria-label="数字拼图"></div>
+    </div>
+  </main>
+  <script src="../js/store.js"></script>
+  <script src="../js/games-common.js"></script>
+  <script src="../js/games/puzzle.js"></script>
+</body>
+</html>

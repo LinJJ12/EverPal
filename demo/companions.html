@@ -44,7 +44,7 @@
           <div>
             <div class="choice-title">${c.name}${state.companionId === c.id ? " · 已选" : ""}</div>
             <div class="choice-desc">${c.blurb}</div>
-            <div class="sample-line">「${c.sample}」</div>
+            <div class="sample-line">「${DemoStore.companionOpener(c)}」</div>
           </div>
         `;
         el.addEventListener("click", () => {

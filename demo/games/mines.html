@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>扫雷 · 玖伴</title>
+  <link rel="stylesheet" href="../css/cartoon.css" />
+  <link rel="stylesheet" href="../css/games.css" />
+</head>
+<body>
+  <header class="site-header" data-demo-header data-brand="玖伴"></header>
+  <main class="page game-page">
+    <div class="game-toolbar">
+      <a class="btn btn-secondary" href="../games.html">回大厅</a>
+      <h1>扫雷</h1>
+      <button type="button" class="btn btn-primary" id="restartBtn">再来一局</button>
+    </div>
+    <div class="game-scores">
+      <span>本次胜场：<strong id="scoreNow">0</strong></span>
+      <span>纪录：<strong id="scoreBest">0</strong></span>
+    </div>
+    <p class="game-hint">先选「挖开」或「插旗」，再点格子。雷不多，慢慢来～</p>
+    <div class="mode-toggle" role="group" aria-label="操作模式">
+      <button type="button" class="btn btn-secondary active" id="modeDig">挖开</button>
+      <button type="button" class="btn btn-secondary" id="modeFlag">插旗</button>
+    </div>
+    <div id="gameMsg" class="game-msg" hidden></div>
+    <div class="game-board-wrap">
+      <div id="board" class="board-grid mines-grid" style="grid-template-columns:repeat(8,1fr)" aria-label="扫雷棋盘"></div>
+    </div>
+  </main>
+  <script src="../js/store.js"></script>
+  <script src="../js/games-common.js"></script>
+  <script src="../js/games/mines.js"></script>
+</body>
+</html>

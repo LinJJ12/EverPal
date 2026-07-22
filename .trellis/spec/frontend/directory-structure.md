@@ -37,8 +37,11 @@ web/
 | localStorage / IndexedDB | `lib/storage.ts` | Random components |
 | Fetch / SSE | `lib/api.ts` | Components calling `fetch` directly |
 
-## Forbidden
+## Demo HTML notes (current ship surface)
 
-- Putting provider/API config pages under `pages/` for end users
-- Copying LibreChat / Open WebUI sidebar-heavy workbench layouts
-- Adding `vendor/kids-ai/pwa/index.html` patterns (7k-line monolith) into `web/`
+Until `web/` lands, UX ships as `demo/*.html` + `demo/js/store.js` + `demo/css/cartoon.css`.
+
+- **Tour-bar**: `DemoStore.TOUR_STEPS` + `mountTourBar()` under sticky header; skip `index.html`.
+- **Full reset**: `DemoStore.resetDemo()` from settings after `confirm`.
+- **Mode chrome**: `html[data-demo-mode="child|adult"]` drives `--demo-font-scale`.
+- **Chat grid**: two areas only — side | shell; mobile drawer ≤960px.

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>贪吃蛇 · 玖伴</title>
+  <link rel="stylesheet" href="../css/cartoon.css" />
+  <link rel="stylesheet" href="../css/games.css" />
+</head>
+<body>
+  <header class="site-header" data-demo-header data-brand="玖伴"></header>
+  <main class="page game-page">
+    <div class="game-toolbar">
+      <a class="btn btn-secondary" href="../games.html">回大厅</a>
+      <h1>贪吃蛇</h1>
+      <button type="button" class="btn btn-primary" id="restartBtn">再来一局</button>
+    </div>
+    <div class="game-scores">
+      <span>本局：<strong id="scoreNow">0</strong></span>
+      <span>纪录：<strong id="scoreBest">0</strong></span>
+    </div>
+    <p class="game-hint">用方向键或下方按钮控制，慢慢吃豆子吧</p>
+    <div id="gameMsg" class="game-msg" hidden></div>
+    <div class="game-board-wrap">
+      <canvas id="board" class="game-canvas" width="360" height="360" aria-label="贪吃蛇棋盘"></canvas>
+    </div>
+    <div class="game-controls">
+      <div class="pad" id="pad">
+        <span class="ghost"></span>
+        <button type="button" class="btn btn-secondary" data-dir="up" aria-label="上">↑</button>
+        <span class="ghost"></span>
+        <button type="button" class="btn btn-secondary" data-dir="left" aria-label="左">←</button>
+        <button type="button" class="btn btn-secondary" data-dir="down" aria-label="下">↓</button>
+        <button type="button" class="btn btn-secondary" data-dir="right" aria-label="右">→</button>
+      </div>
+    </div>
+  </main>
+  <script src="../js/store.js"></script>
+  <script src="../js/games-common.js"></script>
+  <script src="../js/games/snake.js"></script>
+</body>
+</html>

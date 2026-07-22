@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>俄罗斯方块 · 玖伴</title>
+  <link rel="stylesheet" href="../css/cartoon.css" />
+  <link rel="stylesheet" href="../css/games.css" />
+</head>
+<body>
+  <header class="site-header" data-demo-header data-brand="玖伴"></header>
+  <main class="page game-page">
+    <div class="game-toolbar">
+      <a class="btn btn-secondary" href="../games.html">回大厅</a>
+      <h1>俄罗斯方块</h1>
+      <button type="button" class="btn btn-primary" id="restartBtn">再来一局</button>
+    </div>
+    <div class="game-scores">
+      <span>本局：<strong id="scoreNow">0</strong></span>
+      <span>纪录：<strong id="scoreBest">0</strong></span>
+    </div>
+    <p class="game-hint">下落很慢，用按钮左右移动、旋转、下落</p>
+    <div id="gameMsg" class="game-msg" hidden></div>
+    <div class="tetris-layout">
+      <canvas id="board" width="200" height="400" aria-label="俄罗斯方块"></canvas>
+    </div>
+    <div class="game-controls" style="margin-top:14px">
+      <button type="button" class="btn btn-secondary" id="btnLeft" aria-label="左移">←</button>
+      <button type="button" class="btn btn-secondary" id="btnRot" aria-label="旋转">旋</button>
+      <button type="button" class="btn btn-secondary" id="btnRight" aria-label="右移">→</button>
+      <button type="button" class="btn btn-secondary" id="btnDown" aria-label="加速下落">↓</button>
+      <button type="button" class="btn btn-primary" id="btnDrop" aria-label="立刻落下">落</button>
+    </div>
+  </main>
+  <script src="../js/store.js"></script>
+  <script src="../js/games-common.js"></script>
+  <script src="../js/games/tetris.js"></script>
+</body>
+</html>
