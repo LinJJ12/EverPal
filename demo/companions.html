@@ -2,34 +2,41 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>选择角色 · 陪伴 Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>选择角色 · 小伴 Demo</title>
   <link rel="stylesheet" href="css/cartoon.css" />
 </head>
 <body>
-  <nav class="demo-ribbon" aria-label="演示页面切换">
-    <a href="index.html">导览</a>
-    <a href="welcome.html">欢迎</a>
-    <a href="mode.html">模式</a>
-    <a href="nickname.html">昵称</a>
-    <a href="companions.html">角色</a>
-    <a href="chat.html">聊天</a>
-    <a href="settings.html">设置</a>
-  </nav>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="brand-lockup" href="index.html">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>小伴</span>
+      </a>
+      <nav class="nav-links" aria-label="演示页面">
+        <a href="index.html">导览</a>
+        <a href="welcome.html">欢迎</a>
+        <a href="mode.html">模式</a>
+        <a href="nickname.html">昵称</a>
+        <a href="companions.html">角色</a>
+        <a href="chat.html">聊天</a>
+        <a href="settings.html">设置</a>
+      </nav>
+    </div>
+  </header>
 
-  <main class="phone">
-    <div class="topbar">
-      <div class="brand">今天想找谁聊？</div>
+  <main class="page">
+    <div class="page-head">
+      <div>
+        <h1>今天想找谁聊？</h1>
+        <p class="lead" style="margin:0">三个温暖官方伙伴，没有恋爱养成。点选后进入聊天。</p>
+      </div>
       <span class="chip">官方角色</span>
     </div>
 
-    <p class="lead" style="margin:0 4px">没有恋爱养成。三个温暖伙伴，点一下选中。</p>
+    <div class="companion-grid" id="list"></div>
 
-    <section class="card">
-      <div class="companion-grid" id="list"></div>
-    </section>
-
-    <div class="footer-nav">
+    <div class="footer-actions">
       <a class="btn btn-secondary" href="nickname.html">上一步</a>
       <a class="btn btn-mint" href="chat.html">去聊天</a>
     </div>
@@ -47,12 +54,11 @@
         el.type = "button";
         el.className = "companion" + (state.companionId === c.id ? " selected" : "");
         el.innerHTML = `
-          <div class="avatar ${c.id}">${c.emoji}</div>
+          <div class="avatar ${c.id}">${DemoStore.avatarSvg(c.id)}</div>
           <div>
-            <div class="choice-title">${c.name}</div>
+            <div class="choice-title">${c.name}${state.companionId === c.id ? " · 已选" : ""}</div>
             <div class="choice-desc">${c.blurb}</div>
           </div>
-          <div>${state.companionId === c.id ? "✓" : ""}</div>
         `;
         el.addEventListener("click", () => {
           state.companionId = c.id;

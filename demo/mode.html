@@ -2,40 +2,49 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>选择模式 · 陪伴 Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>选择模式 · 小伴 Demo</title>
   <link rel="stylesheet" href="css/cartoon.css" />
 </head>
 <body>
-  <nav class="demo-ribbon" aria-label="演示页面切换">
-    <a href="index.html">导览</a>
-    <a href="welcome.html">欢迎</a>
-    <a href="mode.html">模式</a>
-    <a href="nickname.html">昵称</a>
-    <a href="companions.html">角色</a>
-    <a href="chat.html">聊天</a>
-    <a href="settings.html">设置</a>
-  </nav>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="brand-lockup" href="index.html">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>小伴</span>
+      </a>
+      <nav class="nav-links" aria-label="演示页面">
+        <a href="index.html">导览</a>
+        <a href="welcome.html">欢迎</a>
+        <a href="mode.html">模式</a>
+        <a href="nickname.html">昵称</a>
+        <a href="companions.html">角色</a>
+        <a href="chat.html">聊天</a>
+        <a href="settings.html">设置</a>
+      </nav>
+    </div>
+  </header>
 
-  <main class="phone">
-    <div class="topbar">
-      <div class="brand">选一个模式</div>
+  <main class="page page-narrow">
+    <div class="page-head">
+      <div>
+        <h1>选一个模式</h1>
+        <p class="lead" style="margin:0">会影响说话长短、话题与安全强度。演示中点选即写入本机。</p>
+      </div>
       <span class="chip">可随时再改</span>
     </div>
-
-    <p class="lead" style="margin:0 4px">模式会影响说话长短、话题和安全强度。演示里点一下就会记住。</p>
 
     <section class="card">
       <div class="choice" id="modeChoices">
         <button type="button" class="choice-item" data-mode="child" id="modeChild">
-          <div class="choice-icon child">🎒</div>
+          <div class="choice-icon child" id="iconChild"></div>
           <div>
             <div class="choice-title">儿童模式</div>
             <div class="choice-desc">短句、好懂、更严的安全守护。适合小学生一起聊、听故事。</div>
           </div>
         </button>
         <button type="button" class="choice-item adult-tone" data-mode="adult" id="modeAdult">
-          <div class="choice-icon adult">☕</div>
+          <div class="choice-icon adult" id="iconAdult"></div>
           <div>
             <div class="choice-title">成人模式</div>
             <div class="choice-desc">可以轻度树洞倾诉，先听你说。不做恋爱角色。</div>
@@ -44,14 +53,16 @@
       </div>
     </section>
 
-    <div class="footer-nav">
+    <div class="footer-actions">
       <a class="btn btn-secondary" href="welcome.html">上一步</a>
-      <a class="btn btn-primary" href="nickname.html" id="nextBtn">下一步</a>
+      <a class="btn btn-primary" href="nickname.html">下一步</a>
     </div>
   </main>
 
   <script src="js/store.js"></script>
   <script>
+    document.getElementById("iconChild").innerHTML = DemoStore.iconChild();
+    document.getElementById("iconAdult").innerHTML = DemoStore.iconAdult();
     const state = DemoStore.load();
     function paint() {
       document.querySelectorAll(".choice-item").forEach((el) => {

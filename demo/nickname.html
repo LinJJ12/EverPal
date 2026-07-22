@@ -2,24 +2,35 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>昵称 · 陪伴 Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>昵称 · 小伴 Demo</title>
   <link rel="stylesheet" href="css/cartoon.css" />
 </head>
 <body>
-  <nav class="demo-ribbon" aria-label="演示页面切换">
-    <a href="index.html">导览</a>
-    <a href="welcome.html">欢迎</a>
-    <a href="mode.html">模式</a>
-    <a href="nickname.html">昵称</a>
-    <a href="companions.html">角色</a>
-    <a href="chat.html">聊天</a>
-    <a href="settings.html">设置</a>
-  </nav>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="brand-lockup" href="index.html">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>小伴</span>
+      </a>
+      <nav class="nav-links" aria-label="演示页面">
+        <a href="index.html">导览</a>
+        <a href="welcome.html">欢迎</a>
+        <a href="mode.html">模式</a>
+        <a href="nickname.html">昵称</a>
+        <a href="companions.html">角色</a>
+        <a href="chat.html">聊天</a>
+        <a href="settings.html">设置</a>
+      </nav>
+    </div>
+  </header>
 
-  <main class="phone">
-    <div class="topbar">
-      <div class="brand">我怎么称呼你？</div>
+  <main class="page page-narrow">
+    <div class="page-head">
+      <div>
+        <h1>我怎么称呼你？</h1>
+        <p class="lead" style="margin:0">可选。本机记住昵称，聊天里会叫你的名字。不接账号、不上传。</p>
+      </div>
       <span class="chip">可跳过</span>
     </div>
 
@@ -28,14 +39,13 @@
         <label for="nickname">昵称</label>
         <input id="nickname" type="text" maxlength="12" placeholder="例如：豆豆、小明…" autocomplete="nickname" />
       </div>
-      <p class="note" style="text-align:left;margin:0">演示用本地记住昵称，下次聊天里会叫你的名字。不接账号、不上传。</p>
     </section>
 
-    <div class="footer-nav">
+    <div class="footer-actions">
       <a class="btn btn-secondary" href="mode.html">上一步</a>
       <button type="button" class="btn btn-primary" id="saveBtn">下一步</button>
+      <a class="btn btn-secondary" href="companions.html">暂时跳过</a>
     </div>
-    <a class="btn btn-secondary btn-block" href="companions.html" id="skipBtn">暂时跳过</a>
   </main>
 
   <script src="js/store.js"></script>

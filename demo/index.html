@@ -2,78 +2,80 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>演示导览 · 陪伴 Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>演示导览 · 小伴 Demo</title>
   <link rel="stylesheet" href="css/cartoon.css" />
 </head>
 <body>
-  <nav class="demo-ribbon" aria-label="演示页面切换">
-    <a href="index.html">导览</a>
-    <a href="welcome.html">欢迎</a>
-    <a href="mode.html">模式</a>
-    <a href="nickname.html">昵称</a>
-    <a href="companions.html">角色</a>
-    <a href="chat.html">聊天</a>
-    <a href="settings.html">设置</a>
-  </nav>
-
-  <main class="phone">
-    <div class="hero">
-      <div class="hero-mascot" aria-hidden="true"></div>
-      <h1>陪伴 Demo</h1>
-      <p class="lead">纯 HTML 多页演示。可按下方流程走一遍，也可点顶部条任意跳转。</p>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="brand-lockup" href="index.html">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>小伴 Demo</span>
+      </a>
+      <nav class="nav-links" aria-label="演示页面">
+        <a href="index.html">导览</a>
+        <a href="welcome.html">欢迎</a>
+        <a href="mode.html">模式</a>
+        <a href="nickname.html">昵称</a>
+        <a href="companions.html">角色</a>
+        <a href="chat.html">聊天</a>
+        <a href="settings.html">设置</a>
+      </nav>
     </div>
+  </header>
 
-    <section class="card stack">
-      <p class="note" style="text-align:left;margin:0">演示路径（推荐顺序）</p>
-      <div class="hub-list">
-        <a class="hub-item" href="welcome.html">
-          <div>
-            <strong>1. 欢迎页</strong>
-            <span>品牌与开场，零登录</span>
-          </div>
-          <span>→</span>
-        </a>
-        <a class="hub-item" href="mode.html">
-          <div>
-            <strong>2. 儿童 / 成人模式</strong>
-            <span>分龄语气与安全强度</span>
-          </div>
-          <span>→</span>
-        </a>
-        <a class="hub-item" href="nickname.html">
-          <div>
-            <strong>3. 昵称（可选）</strong>
-            <span>轻量记忆入口</span>
-          </div>
-          <span>→</span>
-        </a>
-        <a class="hub-item" href="companions.html">
-          <div>
-            <strong>4. 选择陪伴角色</strong>
-            <span>小暖 / 跳跳 / 阿茶</span>
-          </div>
-          <span>→</span>
-        </a>
-        <a class="hub-item" href="chat.html">
-          <div>
-            <strong>5. 聊天主界面</strong>
-            <span>话题卡片 + 模拟回复</span>
-          </div>
-          <span>→</span>
-        </a>
-        <a class="hub-item" href="settings.html">
-          <div>
-            <strong>6. 本地设置</strong>
-            <span>切模式、清记忆（无登录）</span>
-          </div>
-          <span>→</span>
-        </a>
+  <p class="demo-banner">纯 HTML 多页演示 · 桌面 Web 布局 · 不接真实大模型 · 可按路径走或点顶部导航跳转</p>
+
+  <main class="page">
+    <section class="hero-web">
+      <div class="hero-copy">
+        <span class="chip">面向小孩与普通人的陪伴演示</span>
+        <h1 style="margin-top:14px">温暖好懂的聊天伙伴</h1>
+        <p class="lead">按推荐顺序走完开场 → 模式 → 昵称 → 角色 → 聊天；也可随时用顶栏切换页面，方便评审与讲解。</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="welcome.html">从欢迎页开始</a>
+          <a class="btn btn-secondary" href="chat.html">直接看聊天界面</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-mascot" role="img" aria-label="卡通伙伴形象"></div>
       </div>
     </section>
 
-    <p class="note">本 Demo 不接真实大模型，仅用于界面与流程演示。</p>
-    <a class="btn btn-primary btn-block" href="welcome.html">从欢迎页开始</a>
+    <h2 class="section-title">演示路径（推荐顺序）</h2>
+    <div class="hub-grid">
+      <a class="hub-item" href="welcome.html">
+        <span class="step">Step 01</span>
+        <strong>欢迎页</strong>
+        <span>品牌与开场，零登录</span>
+      </a>
+      <a class="hub-item" href="mode.html">
+        <span class="step">Step 02</span>
+        <strong>儿童 / 成人模式</strong>
+        <span>分龄语气与安全强度</span>
+      </a>
+      <a class="hub-item" href="nickname.html">
+        <span class="step">Step 03</span>
+        <strong>昵称（可选）</strong>
+        <span>轻量记忆入口</span>
+      </a>
+      <a class="hub-item" href="companions.html">
+        <span class="step">Step 04</span>
+        <strong>选择陪伴角色</strong>
+        <span>小暖 / 跳跳 / 阿茶</span>
+      </a>
+      <a class="hub-item" href="chat.html">
+        <span class="step">Step 05</span>
+        <strong>聊天主界面</strong>
+        <span>侧栏 + 话题卡 + 模拟回复</span>
+      </a>
+      <a class="hub-item" href="settings.html">
+        <span class="step">Step 06</span>
+        <strong>本地设置</strong>
+        <span>切模式、清记忆（无登录）</span>
+      </a>
+    </div>
   </main>
 
   <script src="js/store.js"></script>

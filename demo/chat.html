@@ -2,51 +2,64 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>聊天 · 陪伴 Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>聊天 · 小伴 Demo</title>
   <link rel="stylesheet" href="css/cartoon.css" />
 </head>
 <body>
-  <nav class="demo-ribbon" aria-label="演示页面切换">
-    <a href="index.html">导览</a>
-    <a href="welcome.html">欢迎</a>
-    <a href="mode.html">模式</a>
-    <a href="nickname.html">昵称</a>
-    <a href="companions.html">角色</a>
-    <a href="chat.html">聊天</a>
-    <a href="settings.html">设置</a>
-  </nav>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="brand-lockup" href="index.html">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>小伴</span>
+      </a>
+      <nav class="nav-links" aria-label="演示页面">
+        <a href="index.html">导览</a>
+        <a href="welcome.html">欢迎</a>
+        <a href="mode.html">模式</a>
+        <a href="nickname.html">昵称</a>
+        <a href="companions.html">角色</a>
+        <a href="chat.html">聊天</a>
+        <a href="settings.html">设置</a>
+      </nav>
+    </div>
+  </header>
 
-  <main class="phone" style="padding-bottom:16px">
-    <div class="topbar">
-      <div class="brand">聊天</div>
-      <div style="display:flex;gap:8px;align-items:center">
-        <span class="chip mode-badge" id="modeBadge">儿童</span>
-        <a class="chip" href="settings.html">设置</a>
+  <main class="page page-chat">
+    <div class="page-head" style="margin-bottom:16px">
+      <div>
+        <h1>聊天</h1>
+        <p class="lead" style="margin:0">桌面双栏：左侧伙伴，右侧对话。回复为模拟内容。</p>
       </div>
+      <span class="chip mode-badge" id="modeBadge">儿童模式</span>
     </div>
 
-    <section class="chat-shell">
-      <header class="chat-header">
-        <div class="mini-avatar" id="headerAvatar">🦊</div>
-        <div>
-          <div style="font-weight:800" id="headerName">小暖</div>
-          <div style="font-size:0.78rem;color:var(--muted)" id="headerSub">我在呀，想聊点什么？</div>
-        </div>
-        <a href="companions.html" class="chip" style="margin-left:auto">换角色</a>
-      </header>
+    <div class="chat-layout">
+      <aside class="chat-side" aria-label="伙伴与快捷入口">
+        <h2>我的伙伴</h2>
+        <div class="side-list" id="sideList"></div>
+        <a class="btn btn-secondary btn-block" href="companions.html">管理角色</a>
+        <a class="btn btn-secondary btn-block" href="settings.html">本地设置</a>
+      </aside>
 
-      <div class="chat-messages" id="messages"></div>
+      <section class="chat-shell">
+        <header class="chat-header">
+          <div class="mini-avatar" id="headerAvatar"></div>
+          <div>
+            <div style="font-weight:800;font-family:var(--font-display);font-size:1.15rem" id="headerName">小暖</div>
+            <div style="font-size:0.85rem;color:var(--color-muted)" id="headerSub">我在呀</div>
+          </div>
+        </header>
 
-      <div class="topics" id="topics"></div>
+        <div class="chat-messages" id="messages"></div>
+        <div class="topics" id="topics"></div>
 
-      <form class="composer" id="composer">
-        <input id="input" type="text" placeholder="想说点什么…" autocomplete="off" />
-        <button class="btn btn-primary" type="submit">发送</button>
-      </form>
-    </section>
-
-    <p class="note">模拟回复，未连接真实模型。顶部可切到其他演示页。</p>
+        <form class="composer" id="composer">
+          <input id="input" type="text" placeholder="想说点什么…" autocomplete="off" aria-label="消息输入" />
+          <button class="btn btn-primary" type="submit">发送</button>
+        </form>
+      </section>
+    </div>
   </main>
 
   <script src="js/store.js"></script>
@@ -59,12 +72,25 @@
     modeBadge.textContent = state.mode === "child" ? "儿童模式" : "成人模式";
     modeBadge.classList.add(state.mode);
 
-    document.getElementById("headerAvatar").textContent = companion.emoji;
+    document.getElementById("headerAvatar").innerHTML = DemoStore.avatarSvg(companion.id);
     document.getElementById("headerName").textContent = companion.name;
     document.getElementById("headerSub").textContent =
       state.mode === "child"
         ? `${nick}，今天想听故事还是问问题？`
         : `${nick}，我听着呢，你慢慢说。`;
+
+    const sideList = document.getElementById("sideList");
+    Object.values(DemoStore.companions).forEach((c) => {
+      const a = document.createElement("button");
+      a.type = "button";
+      a.className = "side-link" + (c.id === companion.id ? " active" : "");
+      a.innerHTML = `<span class="side-avatar avatar ${c.id}">${DemoStore.avatarSvg(c.id)}</span><span>${c.name}</span>`;
+      a.addEventListener("click", () => {
+        DemoStore.save({ companionId: c.id });
+        location.reload();
+      });
+      sideList.appendChild(a);
+    });
 
     const messages = document.getElementById("messages");
     const topicsEl = document.getElementById("topics");

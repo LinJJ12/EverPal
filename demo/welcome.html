@@ -2,39 +2,45 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>欢迎 · 陪伴 Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>欢迎 · 小伴 Demo</title>
   <link rel="stylesheet" href="css/cartoon.css" />
 </head>
 <body>
-  <nav class="demo-ribbon" aria-label="演示页面切换">
-    <a href="index.html">导览</a>
-    <a href="welcome.html">欢迎</a>
-    <a href="mode.html">模式</a>
-    <a href="nickname.html">昵称</a>
-    <a href="companions.html">角色</a>
-    <a href="chat.html">聊天</a>
-    <a href="settings.html">设置</a>
-  </nav>
-
-  <main class="phone">
-    <div class="topbar">
-      <div class="brand">小伴</div>
-      <span class="chip">无需登录</span>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="brand-lockup" href="index.html">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>小伴</span>
+      </a>
+      <nav class="nav-links" aria-label="演示页面">
+        <a href="index.html">导览</a>
+        <a href="welcome.html">欢迎</a>
+        <a href="mode.html">模式</a>
+        <a href="nickname.html">昵称</a>
+        <a href="companions.html">角色</a>
+        <a href="chat.html">聊天</a>
+        <a href="settings.html">设置</a>
+      </nav>
     </div>
+  </header>
 
-    <div class="hero">
-      <div class="hero-mascot" aria-hidden="true"></div>
-      <h1>你好呀，我在这儿</h1>
-      <p class="lead">一个温暖好懂的聊天伙伴。小孩可以听故事、问为什么；大人也可以慢慢说心里话。</p>
-    </div>
-
-    <section class="card stack">
-      <a class="btn btn-primary btn-block" href="mode.html">开始陪伴</a>
-      <a class="btn btn-secondary btn-block" href="chat.html">已有档案？直接去聊天</a>
+  <main class="page">
+    <section class="hero-web">
+      <div class="hero-copy">
+        <span class="chip">无需登录 · 开箱即聊</span>
+        <h1 style="margin-top:14px">你好呀，我在这儿</h1>
+        <p class="lead">一个温暖好懂的聊天伙伴。小孩可以听故事、问为什么；大人也可以慢慢说心里话。技术藏在背后，你感受到的是陪伴。</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="mode.html">开始陪伴</a>
+          <a class="btn btn-secondary" href="chat.html">已有档案？去聊天</a>
+        </div>
+        <p class="note" style="margin-top:16px">演示页不配置 API，点按钮进入下一步即可。</p>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-mascot" role="img" aria-label="卡通伙伴"></div>
+      </div>
     </section>
-
-    <p class="note">演示页：不配置 API，点按钮进入下一步即可。</p>
   </main>
 
   <script src="js/store.js"></script>
