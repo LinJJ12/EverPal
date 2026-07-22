@@ -1,6 +1,7 @@
-# 陪伴 Chatbot：流程 · 思维导图 · 架构图
+# 玖伴：流程 · 思维导图 · 架构图
 
-> 依据 `docs/PRD.md` v0.3。一期：**Web + 卡通皮肤 + 无登录 + 提示词/词库安全**。  
+> 依据 `docs/PRD.md` v0.4。产品名暂定 **玖伴**（九久相伴，永远有人回应）。  
+> 一期：**Web + 卡通皮肤 + 无登录 + 提示词/词库安全**。当前可演示界面在 **`demo/`**（纯 HTML）。  
 > 下图均为 Mermaid，可在支持 Mermaid 的编辑器（如 Cursor / VS Code / GitHub）中直接预览。
 
 ---
@@ -82,7 +83,7 @@ flowchart LR
 
 ```mermaid
 mindmap
-  root((陪伴 Chatbot))
+  root((玖伴))
     用户
       小学生 6-12
       普通人成人
@@ -243,20 +244,16 @@ sequenceDiagram
 flowchart TB
     ROOT[chatbot/]
     ROOT --> DOCS[docs/<br/>PRD · 本图文档]
-    ROOT --> APPS[apps/ 或 packages/]
+    ROOT --> DEMO[demo/<br/>当前 HTML 原型]
+    ROOT --> SERVER[server/<br/>BFF 计划中]
 
-    APPS --> WEB[web/<br/>前端 React/Next 等]
-    APPS --> SERVER[server/<br/>BFF API]
-
-    WEB --> W1[pages/chat]
-    WEB --> W2[components/bubble · topics · companion]
-    WEB --> W3[styles/cartoon theme]
-    WEB --> W4[lib/local-profile]
+    DEMO --> D1[pages · store.js · cartoon.css]
+    DEMO --> D2[assets/brand 玖伴图标]
 
     SERVER --> S1[routes/chat · sessions · companions]
     SERVER --> S2[services/persona · memory · safety · llm]
     SERVER --> S3[data/lexicon.json]
-    SERVER --> S4[prompts/child · adult · roles]
+    SERVER --> S4[prompts]
     SERVER --> S5[store/sqlite]
 ```
 
@@ -264,17 +261,16 @@ flowchart TB
 
 ```text
 chatbot/
+├── README.md
 ├── docs/
-│   ├── PRD.md
+│   ├── PRD.md               ← 玖伴需求 v0.4
 │   └── diagrams.md          ← 本文件
-├── web/                     ← 前端（卡通 Web）
-│   ├── src/
-│   │   ├── pages/           # 欢迎、聊天、角色选择
-│   │   ├── components/      # 气泡、话题卡、角色头像
-│   │   ├── themes/cartoon/  # 一期皮肤
-│   │   └── lib/storage.ts   # 本地档案（无登录）
-│   └── package.json
-├── server/                  ← 陪伴 BFF
+├── demo/                    ← 当前可演示 HTML（本阶段唯一前端）
+│   ├── index.html
+│   ├── assets/brand/        # logo.png
+│   ├── css/cartoon.css
+│   └── js/store.js
+├── server/                  ← 计划：陪伴 BFF
 │   ├── src/
 │   │   ├── routes/          # chat / sessions / companions
 │   │   ├── services/
@@ -286,8 +282,7 @@ chatbot/
 │   │   ├── data/lexicon/    # 规则词库
 │   │   └── store/           # SQLite 等
 │   └── package.json
-├── docker-compose.yml       # 运营侧部署（用户无感）
-└── README.md
+└── docker-compose.yml       # 运营侧部署（用户无感）
 ```
 
 ### 3.4 数据关系（概念）

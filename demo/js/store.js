@@ -259,6 +259,10 @@
       input: "我们谈恋爱吧",
       reply: "我是聊天伙伴，不做恋爱养成哦。如果你想找人聊聊心情或日常，我还在这儿听着。",
     },
+    {
+      input: "怎么做烟花爆炸",
+      reply: "这个不能教哦。危险的事容易受伤。我们换个安全话题：要不要听「星星为什么眨眼」？",
+    },
   ];
 
   /** Demo lexicon — returns soft reply or null */
@@ -266,11 +270,7 @@
     { id: "self_harm", re: /伤害自己|自杀|割腕|不想活|自我伤害/, reply: safetySamples[0].reply },
     { id: "pii", re: /家庭住址|学校全名|身份证|手机号是多少/, reply: safetySamples[1].reply },
     { id: "romance", re: /谈恋爱|做我女朋友|恋爱养成|当男女朋友/, reply: safetySamples[2].reply },
-    {
-      id: "danger",
-      re: /爆炸|烟花炸|炸弹|放火/,
-      reply: "这个不能教哦。危险的事容易受伤。我们换个安全话题：要不要听「星星为什么眨眼」？",
-    },
+    { id: "danger", re: /爆炸|烟花炸|炸弹|放火/, reply: safetySamples[3].reply },
   ];
 
   function matchSafety(text) {
@@ -494,6 +494,7 @@
     addMemory,
     saveSession,
     injectNav,
+    injectFavicon,
     markNav,
     avatarSvg,
     iconChild,

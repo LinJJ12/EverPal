@@ -88,6 +88,7 @@
     let played = 0;
     let awaitingChoice = false;
     let autoTimer = null;
+    let sceneStreaming = false;
 
     const messagesEl = document.getElementById("messages");
     const topicsEl = document.getElementById("topics");
@@ -276,8 +277,20 @@
     }
 
     /* ——— Scene pacing with branches ——— */
+    function applySceneProfile(s) {
+      const patch = { mode: s.mode, companionId: s.companionId };
+      if (s.seedLikes) {
+        const cur = DemoStore.load().likes || [];
+        patch.likes = Array.from(new Set([...cur, ...s.seedLikes]));
+      }
+      DemoStore.save(patch);
+      refreshChrome();
+    }
+
     function enterScene(s) {
+      applySceneProfile(s);
       scene = s;
+      sceneStreaming = false;
       queue = s.turns.map((t) => ({ ...t }));
       totalPlanned = queue.length;
       played = 0;
@@ -302,9 +315,11 @@
       const left = queue.length;
       document.getElementById("paceProgress").textContent = awaitingChoice
         ? `请选择分支（已播 ${played} 句）`
-        : `队列剩余 ${left} · 已播 ${played}`;
-      nextTurnBtn.disabled = awaitingChoice || left === 0;
-      if (!awaitingChoice && left === 0 && played > 0) {
+        : sceneStreaming
+          ? `打字中… · 已播 ${played}`
+          : `队列剩余 ${left} · 已播 ${played}`;
+      nextTurnBtn.disabled = awaitingChoice || sceneStreaming || left === 0;
+      if (!awaitingChoice && !sceneStreaming && left === 0 && played > 0) {
         nextTurnBtn.textContent = "已播完";
         nextTurnBtn.disabled = true;
       }
@@ -337,7 +352,7 @@
     }
 
     function playNextTurn() {
-      if (!scene || awaitingChoice || !queue.length) return;
+      if (!scene || awaitingChoice || sceneStreaming || !queue.length) return;
       const turn = queue.shift();
       played += 1;
       updatePace();
@@ -347,19 +362,25 @@
           DemoStore.addMemory(`完成场景「${scene.title}」`);
           updatePace();
         }
-        return;
+        return true;
       }
+      sceneStreaming = true;
+      updatePace();
       addBubble(turn.text, "bot", {
         stream: true,
         onDone: () => {
+          sceneStreaming = false;
           if (turn.choices && turn.choices.length) {
             showChoices(turn.choices);
           } else if (!queue.length) {
             DemoStore.addMemory(`完成场景「${scene.title}」`);
             updatePace();
+          } else {
+            updatePace();
           }
         },
       });
+      return true;
     }
 
     nextTurnBtn.addEventListener("click", () => {
@@ -380,7 +401,7 @@
       }
       autoPlayBtn.textContent = "停止慢放";
       const tick = () => {
-        if (!scene || awaitingChoice) return;
+        if (!scene || awaitingChoice || sceneStreaming) return;
         if (!queue.length) {
           clearInterval(autoTimer);
           autoTimer = null;
@@ -413,6 +434,8 @@
           role: m.role === "assistant" ? "bot" : m.role,
           text: m.text,
         }));
+      } else {
+        seedGreeting();
       }
     } else if (sceneId) {
       const s = DemoStore.scenes.find((x) => x.id === sceneId);

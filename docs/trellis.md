@@ -1,6 +1,8 @@
 # Trellis 使用说明（本仓库）
 
-本仓库已用 [Trellis](https://docs.trytrellis.app/zh) **0.6.7** 初始化（Cursor 平台），用于把**项目规范**注入后续 AI 开发。
+本仓库（产品暂定名 **玖伴**）已用 [Trellis](https://docs.trytrellis.app/zh) **0.6.7** 初始化（Cursor 平台），用于把**项目规范**注入后续 AI 开发。
+
+当前可演示界面在 `demo/`；产品约束见 PRD v0.4。
 
 ## 已就绪内容
 
@@ -13,11 +15,13 @@
 | `.cursor/skills/` | Trellis 工作流 skills |
 | `.cursor/commands/` | `trellis-finish-work` / `trellis-continue` |
 | `AGENTS.md` | 通用 Agent 入口说明 |
+| `demo/` | HTML Demo（规范落地前的可点原型） |
 
 关键规范请先看：
 
 - `.trellis/spec/guides/product-constraints.md`
 - `.trellis/spec/backend/safety-pipeline.md`
+- `docs/PRD.md` / `demo/README.md`
 
 ## 日常用法
 

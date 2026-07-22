@@ -1,6 +1,12 @@
-# Product Constraints (Companion Chatbot)
+# Product Constraints (玖伴)
 
-> Binding decisions from `docs/PRD.md` v0.3. If code conflicts with this file, **this file wins** until the PRD is revised.
+> Binding decisions from `docs/PRD.md` v0.4. If code conflicts with this file, **this file wins** until the PRD is revised.
+
+## Brand (provisional)
+
+- **Name**: 玖伴
+- **Meaning**: 九久相伴，永远有人回应
+- **Icon**: `demo/assets/brand/logo.png` (transparent)
 
 ## Audience
 
@@ -9,13 +15,14 @@
 
 ## Phase-1 must
 
-- Web (mobile-first), cartoon skin
+- Web, cartoon skin
 - No login
 - Child / adult modes
 - Official companions (warm roles only)
 - Light memory (nickname, preferences)
 - Safety = prompt rules + lexicon
 - Server-managed LLM (OpenAI-compatible)
+- Ship UX via HTML `demo/` for now (no separate SPA framework in this phase)
 
 ## Phase-1 must not
 
@@ -33,6 +40,7 @@
 |-----|-----|
 | `docs/PRD.md` | Requirements |
 | `docs/diagrams.md` | Flows / architecture |
+| `demo/README.md` | How to run the HTML demo |
 | `docs/feasibility-kids-ai.md` | What to copy vs discard from kids-ai |
 | `docs/research-companions.md` | Landscape |
 
