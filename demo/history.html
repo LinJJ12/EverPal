@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>会话历史 · 玖伴 Demo</title>
+  <link rel="stylesheet" href="css/cartoon.css" />
+</head>
+<body>
+  <header class="site-header" data-demo-header></header>
+
+  <main class="page page-narrow">
+    <div class="page-head">
+      <div>
+        <h1>会话历史</h1>
+        <p class="lead" style="margin:0">对应 PRD「会话可回看」。演示中在聊天页点「保存本段对话」后会出现在这里。</p>
+      </div>
+    </div>
+
+    <div class="stack" id="list"></div>
+
+    <div class="footer-actions">
+      <button type="button" class="btn btn-secondary" id="clearAll">清空历史</button>
+      <a class="btn btn-primary" href="chat.html">去聊天</a>
+    </div>
+  </main>
+
+  <script src="js/store.js"></script>
+  <script>
+    function refresh() {
+      const sessions = DemoStore.load().sessions || [];
+      const list = document.getElementById("list");
+      if (!sessions.length) {
+        list.innerHTML = `<section class="card"><p class="note" style="margin:0">还没有保存的会话。先去「场景」或「聊天」演示一段，再点保存。</p></section>`;
+        return;
+      }
+      list.innerHTML = sessions
+        .map((s) => {
+          const c = DemoStore.companions[s.companionId]?.name || "伙伴";
+          return `<a class="history-item" href="chat.html?session=${encodeURIComponent(s.id)}">
+            <strong>${s.title}</strong>
+            <div class="note" style="margin:6px 0;text-align:left">${c} · ${s.mode === "child" ? "儿童" : "成人"} · ${s.messages.length} 条消息</div>
+            <time>${new Date(s.updatedAt).toLocaleString()}</time>
+          </a>`;
+        })
+        .join("");
+    }
+    document.getElementById("clearAll").addEventListener("click", () => {
+      DemoStore.save({ sessions: [] });
+      refresh();
+    });
+    refresh();
+  </script>
+</body>
+</html>

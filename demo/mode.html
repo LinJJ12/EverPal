@@ -3,59 +3,48 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>选择模式 · 小伴 Demo</title>
+  <title>选择模式 · 玖伴 Demo</title>
   <link rel="stylesheet" href="css/cartoon.css" />
 </head>
 <body>
-  <header class="site-header">
-    <div class="site-header-inner">
-      <a class="brand-lockup" href="index.html">
-        <span class="brand-mark" aria-hidden="true"></span>
-        <span>小伴</span>
-      </a>
-      <nav class="nav-links" aria-label="演示页面">
-        <a href="index.html">导览</a>
-        <a href="welcome.html">欢迎</a>
-        <a href="mode.html">模式</a>
-        <a href="nickname.html">昵称</a>
-        <a href="companions.html">角色</a>
-        <a href="chat.html">聊天</a>
-        <a href="settings.html">设置</a>
-      </nav>
-    </div>
-  </header>
+  <header class="site-header" data-demo-header></header>
 
   <main class="page page-narrow">
     <div class="page-head">
       <div>
         <h1>选一个模式</h1>
-        <p class="lead" style="margin:0">会影响说话长短、话题与安全强度。演示中点选即写入本机。</p>
+        <p class="lead" style="margin:0">对应 PRD「儿童 / 成人模式」。请稍停讲解差异，再点下一步。</p>
       </div>
       <span class="chip">可随时再改</span>
     </div>
 
-    <section class="card">
+    <section class="card" style="margin-bottom:16px">
       <div class="choice" id="modeChoices">
-        <button type="button" class="choice-item" data-mode="child" id="modeChild">
+        <button type="button" class="choice-item" data-mode="child">
           <div class="choice-icon child" id="iconChild"></div>
           <div>
             <div class="choice-title">儿童模式</div>
-            <div class="choice-desc">短句、好懂、更严的安全守护。适合小学生一起聊、听故事。</div>
+            <div class="choice-desc">短句、比喻、更浅话题；安全词库最严。适合小学生闲聊、听故事、问为什么。</div>
           </div>
         </button>
-        <button type="button" class="choice-item adult-tone" data-mode="adult" id="modeAdult">
+        <button type="button" class="choice-item adult-tone" data-mode="adult">
           <div class="choice-icon adult" id="iconAdult"></div>
           <div>
             <div class="choice-title">成人模式</div>
-            <div class="choice-desc">可以轻度树洞倾诉，先听你说。不做恋爱角色。</div>
+            <div class="choice-desc">可轻度树洞，先共情再给可选建议；不做恋爱角色。语气更成熟，仍守安全边界。</div>
           </div>
         </button>
       </div>
     </section>
 
+    <section class="card stack">
+      <div class="choice-title">讲解备忘</div>
+      <p class="note" style="margin:0;text-align:left">家长同意流程、宵禁与完整家长面板在二期；一期靠儿童模式 + 提示词/词库兜底。</p>
+    </section>
+
     <div class="footer-actions">
       <a class="btn btn-secondary" href="welcome.html">上一步</a>
-      <a class="btn btn-primary" href="nickname.html">下一步</a>
+      <a class="btn btn-primary" href="nickname.html">下一步：档案</a>
     </div>
   </main>
 

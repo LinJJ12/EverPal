@@ -3,46 +3,49 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>欢迎 · 小伴 Demo</title>
+  <title>欢迎 · 玖伴 Demo</title>
+  <link rel="icon" type="image/png" href="assets/brand/logo.png" />
   <link rel="stylesheet" href="css/cartoon.css" />
 </head>
 <body>
-  <header class="site-header">
-    <div class="site-header-inner">
-      <a class="brand-lockup" href="index.html">
-        <span class="brand-mark" aria-hidden="true"></span>
-        <span>小伴</span>
-      </a>
-      <nav class="nav-links" aria-label="演示页面">
-        <a href="index.html">导览</a>
-        <a href="welcome.html">欢迎</a>
-        <a href="mode.html">模式</a>
-        <a href="nickname.html">昵称</a>
-        <a href="companions.html">角色</a>
-        <a href="chat.html">聊天</a>
-        <a href="settings.html">设置</a>
-      </nav>
-    </div>
-  </header>
+  <header class="site-header" data-demo-header></header>
 
   <main class="page">
     <section class="hero-web">
       <div class="hero-copy">
-        <span class="chip">无需登录 · 开箱即聊</span>
-        <h1 style="margin-top:14px">你好呀，我在这儿</h1>
-        <p class="lead">一个温暖好懂的聊天伙伴。小孩可以听故事、问为什么；大人也可以慢慢说心里话。技术藏在背后，你感受到的是陪伴。</p>
-        <div class="hero-actions">
-          <a class="btn btn-primary" href="mode.html">开始陪伴</a>
-          <a class="btn btn-secondary" href="chat.html">已有档案？去聊天</a>
+        <span class="chip" id="eyebrow">无需登录 · 开箱即聊</span>
+        <div class="hero-brand">
+          <img class="hero-mark" src="assets/brand/logo.png" alt="" width="72" height="72" />
+          <div>
+            <h1 id="title">你好呀，我在这儿</h1>
+          </div>
         </div>
-        <p class="note" style="margin-top:16px">演示页不配置 API，点按钮进入下一步即可。</p>
+        <p class="lead" id="lead">玖伴是面向小孩与普通人的 AI 陪伴助手。</p>
+        <ul class="note" style="text-align:left;line-height:1.8;margin:0 0 20px;padding-left:1.2em">
+          <li>不展示 API Key / 模型切换 / 温度旋钮</li>
+          <li>儿童与成人两种陪伴语气</li>
+          <li>可树洞倾诉，明确不做恋爱角色</li>
+        </ul>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="mode.html">下一步：选择模式</a>
+          <a class="btn btn-secondary" href="scenes.html">跳到场景剧本</a>
+        </div>
       </div>
-      <div class="hero-visual">
-        <div class="hero-mascot" role="img" aria-label="卡通伙伴"></div>
-      </div>
+      <aside class="hero-aside" aria-label="品牌寓意">
+        <p class="hero-aside-kicker">玖伴</p>
+        <p class="hero-aside-line">九久相伴</p>
+        <p class="hero-aside-line">永远有人回应</p>
+        <p class="hero-aside-foot">先选模式，再留下昵称与喜好，场景里可以慢慢演。</p>
+      </aside>
     </section>
   </main>
 
   <script src="js/store.js"></script>
+  <script>
+    const g = DemoStore.welcomeGreeting();
+    document.getElementById("eyebrow").textContent = g.eyebrow;
+    document.getElementById("title").textContent = g.title;
+    document.getElementById("lead").textContent = g.lead;
+  </script>
 </body>
 </html>

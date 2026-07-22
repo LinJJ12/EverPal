@@ -3,46 +3,46 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>聊天 · 小伴 Demo</title>
+  <title>聊天 · 玖伴 Demo</title>
   <link rel="stylesheet" href="css/cartoon.css" />
 </head>
 <body>
-  <header class="site-header">
-    <div class="site-header-inner">
-      <a class="brand-lockup" href="index.html">
-        <span class="brand-mark" aria-hidden="true"></span>
-        <span>小伴</span>
-      </a>
-      <nav class="nav-links" aria-label="演示页面">
-        <a href="index.html">导览</a>
-        <a href="welcome.html">欢迎</a>
-        <a href="mode.html">模式</a>
-        <a href="nickname.html">昵称</a>
-        <a href="companions.html">角色</a>
-        <a href="chat.html">聊天</a>
-        <a href="settings.html">设置</a>
-      </nav>
-    </div>
-  </header>
+  <header class="site-header" data-demo-header></header>
 
   <main class="page page-chat">
     <div class="page-head" style="margin-bottom:16px">
       <div>
-        <h1>聊天</h1>
-        <p class="lead" style="margin:0">桌面双栏：左侧伙伴，右侧对话。回复为模拟内容。</p>
+        <h1 id="pageTitle">聊天</h1>
+        <p class="lead" style="margin:0" id="pageLead">自由聊或从场景进入。流式为模拟打字；场景模式请用「下一句」控制节奏。</p>
       </div>
       <span class="chip mode-badge" id="modeBadge">儿童模式</span>
     </div>
 
     <div class="chat-layout">
-      <aside class="chat-side" aria-label="伙伴与快捷入口">
+      <aside class="chat-side" aria-label="伙伴与记忆">
         <h2>我的伙伴</h2>
         <div class="side-list" id="sideList"></div>
-        <a class="btn btn-secondary btn-block" href="companions.html">管理角色</a>
+        <h2>本机记忆快照</h2>
+        <div class="tag-cloud" id="sideLikes"></div>
+        <p class="note" style="margin:0;text-align:left" id="sideNick"></p>
+        <a class="btn btn-secondary btn-block" href="scenes.html">场景剧本</a>
+        <a class="btn btn-secondary btn-block" href="memory.html">记忆面板</a>
         <a class="btn btn-secondary btn-block" href="settings.html">本地设置</a>
       </aside>
 
       <section class="chat-shell">
+        <div class="pace-bar" id="paceBar" hidden>
+          <div>
+            <strong id="paceTitle">场景播放</strong>
+            <span class="note" id="paceProgress" style="margin-left:8px"></span>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button type="button" class="btn btn-primary" id="nextTurnBtn">下一句</button>
+            <button type="button" class="btn btn-secondary" id="autoPlayBtn">自动慢放</button>
+            <button type="button" class="btn btn-secondary" id="exitSceneBtn">退出场景</button>
+          </div>
+        </div>
+
         <header class="chat-header">
           <div class="mini-avatar" id="headerAvatar"></div>
           <div>
@@ -51,12 +51,20 @@
           </div>
         </header>
 
+        <div class="chat-toolbar">
+          <button type="button" class="btn btn-secondary" id="stopBtn" disabled>停止生成</button>
+          <button type="button" class="btn btn-secondary" id="regenBtn" disabled>重新生成上一句</button>
+          <button type="button" class="btn btn-secondary" id="saveBtn">保存本段对话</button>
+          <button type="button" class="btn btn-secondary" id="clearBtn">清空屏幕</button>
+        </div>
+
         <div class="chat-messages" id="messages"></div>
+        <div class="branch-choices" id="branchChoices" hidden></div>
         <div class="topics" id="topics"></div>
 
         <form class="composer" id="composer">
           <input id="input" type="text" placeholder="想说点什么…" autocomplete="off" aria-label="消息输入" />
-          <button class="btn btn-primary" type="submit">发送</button>
+          <button class="btn btn-primary" type="submit" id="sendBtn">发送</button>
         </form>
       </section>
     </div>
@@ -64,98 +72,355 @@
 
   <script src="js/store.js"></script>
   <script>
-    const state = DemoStore.load();
-    const companion = DemoStore.companion();
-    const nick = state.nickname || (state.mode === "child" ? "小朋友" : "你");
+    const params = new URLSearchParams(location.search);
+    const sceneId = params.get("scene");
+    const sessionId = params.get("session");
 
-    const modeBadge = document.getElementById("modeBadge");
-    modeBadge.textContent = state.mode === "child" ? "儿童模式" : "成人模式";
-    modeBadge.classList.add(state.mode);
+    let state = DemoStore.load();
+    let companion = DemoStore.companion();
+    let nick = DemoStore.displayName();
+    let log = [];
+    let stopStream = null;
+    let lastBotText = "";
+    let scene = null;
+    let queue = [];
+    let totalPlanned = 0;
+    let played = 0;
+    let awaitingChoice = false;
+    let autoTimer = null;
 
-    document.getElementById("headerAvatar").innerHTML = DemoStore.avatarSvg(companion.id);
-    document.getElementById("headerName").textContent = companion.name;
-    document.getElementById("headerSub").textContent =
-      state.mode === "child"
-        ? `${nick}，今天想听故事还是问问题？`
-        : `${nick}，我听着呢，你慢慢说。`;
-
-    const sideList = document.getElementById("sideList");
-    Object.values(DemoStore.companions).forEach((c) => {
-      const a = document.createElement("button");
-      a.type = "button";
-      a.className = "side-link" + (c.id === companion.id ? " active" : "");
-      a.innerHTML = `<span class="side-avatar avatar ${c.id}">${DemoStore.avatarSvg(c.id)}</span><span>${c.name}</span>`;
-      a.addEventListener("click", () => {
-        DemoStore.save({ companionId: c.id });
-        location.reload();
-      });
-      sideList.appendChild(a);
-    });
-
-    const messages = document.getElementById("messages");
+    const messagesEl = document.getElementById("messages");
     const topicsEl = document.getElementById("topics");
+    const branchEl = document.getElementById("branchChoices");
+    const paceBar = document.getElementById("paceBar");
+    const nextTurnBtn = document.getElementById("nextTurnBtn");
+    const autoPlayBtn = document.getElementById("autoPlayBtn");
+    const stopBtn = document.getElementById("stopBtn");
+    const regenBtn = document.getElementById("regenBtn");
 
-    const topics =
-      state.mode === "child"
-        ? [
-            { id: "story", label: "听个短故事" },
-            { id: "why", label: "为什么天是蓝的？" },
-            { id: "game", label: "脑筋急转弯" },
-          ]
-        : [
-            { id: "day", label: "说说今天" },
-            { id: "tired", label: "有点累" },
-            { id: "cheer", label: "想听句鼓励" },
-          ];
+    function refreshChrome() {
+      state = DemoStore.load();
+      companion = DemoStore.companion();
+      nick = DemoStore.displayName();
+      const modeBadge = document.getElementById("modeBadge");
+      modeBadge.textContent = state.mode === "child" ? "儿童模式" : "成人模式";
+      modeBadge.className = "chip mode-badge " + state.mode;
+      document.getElementById("headerAvatar").innerHTML = DemoStore.avatarSvg(companion.id);
+      document.getElementById("headerName").textContent = companion.name;
+      const likes = DemoStore.likeLabels();
+      document.getElementById("headerSub").textContent = likes.length
+        ? `${nick}，我记得你喜欢${likes.slice(0, 2).join("、")}～`
+        : state.mode === "child"
+          ? `${nick}，今天想听故事还是问问题？`
+          : `${nick}，我听着呢，你慢慢说。`;
+      document.getElementById("sideNick").textContent = `称呼：${nick || "（未设）"}`;
+      const sideLikes = document.getElementById("sideLikes");
+      sideLikes.innerHTML = likes.length
+        ? likes.map((l) => `<span class="tag on">${l}</span>`).join("")
+        : `<span class="note">暂无喜好</span>`;
 
-    const replies = {
-      story: `好呀 ${nick}！从前有一只小狐狸，口袋里装着一颗会发光的种子……（演示短故事）`,
-      why: `${nick}，阳光像很多颜色的小积木。空气把蓝光「撞」得到处都是，所以看起来天空是蓝的～`,
-      game: `${nick}，猜猜：什么东西越洗越脏？答案是——水！`,
-      day: `${nick}，我在听。今天哪一件小事最想先说出来？`,
-      tired: `${nick}，累了就先停一下也没关系。要不要喝口水，还是就在这儿坐一会儿？`,
-      cheer: `${nick}，你已经走到现在了，这本身就很不容易。我们一步一步来就好。`,
-      defaultChild: `嗯嗯，我听到啦，${nick}。你想让我陪你继续说，还是换个好玩的？`,
-      defaultAdult: `我听懂了，${nick}。谢谢你愿意说出来。你希望我只是陪着听，还是一起想想下一步？`,
-    };
-
-    function addBubble(text, who) {
-      const div = document.createElement("div");
-      div.className = "bubble " + who;
-      div.textContent = text;
-      messages.appendChild(div);
-      messages.scrollTop = messages.scrollHeight;
+      const sideList = document.getElementById("sideList");
+      sideList.innerHTML = "";
+      Object.values(DemoStore.companions).forEach((c) => {
+        const a = document.createElement("button");
+        a.type = "button";
+        a.className = "side-link" + (c.id === companion.id ? " active" : "");
+        a.innerHTML = `<span class="side-avatar avatar ${c.id}">${DemoStore.avatarSvg(c.id)}</span><span>${c.name}</span>`;
+        a.addEventListener("click", () => {
+          if (scene) return alert("场景播放中，请先退出场景再换角色");
+          DemoStore.save({ companionId: c.id });
+          location.href = "chat.html";
+        });
+        sideList.appendChild(a);
+      });
     }
 
-    addBubble(
-      state.mode === "child"
-        ? `我是${companion.name}！${nick}好呀，想听故事、问问题，还是随便聊聊？`
-        : `我是${companion.name}。${nick}，今天想聊点什么都可以。`,
-      "bot"
-    );
+    function addBubble(text, who, opts) {
+      const div = document.createElement("div");
+      div.className = "bubble " + who;
+      messagesEl.appendChild(div);
+      const scroll = () => {
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+      };
+      if (who === "bot" && opts && opts.stream) {
+        const typing = document.createElement("div");
+        typing.className = "typing";
+        typing.innerHTML = "<span></span><span></span><span></span>";
+        messagesEl.appendChild(typing);
+        scroll();
+        setTimeout(() => {
+          typing.remove();
+          stopBtn.disabled = false;
+          stopStream = DemoStore.streamText(div, text, {
+            speed: state.mode === "child" ? 28 : 18,
+            onTick: scroll,
+            onDone: () => {
+              stopBtn.disabled = true;
+              stopStream = null;
+              lastBotText = text;
+              regenBtn.disabled = false;
+              log.push({ role: who, text });
+              if (opts.onDone) opts.onDone();
+            },
+          });
+        }, 450);
+      } else {
+        div.textContent = text;
+        log.push({ role: who, text });
+        if (who === "bot") {
+          lastBotText = text;
+          regenBtn.disabled = false;
+        }
+        scroll();
+        if (opts && opts.onDone) opts.onDone();
+      }
+      return div;
+    }
 
-    topics.forEach((t) => {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "topic";
-      btn.textContent = t.label;
-      btn.addEventListener("click", () => {
-        addBubble(t.label, "user");
-        setTimeout(() => addBubble(replies[t.id] || replies.defaultChild, "bot"), 350);
+    function freeReply(userText) {
+      const hit = DemoStore.matchSafety(userText);
+      if (hit) return hit.reply;
+      const likes = DemoStore.likeLabels();
+      if (/无聊/.test(userText)) {
+        return state.mode === "child"
+          ? `${nick}，无聊其实是「想找点有意思的事」。要听短故事，还是脑筋急转弯？`
+          : `${nick}，有点空的时候，我们可以随便聊聊今天哪里卡住了，或者只是坐一会儿。`;
+      }
+      if (/累|烦|难过|压力/.test(userText)) {
+        return `${nick}，我听到了。先不用急着解决问题——你更希望我陪着听，还是一起挑一件最小的下一步？`;
+      }
+      if (likes.length && /喜欢|爱好/.test(userText)) {
+        return `嗯，我记得你提过喜欢${likes[0]}。今天想围绕它聊，还是换点新的？`;
+      }
+      if (state.mode === "child") {
+        return `嗯嗯，我听到啦，${nick}。你想让我陪你继续说，还是换个好玩的？`;
+      }
+      return `我听懂了，${nick}。谢谢你愿意说出来。你希望我只是陪着听，还是一起想想下一步？`;
+    }
+
+    function renderTopics() {
+      topicsEl.innerHTML = "";
+      if (scene) return;
+      const topics =
+        state.mode === "child"
+          ? [
+              { label: "今天好无聊", text: "今天好无聊啊……" },
+              { label: "听个短故事", text: "我想听个短故事" },
+              { label: "为什么天是蓝的", text: "为什么天是蓝的？" },
+              { label: "假想太空探险", text: "我们假装去太空吧！" },
+            ]
+          : [
+              { label: "说说今天", text: "今天开会开到很晚，整个人空空的。" },
+              { label: "有点累", text: "好累，只想躺着，又觉得自己很废。" },
+              { label: "想听句鼓励", text: "能给我一句不鸡汤的鼓励吗？" },
+            ];
+      topics.forEach((t) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "topic";
+        btn.textContent = t.label;
+        btn.addEventListener("click", () => sendUser(t.text));
+        topicsEl.appendChild(btn);
       });
-      topicsEl.appendChild(btn);
-    });
+    }
+
+    function sendUser(text) {
+      if (scene) return;
+      if (!text.trim()) return;
+      addBubble(text.trim(), "user");
+      const reply = freeReply(text.trim());
+      if (/恐龙|画画|足球|小猫|宇宙|音乐/.test(text)) {
+        DemoStore.addMemory(`提到兴趣相关：${text.slice(0, 24)}`);
+      }
+      addBubble(reply, "bot", { stream: true });
+    }
 
     document.getElementById("composer").addEventListener("submit", (e) => {
       e.preventDefault();
       const input = document.getElementById("input");
-      const text = input.value.trim();
-      if (!text) return;
-      addBubble(text, "user");
+      const text = input.value;
       input.value = "";
-      const key = state.mode === "child" ? "defaultChild" : "defaultAdult";
-      setTimeout(() => addBubble(replies[key], "bot"), 400);
+      sendUser(text);
     });
+
+    stopBtn.addEventListener("click", () => {
+      if (stopStream) stopStream();
+    });
+
+    regenBtn.addEventListener("click", () => {
+      if (!lastBotText || scene) return;
+      addBubble(lastBotText + "（换一种说法：）其实我想更慢一点陪你说完。", "bot", { stream: true });
+    });
+
+    document.getElementById("saveBtn").addEventListener("click", () => {
+      if (!log.length) return alert("还没有对话可保存");
+      const title = scene ? scene.title : `与${companion.name}的对话`;
+      DemoStore.saveSession(title, log);
+      DemoStore.addMemory(`保存了对话「${title}」`);
+      alert("已保存到「历史」页");
+    });
+
+    document.getElementById("clearBtn").addEventListener("click", () => {
+      if (scene) return alert("请先退出场景");
+      log = [];
+      messagesEl.innerHTML = "";
+      seedGreeting();
+    });
+
+    function seedGreeting() {
+      const likes = DemoStore.likeLabels();
+      const hi = likes.length
+        ? `我是${companion.name}。${nick}好呀，还喜欢${likes[0]}吗？今天想聊点什么？`
+        : companion.sample.replace(/你/g, nick);
+      addBubble(hi, "bot", { stream: true });
+    }
+
+    /* ——— Scene pacing with branches ——— */
+    function enterScene(s) {
+      scene = s;
+      queue = s.turns.map((t) => ({ ...t }));
+      totalPlanned = queue.length;
+      played = 0;
+      awaitingChoice = false;
+      log = [];
+      messagesEl.innerHTML = "";
+      branchEl.hidden = true;
+      branchEl.innerHTML = "";
+      paceBar.hidden = false;
+      document.getElementById("pageTitle").textContent = "场景：" + s.title;
+      document.getElementById("pageLead").textContent = `PRD · ${s.prd}｜遇到分支请点选项；否则用「下一句」控制节奏。`;
+      document.getElementById("paceTitle").textContent = s.title;
+      document.getElementById("composer").style.opacity = "0.45";
+      document.getElementById("input").disabled = true;
+      document.getElementById("sendBtn").disabled = true;
+      nextTurnBtn.textContent = "下一句";
+      updatePace();
+      renderTopics();
+    }
+
+    function updatePace() {
+      const left = queue.length;
+      document.getElementById("paceProgress").textContent = awaitingChoice
+        ? `请选择分支（已播 ${played} 句）`
+        : `队列剩余 ${left} · 已播 ${played}`;
+      nextTurnBtn.disabled = awaitingChoice || left === 0;
+      if (!awaitingChoice && left === 0 && played > 0) {
+        nextTurnBtn.textContent = "已播完";
+        nextTurnBtn.disabled = true;
+      }
+    }
+
+    function showChoices(choices) {
+      awaitingChoice = true;
+      updatePace();
+      branchEl.hidden = false;
+      branchEl.innerHTML = "";
+      choices.forEach((c) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "btn btn-primary";
+        b.textContent = c.label;
+        b.addEventListener("click", () => {
+          awaitingChoice = false;
+          branchEl.hidden = true;
+          branchEl.innerHTML = "";
+          addBubble(c.userText, "user");
+          played += 1;
+          const follow = (c.follow || []).map((t) => ({ ...t }));
+          queue = follow.concat(queue);
+          totalPlanned += follow.length;
+          updatePace();
+          DemoStore.addMemory(`场景分支：${c.label}`);
+        });
+        branchEl.appendChild(b);
+      });
+    }
+
+    function playNextTurn() {
+      if (!scene || awaitingChoice || !queue.length) return;
+      const turn = queue.shift();
+      played += 1;
+      updatePace();
+      if (turn.role === "user") {
+        addBubble(turn.text, "user");
+        if (!queue.length) {
+          DemoStore.addMemory(`完成场景「${scene.title}」`);
+          updatePace();
+        }
+        return;
+      }
+      addBubble(turn.text, "bot", {
+        stream: true,
+        onDone: () => {
+          if (turn.choices && turn.choices.length) {
+            showChoices(turn.choices);
+          } else if (!queue.length) {
+            DemoStore.addMemory(`完成场景「${scene.title}」`);
+            updatePace();
+          }
+        },
+      });
+    }
+
+    nextTurnBtn.addEventListener("click", () => {
+      if (autoTimer) {
+        clearInterval(autoTimer);
+        autoTimer = null;
+        autoPlayBtn.textContent = "自动慢放";
+      }
+      playNextTurn();
+    });
+
+    autoPlayBtn.addEventListener("click", () => {
+      if (autoTimer) {
+        clearInterval(autoTimer);
+        autoTimer = null;
+        autoPlayBtn.textContent = "自动慢放";
+        return;
+      }
+      autoPlayBtn.textContent = "停止慢放";
+      const tick = () => {
+        if (!scene || awaitingChoice) return;
+        if (!queue.length) {
+          clearInterval(autoTimer);
+          autoTimer = null;
+          autoPlayBtn.textContent = "自动慢放";
+          return;
+        }
+        playNextTurn();
+      };
+      tick();
+      autoTimer = setInterval(tick, 3600);
+    });
+
+    document.getElementById("exitSceneBtn").addEventListener("click", () => {
+      if (autoTimer) clearInterval(autoTimer);
+      location.href = "chat.html";
+    });
+
+    /* boot */
+    refreshChrome();
+    renderTopics();
+
+    if (sessionId) {
+      const sess = (DemoStore.load().sessions || []).find((x) => x.id === sessionId);
+      if (sess) {
+        DemoStore.save({ companionId: sess.companionId, mode: sess.mode });
+        refreshChrome();
+        document.getElementById("pageTitle").textContent = "回看：" + sess.title;
+        sess.messages.forEach((m) => addBubble(m.text, m.role === "assistant" || m.role === "bot" ? "bot" : m.role));
+        log = sess.messages.map((m) => ({
+          role: m.role === "assistant" ? "bot" : m.role,
+          text: m.text,
+        }));
+      }
+    } else if (sceneId) {
+      const s = DemoStore.scenes.find((x) => x.id === sceneId);
+      if (s) enterScene(s);
+      else seedGreeting();
+    } else {
+      seedGreeting();
+    }
   </script>
 </body>
 </html>

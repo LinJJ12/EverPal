@@ -3,33 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>设置 · 小伴 Demo</title>
+  <title>设置 · 玖伴 Demo</title>
   <link rel="stylesheet" href="css/cartoon.css" />
 </head>
 <body>
-  <header class="site-header">
-    <div class="site-header-inner">
-      <a class="brand-lockup" href="index.html">
-        <span class="brand-mark" aria-hidden="true"></span>
-        <span>小伴</span>
-      </a>
-      <nav class="nav-links" aria-label="演示页面">
-        <a href="index.html">导览</a>
-        <a href="welcome.html">欢迎</a>
-        <a href="mode.html">模式</a>
-        <a href="nickname.html">昵称</a>
-        <a href="companions.html">角色</a>
-        <a href="chat.html">聊天</a>
-        <a href="settings.html">设置</a>
-      </nav>
-    </div>
-  </header>
+  <header class="site-header" data-demo-header></header>
 
   <main class="page page-narrow">
     <div class="page-head">
       <div>
         <h1>本地设置</h1>
-        <p class="lead" style="margin:0">无账号。这里没有模型、密钥、温度等专业配置。</p>
+        <p class="lead" style="margin:0">刻意没有模型列表、温度、Endpoint——对应 PRD「对用户隐藏专业配置」。</p>
       </div>
       <span class="chip">无登录</span>
     </div>
@@ -57,12 +41,13 @@
         </button>
       </div>
 
-      <button type="button" class="btn btn-secondary btn-block" id="clearBtn">清除本机昵称与选择</button>
+      <button type="button" class="btn btn-secondary btn-block" id="clearBtn">清除本机全部演示数据</button>
+      <p class="note" style="margin:0;text-align:left">二期才会出现：家长同意、宵禁、语音朗读等。一期演示到此即可收束。</p>
     </section>
 
     <div class="footer-actions">
       <a class="btn btn-secondary" href="index.html">回导览</a>
-      <a class="btn btn-primary" href="chat.html">回聊天</a>
+      <a class="btn btn-primary" href="scenes.html">回场景</a>
     </div>
   </main>
 
@@ -74,8 +59,9 @@
     function refresh() {
       const s = DemoStore.load();
       const c = DemoStore.companion();
+      const likes = DemoStore.likeLabels().join("、") || "无";
       document.getElementById("summary").textContent =
-        `昵称：${s.nickname || "（未设置）"} · 模式：${s.mode === "child" ? "儿童" : "成人"} · 伙伴：${c.name}`;
+        `昵称：${s.nickname || "（未设置）"} · 模式：${s.mode === "child" ? "儿童" : "成人"} · 伙伴：${c.name} · 喜好：${likes} · 记忆 ${(s.memories || []).length} 条 · 历史 ${(s.sessions || []).length} 段`;
       document.querySelectorAll(".choice-item").forEach((el) => {
         el.classList.toggle("active", el.dataset.mode === s.mode);
       });
@@ -89,9 +75,9 @@
     });
 
     document.getElementById("clearBtn").addEventListener("click", () => {
-      localStorage.removeItem("companion_demo_v1");
+      localStorage.removeItem(DemoStore.KEY);
       refresh();
-      alert("已清除本机演示档案");
+      alert("已清除本机演示数据");
     });
 
     refresh();

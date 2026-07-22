@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>记忆 · 玖伴 Demo</title>
+  <link rel="stylesheet" href="css/cartoon.css" />
+</head>
+<body>
+  <header class="site-header" data-demo-header></header>
+
+  <main class="page page-narrow">
+    <div class="page-head">
+      <div>
+        <h1>轻量记忆</h1>
+        <p class="lead" style="margin:0">对应 PRD「记得你」：昵称、喜好与近期摘要留在本机，可查看可清除。</p>
+      </div>
+    </div>
+
+    <section class="card stack" style="margin-bottom:16px">
+      <div class="choice-title">档案摘要</div>
+      <p class="note" style="margin:0" id="summary">—</p>
+      <div class="tag-cloud" id="likeTags"></div>
+    </section>
+
+    <section class="card stack">
+      <div class="choice-title">近期记忆条</div>
+      <div class="memory-list" id="memList"></div>
+      <button type="button" class="btn btn-secondary btn-block" id="clearMem">清除记忆条（保留昵称）</button>
+    </section>
+
+    <div class="footer-actions">
+      <a class="btn btn-secondary" href="nickname.html">去改档案</a>
+      <a class="btn btn-primary" href="chat.html">回聊天</a>
+    </div>
+  </main>
+
+  <script src="js/store.js"></script>
+  <script>
+    function refresh() {
+      const s = DemoStore.load();
+      const likes = DemoStore.likeLabels();
+      document.getElementById("summary").textContent =
+        `昵称：${s.nickname || "（未设）"} · 模式：${s.mode === "child" ? "儿童" : "成人"} · 伙伴：${DemoStore.companion().name}`;
+      const tags = document.getElementById("likeTags");
+      tags.innerHTML = likes.length
+        ? likes.map((l) => `<span class="tag on">${l}</span>`).join("")
+        : `<span class="note">还没有喜好标签，可在「档案」页点选。</span>`;
+      const list = document.getElementById("memList");
+      const memories = s.memories || [];
+      if (!memories.length) {
+        list.innerHTML = `<p class="note" style="margin:0">暂无记忆条。在聊天或场景里产生的摘要会出现在这里。</p>`;
+        return;
+      }
+      list.innerHTML = memories
+        .map(
+          (m) => `<div class="memory-item"><div>${m.text}</div><time>${new Date(m.ts).toLocaleString()}</time></div>`
+        )
+        .join("");
+    }
+    document.getElementById("clearMem").addEventListener("click", () => {
+      DemoStore.save({ memories: [] });
+      refresh();
+    });
+    refresh();
+  </script>
+</body>
+</html>

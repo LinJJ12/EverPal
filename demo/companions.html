@@ -3,42 +3,27 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>选择角色 · 小伴 Demo</title>
+  <title>选择角色 · 玖伴 Demo</title>
   <link rel="stylesheet" href="css/cartoon.css" />
 </head>
 <body>
-  <header class="site-header">
-    <div class="site-header-inner">
-      <a class="brand-lockup" href="index.html">
-        <span class="brand-mark" aria-hidden="true"></span>
-        <span>小伴</span>
-      </a>
-      <nav class="nav-links" aria-label="演示页面">
-        <a href="index.html">导览</a>
-        <a href="welcome.html">欢迎</a>
-        <a href="mode.html">模式</a>
-        <a href="nickname.html">昵称</a>
-        <a href="companions.html">角色</a>
-        <a href="chat.html">聊天</a>
-        <a href="settings.html">设置</a>
-      </nav>
-    </div>
-  </header>
+  <header class="site-header" data-demo-header></header>
 
   <main class="page">
     <div class="page-head">
       <div>
         <h1>今天想找谁聊？</h1>
-        <p class="lead" style="margin:0">三个温暖官方伙伴，没有恋爱养成。点选后进入聊天。</p>
+        <p class="lead" style="margin:0">对应 PRD「官方陪伴角色 ≥3」。请展开读一下人设与开场白，再进入场景——不要一闪而过。</p>
       </div>
-      <span class="chip">官方角色</span>
+      <span class="chip">无恋爱角色</span>
     </div>
 
     <div class="companion-grid" id="list"></div>
 
     <div class="footer-actions">
       <a class="btn btn-secondary" href="nickname.html">上一步</a>
-      <a class="btn btn-mint" href="chat.html">去聊天</a>
+      <a class="btn btn-mint" href="scenes.html">下一步：场景剧本 ★</a>
+      <a class="btn btn-secondary" href="chat.html">或先自由聊</a>
     </div>
   </main>
 
@@ -55,9 +40,11 @@
         el.className = "companion" + (state.companionId === c.id ? " selected" : "");
         el.innerHTML = `
           <div class="avatar ${c.id}">${DemoStore.avatarSvg(c.id)}</div>
+          <div class="companion-meta">${c.role}</div>
           <div>
             <div class="choice-title">${c.name}${state.companionId === c.id ? " · 已选" : ""}</div>
             <div class="choice-desc">${c.blurb}</div>
+            <div class="sample-line">「${c.sample}」</div>
           </div>
         `;
         el.addEventListener("click", () => {

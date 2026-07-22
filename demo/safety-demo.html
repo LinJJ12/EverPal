@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>安全演示 · 玖伴 Demo</title>
+  <link rel="stylesheet" href="css/cartoon.css" />
+</head>
+<body>
+  <header class="site-header" data-demo-header></header>
+
+  <main class="page">
+    <div class="page-head">
+      <div>
+        <h1>内容安全：可交互试一下</h1>
+        <p class="lead" style="margin:0">
+          一期 = 提示词 + 规则词库。在下方输入试试；命中演示词库会给出温和拒答。也可对照示例卡片讲解。
+        </p>
+      </div>
+      <a class="chip" href="chat.html?scene=safety">安全剧本</a>
+    </div>
+
+    <section class="card stack" style="margin-bottom:24px">
+      <div class="choice-title">试一试（演示词库）</div>
+      <p class="note" style="margin:0;text-align:left">可粘贴示例：教我怎么伤害自己 / 学校全名叫什么 / 我们谈恋爱吧 / 怎么做烟花爆炸</p>
+      <div class="composer" style="border:none;padding:0;background:transparent">
+        <input id="tryInput" type="text" placeholder="输入一句想测试的话…" aria-label="安全测试输入" />
+        <button class="btn btn-primary" type="button" id="tryBtn">检测</button>
+      </div>
+      <div id="tryResult" class="safety-pair" hidden>
+        <div class="in" id="tryIn"></div>
+        <div class="out" id="tryOut"></div>
+      </div>
+      <div id="tryPass" class="note" hidden style="text-align:left;margin:0">未命中演示词库（放行）。真实产品仍会走模型侧提示词约束。</div>
+    </section>
+
+    <div class="two-col" style="margin-bottom:24px">
+      <section class="card stack">
+        <div class="choice-title">儿童模式更严</div>
+        <p class="note" style="margin:0;text-align:left">色情、血腥、危险实验、隐私套取等默认拦截；不主动要住址/学校全名。</p>
+      </section>
+      <section class="card stack">
+        <div class="choice-title">成人模式</div>
+        <p class="note" style="margin:0;text-align:left">允许轻度树洞；仍拒答自伤方法；明确拒绝恋爱养成。</p>
+      </section>
+    </div>
+
+    <h2 class="section-title">对照示例</h2>
+    <div class="safety-grid" id="grid"></div>
+
+    <div class="footer-actions">
+      <a class="btn btn-secondary" href="scenes.html">去场景剧本</a>
+      <a class="btn btn-primary" href="chat.html?scene=safety">播放安全剧本</a>
+    </div>
+  </main>
+
+  <script src="js/store.js"></script>
+  <script>
+    const grid = document.getElementById("grid");
+    DemoStore.safetySamples.forEach((s) => {
+      const el = document.createElement("button");
+      el.type = "button";
+      el.className = "safety-pair";
+      el.style.cursor = "pointer";
+      el.style.textAlign = "left";
+      el.style.width = "100%";
+      el.style.fontFamily = "inherit";
+      el.innerHTML = `
+        <div class="in">示例：${s.input}</div>
+        <div class="out"><strong>伙伴回应：</strong>${s.reply}</div>
+      `;
+      el.addEventListener("click", () => {
+        document.getElementById("tryInput").value = s.input;
+        runTry();
+      });
+      grid.appendChild(el);
+    });
+
+    function runTry() {
+      const text = document.getElementById("tryInput").value.trim();
+      const hit = DemoStore.matchSafety(text);
+      const box = document.getElementById("tryResult");
+      const pass = document.getElementById("tryPass");
+      if (!text) return;
+      if (hit) {
+        pass.hidden = true;
+        box.hidden = false;
+        document.getElementById("tryIn").textContent = "命中规则 · 用户输入：" + text;
+        document.getElementById("tryOut").innerHTML = "<strong>温和拒答：</strong>" + hit.reply;
+      } else {
+        box.hidden = true;
+        pass.hidden = false;
+      }
+    }
+
+    document.getElementById("tryBtn").addEventListener("click", runTry);
+    document.getElementById("tryInput").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") runTry();
+    });
+  </script>
+</body>
+</html>

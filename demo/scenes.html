@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>场景剧本 · 玖伴 Demo</title>
+  <link rel="stylesheet" href="css/cartoon.css" />
+</head>
+<body>
+  <header class="site-header" data-demo-header></header>
+
+  <main class="page">
+    <div class="page-head">
+      <div>
+        <h1>PRD 场景剧本</h1>
+        <p class="lead" style="margin:0">
+          每个场景对应需求文档里的核心场景。进入后请用「下一句」逐步播放，方便讲解共情、分龄与安全策略。
+        </p>
+      </div>
+      <span class="chip">重点演示页</span>
+    </div>
+
+    <div class="scene-grid" id="sceneGrid"></div>
+
+    <div class="footer-actions">
+      <a class="btn btn-secondary" href="companions.html">返回角色</a>
+      <a class="btn btn-primary" href="chat.html">去自由聊天</a>
+    </div>
+  </main>
+
+  <script src="js/store.js"></script>
+  <script>
+    const grid = document.getElementById("sceneGrid");
+    DemoStore.scenes.forEach((s) => {
+      const c = DemoStore.companions[s.companionId];
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "scene-card";
+      btn.innerHTML = `
+        <span class="prd-tag">PRD · ${s.prd}</span>
+        <h3>${s.title}</h3>
+        <p class="choice-desc" style="margin:0">${s.desc}</p>
+        <p class="note" style="margin:0;text-align:left">伙伴：${c.name} · 模式：${s.mode === "child" ? "儿童" : "成人"} · ${s.turns.length} 轮</p>
+        <span class="btn btn-primary" style="align-self:flex-start;pointer-events:none">进入并逐步播放</span>
+      `;
+      btn.addEventListener("click", () => {
+        const patch = { mode: s.mode, companionId: s.companionId };
+        if (s.seedLikes) {
+          const cur = DemoStore.load().likes || [];
+          patch.likes = Array.from(new Set([...cur, ...s.seedLikes]));
+        }
+        DemoStore.save(patch);
+        location.href = "chat.html?scene=" + encodeURIComponent(s.id);
+      });
+      grid.appendChild(btn);
+    });
+  </script>
+</body>
+</html>

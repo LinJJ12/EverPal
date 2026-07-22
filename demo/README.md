@@ -1,27 +1,26 @@
-# 界面 Demo（纯 HTML · Web 布局）
+# 界面 Demo（纯 HTML · 对照 PRD 丰富版）
 
-多页卡通演示，**不接大模型**。布局参考 `ui-ux-pro-max`：桌面顶栏 + 宽内容区；聊天页为侧栏 + 主对话双栏。
+**品牌暂定**：玖伴 — 九久相伴，永远有人回应。图标见 `assets/brand/logo.png`。
+
+建议讲解时长：**8–12 分钟**。重点不要「点完即走」，请在 **场景剧本** 里用「下一句」慢放。
 
 ## 打开
 
-浏览器打开 `demo/index.html`（建议用桌面窗口宽度查看）。
+`demo/index.html`
 
-## 设计要点
+## 新增 / 加厚的能力
 
-- 字体：Baloo 2（标题）+ Nunito（正文）
-- 配色：暖珊瑚 / 薄荷（避开常见紫色 AI 模板）
-- 导航：全站 sticky 顶栏；手机端顶栏链接可横向滑动
-- 图标：SVG 简笔（不用 emoji 当主图标）
-- 交互：`cursor-pointer`、hover 150–180ms、`:focus-visible`、尊重 `prefers-reduced-motion`
+| 能力 | 页面 | 对应 PRD |
+|------|------|----------|
+| 原则与时长导览 | `index.html` | 愿景 / 原则 / 非目标 |
+| 昵称 + 喜好标签 | `nickname.html` | 轻量记忆 |
+| 人设与开场白 | `companions.html` | 官方角色 ≥3 |
+| **多轮场景剧本** | `scenes.html` + `chat.html?scene=` | 六大核心场景 |
+| 流式 / 停止 / 重生成 / 保存 | `chat.html` | 流式、P1 操作、会话 |
+| 记忆面板 | `memory.html` | 记得你 |
+| 历史回看 | `history.html` | 会话历史 |
+| 安全话术墙 | `safety-demo.html` | 提示词 + 词库 |
 
-## 页面
+## 场景列表
 
-| 文件 | 内容 |
-|------|------|
-| `index.html` | 宽屏导览 Hero + 路径卡片网格 |
-| `welcome.html` | 欢迎 Hero |
-| `mode.html` | 双列模式选择 |
-| `nickname.html` | 昵称表单 |
-| `companions.html` | 三列角色卡 |
-| `chat.html` | 桌面双栏聊天 |
-| `settings.html` | 本地设置 |
+无聊陪伴、为什么天是蓝的、太空假想、成人树洞、记得恐龙、安全拦截——均支持「下一句」与「自动慢放」（约 3.2s/句）。
