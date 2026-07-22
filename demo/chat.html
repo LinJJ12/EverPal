@@ -84,6 +84,8 @@
     let nick = DemoStore.displayName();
     let log = [];
     let stopStream = null;
+    let streamDelayTimer = null;
+    let chatBusy = false;
     let lastBotText = "";
     let scene = null;
     let queue = [];
@@ -155,6 +157,40 @@
       });
     }
 
+    function setChatBusy(on) {
+      chatBusy = !!on;
+      if (scene) return;
+      const input = document.getElementById("input");
+      const sendBtn = document.getElementById("sendBtn");
+      input.disabled = chatBusy;
+      sendBtn.disabled = chatBusy;
+      topicsEl.querySelectorAll("button").forEach((btn) => {
+        btn.disabled = chatBusy;
+      });
+      regenBtn.disabled = chatBusy || !lastBotText;
+    }
+
+    function cancelStream() {
+      const hadDelay = !!streamDelayTimer;
+      if (streamDelayTimer) {
+        clearTimeout(streamDelayTimer);
+        streamDelayTimer = null;
+      }
+      if (stopStream) {
+        stopStream();
+        stopStream = null;
+      } else if (hadDelay) {
+        const bots = messagesEl.querySelectorAll(".bubble.bot");
+        const last = bots[bots.length - 1];
+        if (last && !last.textContent.trim()) last.remove();
+      }
+      messagesEl.querySelectorAll(".typing").forEach((el) => el.remove());
+      messagesEl.querySelectorAll(".bubble.streaming").forEach((el) => el.classList.remove("streaming"));
+      stopBtn.disabled = true;
+      if (!scene) setChatBusy(false);
+      sceneStreaming = false;
+    }
+
     function addBubble(text, who, opts) {
       const div = document.createElement("div");
       div.className = "bubble " + who;
@@ -164,12 +200,18 @@
         messagesEl.scrollTop = messagesEl.scrollHeight;
       };
       if (who === "bot" && opts && opts.stream) {
+        if (!scene) setChatBusy(true);
         const typing = document.createElement("div");
         typing.className = "typing";
         typing.innerHTML = "<span></span><span></span><span></span>";
         messagesEl.appendChild(typing);
         scroll();
-        setTimeout(() => {
+        streamDelayTimer = setTimeout(() => {
+          streamDelayTimer = null;
+          if (!typing.isConnected) {
+            if (!scene) setChatBusy(false);
+            return;
+          }
           typing.remove();
           stopBtn.disabled = false;
           div.classList.add("streaming");
@@ -181,7 +223,8 @@
               stopBtn.disabled = true;
               stopStream = null;
               lastBotText = text;
-              regenBtn.disabled = false;
+              if (!scene) setChatBusy(false);
+              else regenBtn.disabled = false;
               log.push({ role: who, text });
               if (opts.onDone) opts.onDone();
             },
@@ -192,7 +235,7 @@
         log.push({ role: who, text });
         if (who === "bot") {
           lastBotText = text;
-          regenBtn.disabled = false;
+          regenBtn.disabled = !scene && chatBusy;
         }
         scroll();
         if (opts && opts.onDone) opts.onDone();
@@ -200,25 +243,67 @@
       return div;
     }
 
+    let freeTurn = 0;
+
     function freeReply(userText) {
       const hit = DemoStore.matchSafety(userText);
       if (hit) return hit.reply;
       const likes = DemoStore.likeLabels();
-      if (/无聊/.test(userText)) {
+      const t = userText.trim();
+      freeTurn += 1;
+
+      if (/无聊/.test(t)) {
         return state.mode === "child"
           ? `${nick}，无聊其实是「想找点有意思的事」。要听短故事，还是脑筋急转弯？`
           : `${nick}，有点空的时候，我们可以随便聊聊今天哪里卡住了，或者只是坐一会儿。`;
       }
-      if (/累|烦|难过|压力/.test(userText)) {
+      if (/故事/.test(t)) {
+        return state.mode === "child"
+          ? `好呀。从前有一颗会发光的小种子，装在狐狸口袋里。每当有人说「谢谢」，它就亮一点点。你想让种子变成星星，还是变成灯笼？`
+          : `那我讲个很短的：有人把一天切成「必须做」和「对自己好一点」两格。你今天更缺哪一格？`;
+      }
+      if (/天.*蓝|为什么.*蓝|天空/.test(t)) {
+        return `阳光像一盒彩色小积木。空气更容易把「蓝积木」撞得到处飞，所以眼睛看到的天空常常是蓝的。还想问太阳，还是月亮？`;
+      }
+      if (/太空|假装|探险|宇宙/.test(t)) {
+        return likes.includes("宇宙") || /宇宙/.test(t)
+          ? `${nick}，出发！我们坐上想象号飞船。先给飞船起个名字？还是先选要去的星球？`
+          : `太好了，我们假装去太空！你当船长，我当通讯员。先说飞船叫什么名字？`;
+      }
+      if (/恐龙|画画|足球|小猫|音乐|看书|小游戏|游戏/.test(t)) {
+        const m = t.match(/恐龙|画画|足球|小猫|音乐|看书|小游戏|游戏/);
+        const topic = m ? m[0] : (likes[0] || "好玩的事");
+        return `说到${topic}我就来劲！你想听一点小知识，还是我们一起编个关于它的小故事？`;
+      }
+      if (/累|烦|难过|压力|废|空空|开会/.test(t)) {
         return `${nick}，我听到了。先不用急着解决问题——你更希望我陪着听，还是一起挑一件最小的下一步？`;
       }
-      if (likes.length && /喜欢|爱好/.test(userText)) {
+      if (/鼓励/.test(t)) {
+        return `你已经撑过今天很不容易了。不用立刻变好，先喝口水、伸个懒腰也算前进。我在这儿。`;
+      }
+      if (likes.length && /喜欢|爱好/.test(t)) {
         return `嗯，我记得你提过喜欢${likes[0]}。今天想围绕它聊，还是换点新的？`;
       }
-      if (state.mode === "child") {
-        return `嗯嗯，我听到啦，${nick}。你想让我陪你继续说，还是换个好玩的？`;
+      if (likes.length && freeTurn % 4 === 0) {
+        return `对了，你不是喜欢${likes[0]}吗？要不要从那儿聊起，或者继续说你刚才那句？`;
       }
-      return `我听懂了，${nick}。谢谢你愿意说出来。你希望我只是陪着听，还是一起想想下一步？`;
+
+      const childFallbacks = [
+        `${nick}，我听见啦。你刚才说的是「${t.slice(0, 18)}${t.length > 18 ? "…" : ""}」。想让我接着问，还是换个话题卡？`,
+        `有意思！关于这个，你更想听我瞎猜一版，还是你再多说一点细节？`,
+        `嗯嗯，我跟着你的节奏。要不要玩「三选一」：听故事、问为什么、还是假装冒险？`,
+        `收到！那我们慢慢聊。你希望我认真回答，还是先逗你开心一下？`,
+      ];
+      const adultFallbacks = [
+        `我听懂了，${nick}。谢谢你愿意说出来。你希望我只是陪着听，还是一起想想下一步？`,
+        `嗯，我抓住了你话里的重点。你更想被理解，还是想要一句具体建议？`,
+        `可以说得再随意一点。我在这儿，不催你。`,
+        `我记下了。若你愿意，我们把这件事拆成「现在能做的一件小事」。`,
+      ];
+      const pool = state.mode === "child" ? childFallbacks : adultFallbacks;
+      let sum = freeTurn;
+      for (let i = 0; i < t.length; i++) sum += t.charCodeAt(i);
+      return pool[sum % pool.length];
     }
 
     function renderTopics() {
@@ -248,11 +333,11 @@
     }
 
     function sendUser(text) {
-      if (scene) return;
+      if (scene || chatBusy) return;
       if (!text.trim()) return;
       addBubble(text.trim(), "user");
       const reply = freeReply(text.trim());
-      if (/恐龙|画画|足球|小猫|宇宙|音乐/.test(text)) {
+      if (/恐龙|画画|足球|小猫|宇宙|音乐|看书|小游戏|游戏/.test(text)) {
         DemoStore.addMemory(`提到兴趣相关：${text.slice(0, 24)}`);
       }
       addBubble(reply, "bot", { stream: true });
@@ -260,6 +345,7 @@
 
     document.getElementById("composer").addEventListener("submit", (e) => {
       e.preventDefault();
+      if (chatBusy || scene) return;
       const input = document.getElementById("input");
       const text = input.value;
       input.value = "";
@@ -267,11 +353,12 @@
     });
 
     stopBtn.addEventListener("click", () => {
-      if (stopStream) stopStream();
+      cancelStream();
+      if (scene) updatePace();
     });
 
     regenBtn.addEventListener("click", () => {
-      if (!lastBotText || scene) return;
+      if (!lastBotText || scene || chatBusy) return;
       addBubble(lastBotText + "（换一种说法：）其实我想更慢一点陪你说完。", "bot", { stream: true });
     });
 
@@ -285,7 +372,9 @@
 
     document.getElementById("clearBtn").addEventListener("click", () => {
       if (scene) return alert("请先退出场景");
+      cancelStream();
       log = [];
+      lastBotText = "";
       messagesEl.innerHTML = "";
       seedGreeting();
     });
@@ -448,7 +537,11 @@
     });
 
     document.getElementById("exitSceneBtn").addEventListener("click", () => {
-      if (autoTimer) clearInterval(autoTimer);
+      if (autoTimer) {
+        clearInterval(autoTimer);
+        autoTimer = null;
+      }
+      cancelStream();
       location.href = "chat.html";
     });
 

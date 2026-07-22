@@ -502,8 +502,18 @@ input:focus-visible {
 
 .page-chat {
   width: min(1200px, calc(100% - 48px));
-  padding-bottom: 32px;
+  padding-top: 20px;
+  padding-bottom: 16px;
   font-size: calc(1rem * var(--demo-font-scale));
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.page-chat .page-head {
+  flex-shrink: 0;
+  margin-bottom: 12px;
 }
 
 .page-chat .bubble {
@@ -855,8 +865,9 @@ input:focus-visible {
   grid-template-columns: 260px minmax(0, 1fr);
   grid-template-areas: "side shell";
   gap: 20px;
-  min-height: calc(100dvh - var(--nav-h) - 48px - 80px);
-  align-items: start;
+  flex: 1 1 auto;
+  min-height: 0;
+  align-items: stretch;
 }
 
 .chat-side {
@@ -869,6 +880,9 @@ input:focus-visible {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  min-height: 0;
+  overflow: auto;
+  align-self: stretch;
 }
 
 .chat-side .btn-block {
@@ -918,7 +932,9 @@ input:focus-visible {
   grid-area: shell;
   display: flex;
   flex-direction: column;
-  min-height: min(640px, calc(100dvh - var(--nav-h) - 48px - 120px));
+  min-height: 0;
+  height: 100%;
+  max-height: 100%;
   min-width: 0;
   width: 100%;
   background: rgba(255,255,255,0.72);
@@ -965,7 +981,7 @@ input:focus-visible {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  min-height: 240px;
+  min-height: 0;
 }
 
 .bubble {
@@ -1045,6 +1061,15 @@ input:focus-visible {
   border-color: #f0c9b0;
 }
 
+.chat-toolbar,
+.chat-header,
+.pace-bar,
+.topics,
+.composer,
+.branch-choices {
+  flex-shrink: 0;
+}
+
 .composer {
   display: flex;
   gap: 10px;
@@ -1064,6 +1089,24 @@ input:focus-visible {
 }
 
 .composer .btn { min-height: 48px; padding-inline: 20px; }
+
+body:has(.page-chat) {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+body:has(.page-chat) .site-header {
+  flex-shrink: 0;
+}
+
+body:has(.page-chat) .page-chat {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: auto;
+  max-height: none;
+}
 
 /* ——— Responsive ——— */
 @media (max-width: 960px) {
@@ -1113,7 +1156,8 @@ input:focus-visible {
     z-index: 15;
   }
   .chat-shell {
-    min-height: min(560px, calc(100dvh - var(--nav-h) - 48px - 72px));
+    min-height: 0;
+    height: 100%;
   }
 }
 
