@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>聊天 · 陪伴 Demo</title>
+  <link rel="stylesheet" href="css/cartoon.css" />
+</head>
+<body>
+  <nav class="demo-ribbon" aria-label="演示页面切换">
+    <a href="index.html">导览</a>
+    <a href="welcome.html">欢迎</a>
+    <a href="mode.html">模式</a>
+    <a href="nickname.html">昵称</a>
+    <a href="companions.html">角色</a>
+    <a href="chat.html">聊天</a>
+    <a href="settings.html">设置</a>
+  </nav>
+
+  <main class="phone" style="padding-bottom:16px">
+    <div class="topbar">
+      <div class="brand">聊天</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span class="chip mode-badge" id="modeBadge">儿童</span>
+        <a class="chip" href="settings.html">设置</a>
+      </div>
+    </div>
+
+    <section class="chat-shell">
+      <header class="chat-header">
+        <div class="mini-avatar" id="headerAvatar">🦊</div>
+        <div>
+          <div style="font-weight:800" id="headerName">小暖</div>
+          <div style="font-size:0.78rem;color:var(--muted)" id="headerSub">我在呀，想聊点什么？</div>
+        </div>
+        <a href="companions.html" class="chip" style="margin-left:auto">换角色</a>
+      </header>
+
+      <div class="chat-messages" id="messages"></div>
+
+      <div class="topics" id="topics"></div>
+
+      <form class="composer" id="composer">
+        <input id="input" type="text" placeholder="想说点什么…" autocomplete="off" />
+        <button class="btn btn-primary" type="submit">发送</button>
+      </form>
+    </section>
+
+    <p class="note">模拟回复，未连接真实模型。顶部可切到其他演示页。</p>
+  </main>
+
+  <script src="js/store.js"></script>
+  <script>
+    const state = DemoStore.load();
+    const companion = DemoStore.companion();
+    const nick = state.nickname || (state.mode === "child" ? "小朋友" : "你");
+
+    const modeBadge = document.getElementById("modeBadge");
+    modeBadge.textContent = state.mode === "child" ? "儿童模式" : "成人模式";
+    modeBadge.classList.add(state.mode);
+
+    document.getElementById("headerAvatar").textContent = companion.emoji;
+    document.getElementById("headerName").textContent = companion.name;
+    document.getElementById("headerSub").textContent =
+      state.mode === "child"
+        ? `${nick}，今天想听故事还是问问题？`
+        : `${nick}，我听着呢，你慢慢说。`;
+
+    const messages = document.getElementById("messages");
+    const topicsEl = document.getElementById("topics");
+
+    const topics =
+      state.mode === "child"
+        ? [
+            { id: "story", label: "听个短故事" },
+            { id: "why", label: "为什么天是蓝的？" },
+            { id: "game", label: "脑筋急转弯" },
+          ]
+        : [
+            { id: "day", label: "说说今天" },
+            { id: "tired", label: "有点累" },
+            { id: "cheer", label: "想听句鼓励" },
+          ];
+
+    const replies = {
+      story: `好呀 ${nick}！从前有一只小狐狸，口袋里装着一颗会发光的种子……（演示短故事）`,
+      why: `${nick}，阳光像很多颜色的小积木。空气把蓝光「撞」得到处都是，所以看起来天空是蓝的～`,
+      game: `${nick}，猜猜：什么东西越洗越脏？答案是——水！`,
+      day: `${nick}，我在听。今天哪一件小事最想先说出来？`,
+      tired: `${nick}，累了就先停一下也没关系。要不要喝口水，还是就在这儿坐一会儿？`,
+      cheer: `${nick}，你已经走到现在了，这本身就很不容易。我们一步一步来就好。`,
+      defaultChild: `嗯嗯，我听到啦，${nick}。你想让我陪你继续说，还是换个好玩的？`,
+      defaultAdult: `我听懂了，${nick}。谢谢你愿意说出来。你希望我只是陪着听，还是一起想想下一步？`,
+    };
+
+    function addBubble(text, who) {
+      const div = document.createElement("div");
+      div.className = "bubble " + who;
+      div.textContent = text;
+      messages.appendChild(div);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    addBubble(
+      state.mode === "child"
+        ? `我是${companion.name}！${nick}好呀，想听故事、问问题，还是随便聊聊？`
+        : `我是${companion.name}。${nick}，今天想聊点什么都可以。`,
+      "bot"
+    );
+
+    topics.forEach((t) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "topic";
+      btn.textContent = t.label;
+      btn.addEventListener("click", () => {
+        addBubble(t.label, "user");
+        setTimeout(() => addBubble(replies[t.id] || replies.defaultChild, "bot"), 350);
+      });
+      topicsEl.appendChild(btn);
+    });
+
+    document.getElementById("composer").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const input = document.getElementById("input");
+      const text = input.value.trim();
+      if (!text) return;
+      addBubble(text, "user");
+      input.value = "";
+      const key = state.mode === "child" ? "defaultChild" : "defaultAdult";
+      setTimeout(() => addBubble(replies[key], "bot"), 400);
+    });
+  </script>
+</body>
+</html>

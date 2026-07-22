@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>昵称 · 陪伴 Demo</title>
+  <link rel="stylesheet" href="css/cartoon.css" />
+</head>
+<body>
+  <nav class="demo-ribbon" aria-label="演示页面切换">
+    <a href="index.html">导览</a>
+    <a href="welcome.html">欢迎</a>
+    <a href="mode.html">模式</a>
+    <a href="nickname.html">昵称</a>
+    <a href="companions.html">角色</a>
+    <a href="chat.html">聊天</a>
+    <a href="settings.html">设置</a>
+  </nav>
+
+  <main class="phone">
+    <div class="topbar">
+      <div class="brand">我怎么称呼你？</div>
+      <span class="chip">可跳过</span>
+    </div>
+
+    <section class="card stack">
+      <div class="field">
+        <label for="nickname">昵称</label>
+        <input id="nickname" type="text" maxlength="12" placeholder="例如：豆豆、小明…" autocomplete="nickname" />
+      </div>
+      <p class="note" style="text-align:left;margin:0">演示用本地记住昵称，下次聊天里会叫你的名字。不接账号、不上传。</p>
+    </section>
+
+    <div class="footer-nav">
+      <a class="btn btn-secondary" href="mode.html">上一步</a>
+      <button type="button" class="btn btn-primary" id="saveBtn">下一步</button>
+    </div>
+    <a class="btn btn-secondary btn-block" href="companions.html" id="skipBtn">暂时跳过</a>
+  </main>
+
+  <script src="js/store.js"></script>
+  <script>
+    const input = document.getElementById("nickname");
+    input.value = DemoStore.load().nickname || "";
+    function goNext() {
+      DemoStore.save({ nickname: input.value.trim() });
+      location.href = "companions.html";
+    }
+    document.getElementById("saveBtn").addEventListener("click", goNext);
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") goNext();
+    });
+  </script>
+</body>
+</html>

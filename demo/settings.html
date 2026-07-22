@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>设置 · 陪伴 Demo</title>
+  <link rel="stylesheet" href="css/cartoon.css" />
+</head>
+<body>
+  <nav class="demo-ribbon" aria-label="演示页面切换">
+    <a href="index.html">导览</a>
+    <a href="welcome.html">欢迎</a>
+    <a href="mode.html">模式</a>
+    <a href="nickname.html">昵称</a>
+    <a href="companions.html">角色</a>
+    <a href="chat.html">聊天</a>
+    <a href="settings.html">设置</a>
+  </nav>
+
+  <main class="phone">
+    <div class="topbar">
+      <div class="brand">本地设置</div>
+      <span class="chip">无账号</span>
+    </div>
+
+    <section class="card stack">
+      <div>
+        <div class="choice-title" style="margin-bottom:8px">当前档案</div>
+        <p class="note" style="text-align:left;margin:0" id="summary">—</p>
+      </div>
+
+      <div class="choice">
+        <button type="button" class="choice-item" data-mode="child" id="modeChild">
+          <div class="choice-icon child">🎒</div>
+          <div>
+            <div class="choice-title">切换到儿童模式</div>
+            <div class="choice-desc">短句、更严守护</div>
+          </div>
+        </button>
+        <button type="button" class="choice-item adult-tone" data-mode="adult" id="modeAdult">
+          <div class="choice-icon adult">☕</div>
+          <div>
+            <div class="choice-title">切换到成人模式</div>
+            <div class="choice-desc">可轻度倾诉，非恋爱</div>
+          </div>
+        </button>
+      </div>
+
+      <button type="button" class="btn btn-secondary btn-block" id="clearBtn">清除本机昵称与选择</button>
+      <p class="note" style="text-align:left;margin:0">演示说明：这里没有模型、密钥、温度等专业配置。</p>
+    </section>
+
+    <div class="footer-nav">
+      <a class="btn btn-secondary" href="index.html">回导览</a>
+      <a class="btn btn-primary" href="chat.html">回聊天</a>
+    </div>
+  </main>
+
+  <script src="js/store.js"></script>
+  <script>
+    function refresh() {
+      const s = DemoStore.load();
+      const c = DemoStore.companion();
+      document.getElementById("summary").textContent =
+        `昵称：${s.nickname || "（未设置）"} · 模式：${s.mode === "child" ? "儿童" : "成人"} · 伙伴：${c.name}`;
+      document.querySelectorAll(".choice-item").forEach((el) => {
+        el.classList.toggle("active", el.dataset.mode === s.mode);
+      });
+    }
+
+    document.querySelectorAll(".choice-item").forEach((el) => {
+      el.addEventListener("click", () => {
+        DemoStore.save({ mode: el.dataset.mode });
+        refresh();
+      });
+    });
+
+    document.getElementById("clearBtn").addEventListener("click", () => {
+      localStorage.removeItem("companion_demo_v1");
+      refresh();
+      alert("已清除本机演示档案");
+    });
+
+    refresh();
+  </script>
+</body>
+</html>
