@@ -35,8 +35,10 @@
 | Mistake | Why it breaks | Correct |
 |---------|---------------|---------|
 | Put mobile 「伙伴/记忆」toggle as a direct child of `.chat-layout` grid | Even with `display:none` risk / media-query visibility, a 3rd grid child can place `.chat-shell` in the narrow column and stretch side links into empty “cards” | Only `aside.chat-side` + `section.chat-shell` as layout children; put the toggle **inside** `.chat-shell`; use `grid-template-areas: "side shell"` |
-| Rely on `max-height` on `.chat-messages` without accounting for Tour-bar | Sticky tour bar steals viewport; bubbles clip | Prefer flex column on `.chat-shell` + `flex:1; overflow:auto` on messages; avoid brittle `100dvh - fixed` max-heights |
+| Rely on `max-height` on `.chat-messages` without accounting for sticky chrome | Sticky header / pace bar steals viewport; bubbles clip | Prefer flex column on `.chat-shell` + `flex:1; overflow:auto` on messages; avoid brittle `100dvh - fixed` max-heights |
+| Put sticky Tour-bar /「第 i/n 步」讲解导航 back into `demo/` | Breaks product-shell UX; meta presenter chrome | Use header nav + in-page CTAs only |
+| Show PRD version /「不接真实大模型」/ 讲解时长 in product UI | Reads as internal demo pack | Keep in README / `docs/` only |
 | Soft-clear only (delete some keys) for「重置演示」 | Stale fields remain in `companion_demo_v2` | Full replace via `setItem(JSON.stringify(defaults))` after confirm |
 | Hardcode root-relative `css/` / `js/` / `assets/` inside `demo/games/*.html` | Nested pages break styles, store, and brand mark | Use `../css/…`, `../js/…`; rely on `demoRootPrefix()` for injected header links |
-| Put kids games into `TOUR_STEPS` | Inflates the 8–12 min demo path | Keep「游戏」in `NAV_PRIMARY` only; hub is optional side content |
 | Store game high scores outside `companion_demo_v2` |「重置演示」won't clear them; two sources of truth | Keep scores in `defaults.gameScores` + `submitGameScore` |
+| `innerHTML` user nickname / memory / history titles | XSS if crafted strings land in localStorage | Use `textContent` or `createElement` |

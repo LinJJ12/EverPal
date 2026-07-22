@@ -22,7 +22,8 @@
 - Light memory (nickname, preferences)
 - Safety = prompt rules + lexicon
 - Server-managed LLM (OpenAI-compatible)
-- Ship UX via HTML `demo/` for now (no separate SPA framework in this phase)
+- Ship UX via HTML `demo/` **product shell** for now (no separate SPA framework in this phase)
+- Demo UI must read as a companion product, not an internal PRD/Tour presenter pack
 
 ## Phase-1 must not
 

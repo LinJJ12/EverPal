@@ -32,6 +32,8 @@ Frontend is a **mobile-first cartoon companion UI**. Hide all LLM/provider confi
 4. **No romance / dating character UI.**
 5. Errors use plain Chinese, never raw HTTP/API messages.
 6. Prefer large tap targets; phone is the primary device.
+7. **Product-shell copy**: user-visible UI must not expose PRD version, presenter timing, Tour steps, or 「不接真实大模型」. Keep those in repo docs only.
+8. **No Tour-bar** in `demo/` — navigation is product header (`NAV_PRIMARY` / `NAV_MORE`) + in-page CTAs only.
 
 ---
 

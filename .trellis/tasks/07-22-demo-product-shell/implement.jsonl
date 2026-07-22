@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/frontend/index.md", "reason": "Cartoon companion UI hard rules: no login, hide model config, mobile-first"}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Soft low-density companion component patterns"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Forbidden dark-tooling aesthetic; demo path constraints"}
+{"file": ".trellis/spec/frontend/directory-structure.md", "reason": "demo/ file layout, mode chrome, games path prefixes"}
+{"file": ".trellis/spec/guides/product-constraints.md", "reason": "Brand and phase-1 product constraints for 玖伴"}

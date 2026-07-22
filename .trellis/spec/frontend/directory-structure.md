@@ -39,13 +39,17 @@ web/
 
 ## Demo HTML notes (current ship surface)
 
-Until `web/` lands, UX ships as `demo/*.html` + `demo/js/store.js` + `demo/css/cartoon.css`.
+Until `web/` lands, UX ships as `demo/*.html` + `demo/js/store.js` + `demo/css/cartoon.css` as a **product shell** (not a presenter Tour pack).
 
-- **Tour-bar**: `DemoStore.TOUR_STEPS` + `mountTourBar()` under sticky header; skip `index.html`.
-- **Full reset**: `DemoStore.resetDemo()` from settings after `confirm` — must rewrite full `defaults` (includes `gameScores`).
+- **Home**: `index.html` uses full-bleed `.shell-hero` (brand-dominant first viewport) + benefit list + explore hub; keep existing cartoon color tokens / font families unless a task explicitly changes them.
+- **Welcome**: `welcome.html` shows current companion avatar, optional memory chips, and next-step hub links.
+- **No Tour-bar**: do **not** add `TOUR_STEPS` / `mountTourBar`; navigation is `NAV_PRIMARY` + `NAV_MORE` + page CTAs only.
+- **Copy**: no user-visible PRD version, 「讲解」, timing tips, or 「不接真实大模型」; developer notes stay in README / `docs/`.
+- **Full reset**: settings「重置演示」→ `confirm` → `DemoStore.resetDemo()` must rewrite full `defaults` (includes `gameScores`).
 - **Mode chrome**: `html[data-demo-mode="child|adult"]` drives `--demo-font-scale`.
 - **Chat grid**: two areas only — side | shell; mobile drawer ≤960px.
 - **Kids games**: hub `demo/games.html` + play pages `demo/games/<id>.html`; shared `demo/js/games-common.js`, `demo/js/games/<id>.js`, `demo/css/games.css`.
-- **Nav**: `NAV_PRIMARY` includes「游戏」→ `games.html`; games are **not** in `TOUR_STEPS`.
+- **Nav**: `NAV_PRIMARY` includes「游戏」→ `games.html`.
 - **Scores**: `companion_demo_v2.gameScores` via `getGameHigh` / `submitGameScore` (puzzle is lower-better / `null` = no record).
 - **Nested paths**: pages under `demo/games/` must use `../` for css/js/assets; `DemoStore.demoRootPrefix()` prefixes injected nav/favicon.
+- **User text in DOM**: prefer `textContent` / `createElement` for nickname, memory lines, and history titles (avoid raw `innerHTML` with user data).

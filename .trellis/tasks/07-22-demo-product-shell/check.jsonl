@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/frontend/index.md", "reason": "Verify cartoon companion hard rules still held after shell polish"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Check no dark-tooling default; games/tour constraints"}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Component density and companion tone checks"}
+{"file": ".trellis/spec/guides/product-constraints.md", "reason": "Brand and no-login / hide-config acceptance"}
