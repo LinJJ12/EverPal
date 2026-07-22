@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>聊天 · 玖伴 Demo</title>
+  <title>聊天 · 玖伴</title>
   <link rel="stylesheet" href="css/cartoon.css" />
 </head>
 <body>
@@ -13,7 +13,7 @@
     <div class="page-head" style="margin-bottom:16px">
       <div>
         <h1 id="pageTitle">聊天</h1>
-        <p class="lead" style="margin:0" id="pageLead">自由聊或从场景进入。流式为模拟打字；场景模式请用「下一句」控制节奏。</p>
+        <p class="lead" style="margin:0" id="pageLead">随时聊聊。从场景进来时，可用「下一句」慢慢往下走。</p>
       </div>
       <span class="chip mode-badge" id="modeBadge">儿童模式</span>
     </div>
@@ -25,7 +25,7 @@
         <h2>本机记忆快照</h2>
         <div class="tag-cloud" id="sideLikes"></div>
         <p class="note" style="margin:0;text-align:left" id="sideNick"></p>
-        <a class="btn btn-secondary btn-block" href="scenes.html">场景剧本</a>
+        <a class="btn btn-secondary btn-block" href="scenes.html">情境对话</a>
         <a class="btn btn-secondary btn-block" href="memory.html">记忆面板</a>
         <a class="btn btn-secondary btn-block" href="settings.html">本地设置</a>
       </aside>
@@ -331,7 +331,9 @@
       branchEl.innerHTML = "";
       paceBar.hidden = false;
       document.getElementById("pageTitle").textContent = "场景：" + s.title;
-      document.getElementById("pageLead").textContent = `PRD · ${s.prd}｜遇到分支请点选项；否则用「下一句」控制节奏。`;
+      document.getElementById("pageLead").textContent = s.prd
+        ? `${s.prd} · 有选项时点一下，或用「下一句」继续`
+        : `有选项时点一下，或用「下一句」继续`;
       document.getElementById("paceTitle").textContent = s.title;
       document.getElementById("composer").style.opacity = "0.45";
       document.getElementById("input").disabled = true;
@@ -344,13 +346,13 @@
     function updatePace() {
       const left = queue.length;
       document.getElementById("paceProgress").textContent = awaitingChoice
-        ? `请选择分支（已播 ${played} 句）`
+        ? `请选一个继续（已聊 ${played} 句）`
         : sceneStreaming
-          ? `打字中… · 已播 ${played}`
-          : `队列剩余 ${left} · 已播 ${played}`;
+          ? `打字中… · 已聊 ${played}`
+          : `还剩 ${left} 句 · 已聊 ${played}`;
       nextTurnBtn.disabled = awaitingChoice || sceneStreaming || left === 0;
       if (!awaitingChoice && !sceneStreaming && left === 0 && played > 0) {
-        nextTurnBtn.textContent = "已播完";
+        nextTurnBtn.textContent = "聊完啦";
         nextTurnBtn.disabled = true;
       }
     }
@@ -375,7 +377,7 @@
           queue = follow.concat(queue);
           totalPlanned += follow.length;
           updatePace();
-          DemoStore.addMemory(`场景分支：${c.label}`);
+          DemoStore.addMemory(`场景里选了：${c.label}`);
         });
         branchEl.appendChild(b);
       });

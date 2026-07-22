@@ -3,49 +3,84 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>欢迎 · 玖伴 Demo</title>
+  <title>欢迎 · 玖伴</title>
   <link rel="icon" type="image/png" href="assets/brand/logo.png" />
   <link rel="stylesheet" href="css/cartoon.css" />
 </head>
 <body>
   <header class="site-header" data-demo-header></header>
 
-  <main class="page">
-    <section class="hero-web">
-      <div class="hero-copy">
-        <span class="chip" id="eyebrow">无需登录 · 开箱即聊</span>
-        <div class="hero-brand">
-          <img class="hero-mark" src="assets/brand/logo.png" alt="" width="72" height="72" />
-          <div>
-            <h1 id="title">你好呀，我在这儿</h1>
-          </div>
-        </div>
-        <p class="lead" id="lead">玖伴是面向小孩与普通人的 AI 陪伴助手。</p>
-        <ul class="note" style="text-align:left;line-height:1.8;margin:0 0 20px;padding-left:1.2em">
-          <li>不展示 API Key / 模型切换 / 温度旋钮</li>
-          <li>儿童与成人两种陪伴语气</li>
-          <li>可树洞倾诉，明确不做恋爱角色</li>
-        </ul>
-        <div class="hero-actions">
-          <a class="btn btn-primary" href="mode.html">下一步：选择模式</a>
-          <a class="btn btn-secondary" href="scenes.html">跳到场景剧本</a>
-        </div>
+  <main class="page page-welcome">
+    <section class="welcome-stage" aria-label="欢迎">
+      <div class="welcome-stage-glow" aria-hidden="true"></div>
+      <div class="welcome-presence">
+        <div class="welcome-avatar avatar" id="avatar"></div>
+        <p class="welcome-presence-name" id="compName">小暖</p>
+        <p class="welcome-presence-note" id="compNote">在这儿等你</p>
       </div>
-      <aside class="hero-aside" aria-label="品牌寓意">
-        <p class="hero-aside-kicker">玖伴</p>
-        <p class="hero-aside-line">九久相伴</p>
-        <p class="hero-aside-line">永远有人回应</p>
-        <p class="hero-aside-foot">先选模式，再留下昵称与喜好，场景里可以慢慢演。</p>
-      </aside>
+      <h1 id="title">你好呀，我在这儿</h1>
+      <p class="lead" id="lead">玖伴是面向小孩与普通人的 AI 陪伴助手。</p>
+      <div class="welcome-memory" id="memory" hidden></div>
+      <div class="shell-hero-actions">
+        <a class="btn btn-primary btn-lg" href="mode.html">选择模式</a>
+        <a class="btn btn-secondary btn-lg" href="chat.html">直接聊天</a>
+      </div>
+    </section>
+
+    <section class="welcome-next" aria-labelledby="next-title">
+      <h2 id="next-title" class="section-title">接下来可以…</h2>
+      <div class="hub-grid hub-grid-welcome">
+        <a class="hub-item" href="mode.html">
+          <span class="step">分龄</span>
+          <strong>选择模式</strong>
+          <span>儿童或成人，语气与守护强度不同</span>
+        </a>
+        <a class="hub-item" href="scenes.html">
+          <span class="step">场景</span>
+          <strong>先看情境</strong>
+          <span>无聊、好奇、树洞——跟着聊几轮</span>
+        </a>
+        <a class="hub-item" href="companions.html">
+          <span class="step">伙伴</span>
+          <strong>换一位角色</strong>
+          <span>小暖、跳跳、阿茶，今天想找谁</span>
+        </a>
+      </div>
     </section>
   </main>
 
   <script src="js/store.js"></script>
   <script>
     const g = DemoStore.welcomeGreeting();
-    document.getElementById("eyebrow").textContent = g.eyebrow;
+    const c = DemoStore.companion();
+    const likes = DemoStore.likeLabels();
+    const state = DemoStore.load();
+
     document.getElementById("title").textContent = g.title;
     document.getElementById("lead").textContent = g.lead;
+
+    const avatar = document.getElementById("avatar");
+    avatar.classList.add(c.id);
+    avatar.innerHTML = DemoStore.avatarSvg(c.id);
+    document.getElementById("compName").textContent = c.name;
+    document.getElementById("compNote").textContent =
+      state.nickname || likes.length ? "记得你，一直在" : "打开就能聊，我在这儿";
+
+    const memory = document.getElementById("memory");
+    const bits = [];
+    if (state.nickname) bits.push(`昵称 · ${state.nickname}`);
+    if (state.mode === "child") bits.push("儿童模式");
+    else if (state.mode === "adult") bits.push("成人模式");
+    likes.slice(0, 3).forEach((label) => bits.push(label));
+    if (bits.length) {
+      memory.hidden = false;
+      memory.replaceChildren();
+      bits.forEach((b) => {
+        const span = document.createElement("span");
+        span.textContent = b;
+        memory.appendChild(span);
+      });
+    }
   </script>
 </body>
 </html>

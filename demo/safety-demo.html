@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>安全演示 · 玖伴 Demo</title>
+  <title>安全守护 · 玖伴</title>
   <link rel="stylesheet" href="css/cartoon.css" />
 </head>
 <body>
@@ -12,26 +12,26 @@
   <main class="page">
     <div class="page-head">
       <div>
-        <h1>内容安全：可交互试一下</h1>
+        <h1>安全守护</h1>
         <p class="lead" style="margin:0">
-          一期 = 提示词 + 规则词库。在下方输入试试；命中演示词库会给出温和拒答。也可对照示例卡片讲解。
+          危险或越界话题会温和转开。在下方输入试试，或点示例卡片看伙伴怎么回应。
         </p>
       </div>
-      <a class="chip" href="chat.html?scene=safety">安全剧本</a>
+      <a class="chip" href="chat.html?scene=safety">安全情境</a>
     </div>
 
     <section class="card stack" style="margin-bottom:24px">
-      <div class="choice-title">试一试（演示词库）</div>
+      <div class="choice-title">试一试</div>
       <p class="note" style="margin:0;text-align:left">可粘贴示例：教我怎么伤害自己 / 学校全名叫什么 / 我们谈恋爱吧 / 怎么做烟花爆炸</p>
       <div class="composer" style="border:none;padding:0;background:transparent">
-        <input id="tryInput" type="text" placeholder="输入一句想测试的话…" aria-label="安全测试输入" />
+        <input id="tryInput" type="text" placeholder="输入一句想试试的话…" aria-label="安全测试输入" />
         <button class="btn btn-primary" type="button" id="tryBtn">检测</button>
       </div>
       <div id="tryResult" class="safety-pair" hidden>
         <div class="in" id="tryIn"></div>
         <div class="out" id="tryOut"></div>
       </div>
-      <div id="tryPass" class="note" hidden style="text-align:left;margin:0">未命中演示词库（放行）。真实产品仍会走模型侧提示词约束。</div>
+      <div id="tryPass" class="note" hidden style="text-align:left;margin:0">这句话没有触发守护规则，可以正常聊下去。</div>
     </section>
 
     <div class="two-col" style="margin-bottom:24px">
@@ -45,12 +45,12 @@
       </section>
     </div>
 
-    <h2 class="section-title">对照示例</h2>
+    <h2 class="section-title">示例对照</h2>
     <div class="safety-grid" id="grid"></div>
 
     <div class="footer-actions">
-      <a class="btn btn-secondary" href="scenes.html">去场景剧本</a>
-      <a class="btn btn-primary" href="chat.html?scene=safety">播放安全剧本</a>
+      <a class="btn btn-secondary" href="scenes.html">去场景</a>
+      <a class="btn btn-primary" href="chat.html?scene=safety">播放安全情境</a>
     </div>
   </main>
 

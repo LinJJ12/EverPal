@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>场景剧本 · 玖伴 Demo</title>
+  <title>场景 · 玖伴</title>
   <link rel="stylesheet" href="css/cartoon.css" />
 </head>
 <body>
@@ -12,12 +12,11 @@
   <main class="page">
     <div class="page-head">
       <div>
-        <h1>PRD 场景剧本</h1>
+        <h1>情境对话</h1>
         <p class="lead" style="margin:0">
-          每个场景对应需求文档里的核心场景。进入后请用「下一句」逐步播放，方便讲解共情、分龄与安全策略。
+          挑一个日常情境，跟着对话走几轮——感受共情、分龄语气与安全守护。
         </p>
       </div>
-      <span class="chip">重点演示页</span>
     </div>
 
     <div class="scene-grid" id="sceneGrid"></div>
@@ -36,12 +35,13 @@
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "scene-card";
+      const theme = s.prd || "";
       btn.innerHTML = `
-        <span class="prd-tag">PRD · ${s.prd}</span>
+        ${theme ? `<span class="theme-tag">${theme}</span>` : ""}
         <h3>${s.title}</h3>
         <p class="choice-desc" style="margin:0">${s.desc}</p>
         <p class="note" style="margin:0;text-align:left">伙伴：${c.name} · 模式：${s.mode === "child" ? "儿童" : "成人"} · ${s.turns.length} 轮</p>
-        <span class="btn btn-primary" style="align-self:flex-start;pointer-events:none">进入并逐步播放</span>
+        <span class="btn btn-primary" style="align-self:flex-start;pointer-events:none">进入对话</span>
       `;
       btn.addEventListener("click", () => {
         const patch = { mode: s.mode, companionId: s.companionId };

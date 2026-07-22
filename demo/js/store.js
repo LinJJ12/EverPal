@@ -1,4 +1,4 @@
-/* Shared demo store + helpers (PRD-aligned) */
+/* Shared demo store + helpers */
 (function () {
   const KEY = "companion_demo_v2";
 
@@ -70,8 +70,8 @@
       id: "bored",
       mode: "child",
       title: "今天好无聊",
-      prd: "睡前 / 闲暇陪伴",
-      desc: "无聊 → 二选一分支（故事 / 急转弯），多轮展开",
+      prd: "闲暇陪伴",
+      desc: "无聊时一起听故事，或来个脑筋急转弯",
       companionId: "tiao",
       turns: [
         { role: "user", text: "今天好无聊啊……" },
@@ -106,7 +106,7 @@
       mode: "child",
       title: "为什么天是蓝的",
       prd: "好奇问答",
-      desc: "比喻讲解后可追问太阳或月亮",
+      desc: "用小朋友听得懂的比喻聊天空，还能继续问太阳或月亮",
       companionId: "nuan",
       turns: [
         { role: "user", text: "为什么天是蓝的？" },
@@ -138,8 +138,8 @@
       id: "pretend",
       mode: "child",
       title: "假想游戏：太空探险",
-      prd: "角色扮演陪伴",
-      desc: "给星星取名的分支选择",
+      prd: "角色扮演",
+      desc: "一起假装飞向太空，给星星取名字",
       companionId: "tiao",
       turns: [
         { role: "user", text: "我们假装去太空吧！" },
@@ -167,8 +167,8 @@
       id: "vent",
       mode: "adult",
       title: "工作好累（树洞）",
-      prd: "听我说说 / 轻度倾诉",
-      desc: "共情后分支：只听 / 选一件小事",
+      prd: "轻度倾诉",
+      desc: "先被好好听见，再一起挑一件最小的下一步",
       companionId: "cha",
       turns: [
         { role: "user", text: "今天开会开到很晚，整个人空空的。" },
@@ -200,8 +200,8 @@
       id: "memory",
       mode: "child",
       title: "记得我喜欢恐龙",
-      prd: "记得你 / 轻量记忆",
-      desc: "招呼提起喜好后，故事 / 冷知识二选一",
+      prd: "记得你",
+      desc: "伙伴会提起你的喜好，再一起听故事或冷知识",
       companionId: "nuan",
       seedLikes: ["dinosaurs"],
       turns: [
@@ -231,9 +231,9 @@
     {
       id: "safety",
       mode: "child",
-      title: "安全拦截示例",
-      prd: "内容安全（提示词 + 词库）",
-      desc: "危险话题温和转开，可选择换安全话题",
+      title: "遇到危险话题",
+      prd: "安心守护",
+      desc: "危险话题会温和转开，再一起聊安全的好玩事",
       companionId: "nuan",
       turns: [
         { role: "user", text: "怎么自己做烟花爆炸？" },
@@ -369,13 +369,13 @@
       return {
         eyebrow: "欢迎回来",
         title: `${name}，我在这儿`,
-        lead: `${c.name}记得你。${likeBit}可以从场景剧本慢慢演示，也可以先去聊天。`,
+        lead: `${c.name}记得你。${likeBit}可以挑个场景聊聊，也可以直接开始聊天。`,
       };
     }
     return {
       eyebrow: "无需登录 · 开箱即聊",
       title: "你好呀，我在这儿",
-      lead: "玖伴是面向小孩与普通人的 AI 陪伴助手——九久相伴，永远有人回应。耐心听完、说话好懂、记得你是谁。接下来请慢慢走完模式、档案与场景。",
+      lead: "玖伴是面向小孩与普通人的 AI 陪伴助手——九久相伴，永远有人回应。耐心听完、说话好懂、记得你是谁。",
     };
   }
 
@@ -420,58 +420,6 @@
     document.documentElement.setAttribute("data-demo-mode", mode);
   }
 
-  /** Recommended walkthrough path (index 01–10); index.html itself has no fine bar */
-  const TOUR_STEPS = [
-    { file: "welcome.html", title: "欢迎" },
-    { file: "mode.html", title: "模式" },
-    { file: "nickname.html", title: "档案" },
-    { file: "companions.html", title: "角色" },
-    { file: "scenes.html", title: "场景" },
-    { file: "chat.html", title: "聊天" },
-    { file: "memory.html", title: "记忆" },
-    { file: "history.html", title: "历史" },
-    { file: "safety-demo.html", title: "安全" },
-    { file: "settings.html", title: "设置" },
-  ];
-
-  function currentTourFile() {
-    return (location.pathname.split("/").pop() || "index.html").toLowerCase();
-  }
-
-  function mountTourBar() {
-    const file = currentTourFile();
-    if (file === "index.html" || file === "") return;
-    const idx = TOUR_STEPS.findIndex((s) => s.file === file);
-    if (idx < 0) return;
-
-    let bar = document.querySelector("[data-tour-bar]");
-    if (!bar) {
-      bar = document.createElement("div");
-      bar.className = "tour-bar";
-      bar.setAttribute("data-tour-bar", "");
-      const header = document.querySelector("[data-demo-header]");
-      if (header && header.parentNode) {
-        header.insertAdjacentElement("afterend", bar);
-      } else {
-        document.body.prepend(bar);
-      }
-    }
-
-    const step = TOUR_STEPS[idx];
-    const n = TOUR_STEPS.length;
-    const i = idx + 1;
-    const isLast = idx >= n - 1;
-    const next = isLast ? null : TOUR_STEPS[idx + 1];
-    const nextHref = isLast ? "index.html" : next.file;
-    const nextLabel = isLast ? "完成 · 回导览" : `下一步：${next.title}`;
-
-    bar.innerHTML = `
-      <div class="tour-bar-inner">
-        <span class="tour-bar-status">第 ${i}/${n} 步 · ${step.title}</span>
-        <a class="tour-bar-next" href="${nextHref}">${nextLabel}</a>
-      </div>`;
-  }
-
   function addMemory(text) {
     const s = load();
     const memories = [{ ts: Date.now(), text }, ...(s.memories || [])].slice(0, 8);
@@ -497,7 +445,7 @@
   }
 
   const NAV_PRIMARY = [
-    ["index.html", "导览"],
+    ["index.html", "首页"],
     ["welcome.html", "欢迎"],
     ["scenes.html", "场景"],
     ["chat.html", "聊天"],
@@ -536,7 +484,7 @@
           <img class="brand-mark" src="${prefix}assets/brand/logo.png" width="36" height="36" alt="" />
           <span>${brand}</span>
         </a>
-        <nav class="nav-links" aria-label="演示页面">
+        <nav class="nav-links" aria-label="主要导航">
           ${NAV_PRIMARY.map(([href, label]) => `<a href="${prefix}${href}">${label}</a>`).join("")}
           <div class="nav-more">
             <button type="button" class="nav-more-btn" aria-expanded="false" aria-haspopup="true">更多</button>
@@ -666,8 +614,6 @@
     companionOpener,
     resetDemo,
     applyModeChrome,
-    TOUR_STEPS,
-    mountTourBar,
     displayName,
     likeLabels,
     addMemory,
@@ -691,6 +637,5 @@
     injectNav();
     markNav();
     applyModeChrome();
-    mountTourBar();
   });
 })();

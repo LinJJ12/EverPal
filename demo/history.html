@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>会话历史 · 玖伴 Demo</title>
+  <title>会话历史 · 玖伴</title>
   <link rel="stylesheet" href="css/cartoon.css" />
 </head>
 <body>
@@ -13,7 +13,7 @@
     <div class="page-head">
       <div>
         <h1>会话历史</h1>
-        <p class="lead" style="margin:0">对应 PRD「会话可回看」。演示中在聊天页点「保存本段对话」后会出现在这里。</p>
+        <p class="lead" style="margin:0">在聊天页点「保存本段对话」后，会出现在这里，方便回看。</p>
       </div>
     </div>
 
@@ -31,19 +31,26 @@
       const sessions = DemoStore.load().sessions || [];
       const list = document.getElementById("list");
       if (!sessions.length) {
-        list.innerHTML = `<section class="card"><p class="note" style="margin:0">还没有保存的会话。先去「场景」或「聊天」演示一段，再点保存。</p></section>`;
+        list.innerHTML = `<section class="card"><p class="note" style="margin:0">还没有保存的会话。先去「场景」或「聊天」聊一段，再点保存。</p></section>`;
         return;
       }
-      list.innerHTML = sessions
-        .map((s) => {
-          const c = DemoStore.companions[s.companionId]?.name || "伙伴";
-          return `<a class="history-item" href="chat.html?session=${encodeURIComponent(s.id)}">
-            <strong>${s.title}</strong>
-            <div class="note" style="margin:6px 0;text-align:left">${c} · ${s.mode === "child" ? "儿童" : "成人"} · ${s.messages.length} 条消息</div>
-            <time>${new Date(s.updatedAt).toLocaleString()}</time>
-          </a>`;
-        })
-        .join("");
+      list.replaceChildren();
+      sessions.forEach((s) => {
+        const c = DemoStore.companions[s.companionId]?.name || "伙伴";
+        const a = document.createElement("a");
+        a.className = "history-item";
+        a.href = "chat.html?session=" + encodeURIComponent(s.id);
+        const strong = document.createElement("strong");
+        strong.textContent = s.title || "未命名会话";
+        const meta = document.createElement("div");
+        meta.className = "note";
+        meta.style.cssText = "margin:6px 0;text-align:left";
+        meta.textContent = `${c} · ${s.mode === "child" ? "儿童" : "成人"} · ${(s.messages || []).length} 条消息`;
+        const time = document.createElement("time");
+        time.textContent = new Date(s.updatedAt).toLocaleString();
+        a.append(strong, meta, time);
+        list.appendChild(a);
+      });
     }
     document.getElementById("clearAll").addEventListener("click", () => {
       DemoStore.save({ sessions: [] });

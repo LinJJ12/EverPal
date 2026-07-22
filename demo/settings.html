@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>设置 · 玖伴 Demo</title>
+  <title>设置 · 玖伴</title>
   <link rel="stylesheet" href="css/cartoon.css" />
 </head>
 <body>
@@ -13,7 +13,7 @@
     <div class="page-head">
       <div>
         <h1>本地设置</h1>
-        <p class="lead" style="margin:0">刻意没有模型列表、温度、Endpoint——对应 PRD「对用户隐藏专业配置」。</p>
+        <p class="lead" style="margin:0">只保留陪伴相关选项——没有模型列表、温度或接口配置。</p>
       </div>
       <span class="chip">无登录</span>
     </div>
@@ -43,12 +43,11 @@
 
       <button type="button" class="btn btn-secondary btn-block" id="resetBtn">重置演示</button>
       <p class="note" style="margin:0;text-align:left" id="resetHint">确认后恢复默认：儿童模式、空昵称、空喜好、小暖、无会话无记忆、无游戏纪录。</p>
-      <p class="note" style="margin:0;text-align:left">二期才会出现：家长同意、宵禁、语音朗读等。一期演示到此即可收束。</p>
     </section>
 
     <div class="footer-actions">
-      <a class="btn btn-secondary" href="index.html">回导览</a>
-      <a class="btn btn-primary" href="scenes.html">回场景</a>
+      <a class="btn btn-secondary" href="index.html">回首页</a>
+      <a class="btn btn-primary" href="scenes.html">去场景</a>
     </div>
   </main>
 
@@ -77,11 +76,11 @@
     });
 
     document.getElementById("resetBtn").addEventListener("click", () => {
-      const ok = confirm("确定重置演示？将清除本机全部演示数据（含游戏纪录），并恢复默认（儿童 · 小暖 · 空档案）。");
+      const ok = confirm("确定重置演示？将清除本机全部数据（含游戏纪录），并恢复默认（儿童 · 小暖 · 空档案）。");
       if (!ok) return;
       DemoStore.resetDemo();
       refresh();
-      alert("已重置演示，刷新后仍保持干净状态");
+      alert("已重置，刷新后仍保持干净状态");
     });
 
     refresh();

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>记忆 · 玖伴 Demo</title>
+  <title>记忆 · 玖伴</title>
   <link rel="stylesheet" href="css/cartoon.css" />
 </head>
 <body>
@@ -13,7 +13,7 @@
     <div class="page-head">
       <div>
         <h1>轻量记忆</h1>
-        <p class="lead" style="margin:0">对应 PRD「记得你」：昵称、喜好与近期摘要留在本机，可查看可清除。</p>
+        <p class="lead" style="margin:0">昵称、喜好与近期摘要留在本机，可随时查看或清除。</p>
       </div>
     </div>
 
@@ -52,11 +52,17 @@
         list.innerHTML = `<p class="note" style="margin:0">暂无记忆条。在聊天或场景里产生的摘要会出现在这里。</p>`;
         return;
       }
-      list.innerHTML = memories
-        .map(
-          (m) => `<div class="memory-item"><div>${m.text}</div><time>${new Date(m.ts).toLocaleString()}</time></div>`
-        )
-        .join("");
+      list.replaceChildren();
+      memories.forEach((m) => {
+        const row = document.createElement("div");
+        row.className = "memory-item";
+        const text = document.createElement("div");
+        text.textContent = m.text || "";
+        const time = document.createElement("time");
+        time.textContent = new Date(m.ts).toLocaleString();
+        row.append(text, time);
+        list.appendChild(row);
+      });
     }
     document.getElementById("clearMem").addEventListener("click", () => {
       DemoStore.save({ memories: [] });

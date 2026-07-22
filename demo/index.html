@@ -3,144 +3,95 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>演示导览 · 玖伴 Demo</title>
+  <title>玖伴 · 九久相伴</title>
   <link rel="icon" type="image/png" href="assets/brand/logo.png" />
   <link rel="stylesheet" href="css/cartoon.css" />
 </head>
-<body>
+<body class="page-home">
   <header class="site-header" data-demo-header data-brand="玖伴"></header>
 
-  <p class="demo-banner">
-    对照 PRD v0.4 · 玖伴演示包 · 建议预留 <strong>8–12 分钟</strong>走完「场景剧本」· 不接真实大模型
-  </p>
-
-  <main class="page">
-    <section class="hero-web">
-      <div class="hero-copy">
-        <span class="chip">陪伴优先 · 零登录 · 卡通 Web</span>
-        <div class="hero-brand">
-          <img class="hero-mark" src="assets/brand/logo.png" alt="" width="88" height="88" />
-          <div>
-            <h1>玖伴</h1>
-            <p class="hero-tagline">九久相伴，永远有人回应</p>
-          </div>
-        </div>
-        <p class="lead">
-          不是更快的 ChatGPT，是更好懂的伙伴。本 Demo 按需求文档展开：分龄模式、官方人设、轻量记忆、多轮场景剧本、安全拦截话术、会话历史。
-          讲解时请优先打开「场景」页，用「下一句」慢慢演示，而不是一键跳过。
-        </p>
-        <div class="hero-actions">
-          <a class="btn btn-primary" href="scenes.html">从场景剧本开始（推荐）</a>
-          <a class="btn btn-secondary" href="welcome.html">完整新手路径</a>
-        </div>
+  <section class="shell-hero" aria-label="玖伴">
+    <div class="shell-hero-glow" aria-hidden="true"></div>
+    <div class="shell-hero-inner">
+      <img class="shell-hero-mark" src="assets/brand/logo.png" alt="" width="160" height="160" />
+      <h1 class="shell-hero-brand">玖伴</h1>
+      <p class="shell-hero-tagline">九久相伴，永远有人回应</p>
+      <p class="shell-hero-lead">不是更快的 ChatGPT，是更好懂的伙伴。打开就能聊。</p>
+      <div class="shell-hero-actions">
+        <a class="btn btn-primary btn-lg" href="welcome.html">开始陪伴</a>
+        <a class="btn btn-secondary btn-lg" href="chat.html">去聊天</a>
       </div>
-      <aside class="hero-aside" aria-label="品牌寓意">
-        <p class="hero-aside-kicker">名字里的意思</p>
-        <p class="hero-aside-line"><strong>玖</strong> · 九久，时间拉长</p>
-        <p class="hero-aside-line"><strong>伴</strong> · 有人在，不孤单</p>
-        <p class="hero-aside-foot">打开就能聊，永远有一句回应等着你。</p>
-      </aside>
+    </div>
+  </section>
+
+  <main class="page page-home-main">
+    <section class="benefit-band" aria-labelledby="benefits-title">
+      <h2 id="benefits-title" class="section-title">玖伴能为你做什么</h2>
+      <ul class="benefit-list">
+        <li>
+          <strong>随时陪伴</strong>
+          <span>零登录开箱即聊，打开就有人回应</span>
+        </li>
+        <li>
+          <strong>安心边界</strong>
+          <span>儿童更严守护；危险话题温和转开</span>
+        </li>
+        <li>
+          <strong>记得你</strong>
+          <span>昵称与喜好留在本机，下次还会提起</span>
+        </li>
+        <li>
+          <strong>温暖不越界</strong>
+          <span>可以树洞倾诉，明确不做恋爱角色</span>
+        </li>
+      </ul>
     </section>
 
-    <div class="stat-row">
-      <div class="stat"><strong>6</strong><span>PRD 核心场景剧本</span></div>
-      <div class="stat"><strong>3</strong><span>官方陪伴角色</span></div>
-      <div class="stat"><strong>12</strong><span>可切换演示页</span></div>
-      <div class="stat"><strong>7</strong><span>益智小游戏</span></div>
-    </div>
-
-    <h2 class="section-title">一、产品原则（讲解用）</h2>
-    <div class="hub-grid" style="margin-bottom:36px">
-      <div class="hub-item" style="cursor:default">
-        <span class="step">原则 1</span>
-        <strong>陪伴优先</strong>
-        <span>不做多模型工作台；用户零配置</span>
+    <section class="explore-band" aria-labelledby="explore-title">
+      <h2 id="explore-title" class="section-title">去探索</h2>
+      <div class="hub-grid hub-grid-explore">
+        <a class="hub-item" href="welcome.html">
+          <span class="step">起步</span>
+          <strong>欢迎</strong>
+          <span>认识玖伴</span>
+        </a>
+        <a class="hub-item" href="mode.html">
+          <span class="step">分龄</span>
+          <strong>儿童 / 成人</strong>
+          <span>语气与守护强度</span>
+        </a>
+        <a class="hub-item" href="companions.html">
+          <span class="step">伙伴</span>
+          <strong>官方角色</strong>
+          <span>小暖、跳跳、阿茶</span>
+        </a>
+        <a class="hub-item" href="scenes.html">
+          <span class="step">场景</span>
+          <strong>情境对话</strong>
+          <span>无聊、好奇与树洞</span>
+        </a>
+        <a class="hub-item" href="chat.html">
+          <span class="step">聊天</span>
+          <strong>自由聊天</strong>
+          <span>打字、话题卡</span>
+        </a>
+        <a class="hub-item" href="games.html">
+          <span class="step">游戏</span>
+          <strong>益智小游戏</strong>
+          <span>七款本地可玩</span>
+        </a>
+        <a class="hub-item" href="memory.html">
+          <span class="step">记忆</span>
+          <strong>记忆面板</strong>
+          <span>查看或清理</span>
+        </a>
+        <a class="hub-item" href="settings.html">
+          <span class="step">设置</span>
+          <strong>本地设置</strong>
+          <span>模式与数据</span>
+        </a>
       </div>
-      <div class="hub-item" style="cursor:default">
-        <span class="step">原则 2</span>
-        <strong>安全底线</strong>
-        <span>儿童更严；危险话题温和转开</span>
-      </div>
-      <div class="hub-item" style="cursor:default">
-        <span class="step">原则 3</span>
-        <strong>记得你</strong>
-        <span>昵称与喜好可延续到下次招呼</span>
-      </div>
-      <div class="hub-item" style="cursor:default">
-        <span class="step">原则 4</span>
-        <strong>温暖不越界</strong>
-        <span>可树洞；明确不做恋爱角色</span>
-      </div>
-      <div class="hub-item" style="cursor:default">
-        <span class="step">原则 5</span>
-        <strong>零门槛</strong>
-        <span>无登录、无 API Key、无温度旋钮</span>
-      </div>
-      <div class="hub-item" style="cursor:default">
-        <span class="step">非目标</span>
-        <strong>刻意不做</strong>
-        <span>RAG 工作台 / 家长同意（二期）/ 语音（二期）</span>
-      </div>
-    </div>
-
-    <h2 class="section-title">二、推荐演示顺序（放慢节奏）</h2>
-    <div class="hub-grid">
-      <a class="hub-item" href="welcome.html">
-        <span class="step">01 · 约 1 分钟</span>
-        <strong>欢迎 / 品牌</strong>
-        <span>零登录开场</span>
-      </a>
-      <a class="hub-item" href="mode.html">
-        <span class="step">02 · 约 1 分钟</span>
-        <strong>儿童 / 成人模式</strong>
-        <span>分龄语气与安全强度</span>
-      </a>
-      <a class="hub-item" href="nickname.html">
-        <span class="step">03 · 约 1–2 分钟</span>
-        <strong>档案：昵称 + 喜好</strong>
-        <span>轻量记忆入口</span>
-      </a>
-      <a class="hub-item" href="companions.html">
-        <span class="step">04 · 约 1–2 分钟</span>
-        <strong>三个官方角色</strong>
-        <span>读人设与开场白</span>
-      </a>
-      <a class="hub-item" href="scenes.html">
-        <span class="step">05 · 约 4–6 分钟 ★</span>
-        <strong>场景剧本（重点）</strong>
-        <span>多轮「下一句」慢慢演</span>
-      </a>
-      <a class="hub-item" href="chat.html">
-        <span class="step">06 · 约 2 分钟</span>
-        <strong>自由聊天台</strong>
-        <span>流式、停止、话题卡</span>
-      </a>
-      <a class="hub-item" href="games.html">
-        <span class="step">加餐 · 可随时</span>
-        <strong>益智小游戏大厅</strong>
-        <span>七款本地小游戏（不进讲解 Tour）</span>
-      </a>
-      <a class="hub-item" href="memory.html">
-        <span class="step">07 · 约 1 分钟</span>
-        <strong>记忆面板</strong>
-        <span>查看 / 清理本机记忆</span>
-      </a>
-      <a class="hub-item" href="history.html">
-        <span class="step">08 · 约 1 分钟</span>
-        <strong>会话历史</strong>
-        <span>回看已保存演示对话</span>
-      </a>
-      <a class="hub-item" href="safety-demo.html">
-        <span class="step">09 · 约 1–2 分钟</span>
-        <strong>安全话术墙</strong>
-        <span>词库拦截示例对照</span>
-      </a>
-      <a class="hub-item" href="settings.html">
-        <span class="step">10 · 约 1 分钟</span>
-        <strong>本地设置</strong>
-        <span>无专业模型配置</span>
-      </a>
-    </div>
+    </section>
   </main>
 
   <script src="js/store.js"></script>
