@@ -42,6 +42,10 @@ web/
 Until `web/` lands, UX ships as `demo/*.html` + `demo/js/store.js` + `demo/css/cartoon.css`.
 
 - **Tour-bar**: `DemoStore.TOUR_STEPS` + `mountTourBar()` under sticky header; skip `index.html`.
-- **Full reset**: `DemoStore.resetDemo()` from settings after `confirm`.
+- **Full reset**: `DemoStore.resetDemo()` from settings after `confirm` — must rewrite full `defaults` (includes `gameScores`).
 - **Mode chrome**: `html[data-demo-mode="child|adult"]` drives `--demo-font-scale`.
 - **Chat grid**: two areas only — side | shell; mobile drawer ≤960px.
+- **Kids games**: hub `demo/games.html` + play pages `demo/games/<id>.html`; shared `demo/js/games-common.js`, `demo/js/games/<id>.js`, `demo/css/games.css`.
+- **Nav**: `NAV_PRIMARY` includes「游戏」→ `games.html`; games are **not** in `TOUR_STEPS`.
+- **Scores**: `companion_demo_v2.gameScores` via `getGameHigh` / `submitGameScore` (puzzle is lower-better / `null` = no record).
+- **Nested paths**: pages under `demo/games/` must use `../` for css/js/assets; `DemoStore.demoRootPrefix()` prefixes injected nav/favicon.
