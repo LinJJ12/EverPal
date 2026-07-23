@@ -45,3 +45,6 @@
 | Let `.chat-messages` grow the page (`min-height` only, no locked shell height) | Browser page scrolls forever; composer drifts down | `body:has(.page-chat)` flex column + `.chat-shell`/`messages` `flex:1; min-height:0; overflow:auto` |
 | Single default free-chat reply for all unmatched lines | Topic chips feel broken (same line forever) | Match story/sky/space/interest intents; rotate fallbacks |
 | Allow send/topic clicks while a bot stream is in flight | Overlapping streams / orphaned typing nodes | `chatBusy` lock + `cancelStream()` on stop/clear/exit |
+| 「重置本机档案」只 `removeItem(client_id)` 再 `save`，文案写「刷新后才换标识」 | `save` 已触发新 id，提示与行为不一致；内存里旧 session 仍可能残留 | `resetClientId()` 立刻写入新 id → 清 `sessionId` → `location.reload()` |
+| `?session=` 加载失败仍保留旧 `sessionId` / 空白当成功 | 后续发送挂到错误会话；用户以为回看成功 | 失败：人话错误 + `sessionId = null` + 清空消息；加载中明示「正在加载…」 |
+| 档案/模式/伙伴 `save` 先改本地再请求，失败时静默 `catch` | UI 显示已切换，服务端未改 | `save` 失败回滚 Pinia；页面用人话提示（`friendlyError`） |
