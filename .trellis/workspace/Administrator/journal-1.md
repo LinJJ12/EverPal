@@ -71,3 +71,37 @@
 ### Next Steps
 
 - None - task complete
+
+
+## Session 3: MVP 缺口收口：前端状态闭环打磨
+
+**Date**: 2026-07-23
+**Task**: MVP 缺口收口：前端状态闭环打磨
+**Branch**: `main`
+
+### Summary
+
+完成一小轮前端状态闭环：历史回看、重置强制刷新、写失败回滚与后端不可达提示；写入 frontend state-management 约定；一并归档 mvp-gap-close、frontend-scaffold-chat、backend-scaffold-llm。
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `db654ce` | (see git log) |
+| `46ee828` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 2
+- **Total Sessions**: 3
 - **Last Active**: 2026-07-23
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~73 | Active |
+| `journal-1.md` | ~107 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 3 | 2026-07-23 | MVP 缺口收口：前端状态闭环打磨 | `db654ce`, `46ee828` | `main` |
 | 2 | 2026-07-23 | 自由聊上下文与路径/次要页 stage 收尾 | `2adafec` | `main` |
 | 1 | 2026-07-22 | 归档 demo-frontend-polish | `abc0992` | `main` |
 <!-- @@@/auto:session-history -->
