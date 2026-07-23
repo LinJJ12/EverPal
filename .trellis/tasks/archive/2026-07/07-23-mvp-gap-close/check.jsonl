@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/frontend/index.md", "reason": "Product UI hard rules: plain Chinese errors, no model/API UI"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Error copy and forbidden raw HTTP patterns"}
+{"file": ".trellis/spec/frontend/state-management.md", "reason": "Profile/session device-bound state rules"}
+{"file": ".trellis/spec/guides/product-constraints.md", "reason": "Phase-1 must/must-not: no login, no API keys in frontend"}
