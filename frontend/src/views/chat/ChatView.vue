@@ -9,6 +9,7 @@ import ChatComposer from "@/components/chat/ChatComposer.vue";
 import TopicCards from "@/components/chat/TopicCards.vue";
 import CompanionAvatar from "@/components/companions/CompanionAvatar.vue";
 import { COMPANION_SAMPLES } from "@/utils/avatars";
+import { friendlyError } from "@/utils/errors";
 
 const store = useProfileStore();
 const { companion, nickname, likeLabels, mode, companions } = storeToRefs(store);
@@ -25,6 +26,9 @@ const {
 } = useChatPage();
 const route = useRoute();
 const sideOpen = ref(false);
+const sessionLoading = ref(false);
+const sessionLoadError = ref("");
+const sideError = ref("");
 
 const headerSub = computed(() => {
   if (nickname.value && likeLabels.value.length) {
@@ -44,11 +48,23 @@ const emptyHint = computed(() => {
 });
 
 async function pickCompanion(id: string) {
+  if (id === companion.value?.id) return;
+  sideError.value = "";
   try {
     await store.save({ companion_id: id });
-  } catch {
-    /* ignore */
+  } catch (e) {
+    sideError.value = friendlyError(e);
   }
+}
+
+function onSubmit(text?: string) {
+  sessionLoadError.value = "";
+  return submit(text);
+}
+
+function onClear() {
+  sessionLoadError.value = "";
+  clear();
 }
 
 function regen() {
@@ -58,30 +74,40 @@ function regen() {
   if (messages.value.length && messages.value[messages.value.length - 1].role === "assistant") {
     messages.value.pop();
   }
-  submit(lastUser.content);
+  onSubmit(lastUser.content);
 }
 
 onMounted(() => {
   const seed = route.query.seed;
   if (typeof seed === "string" && seed.trim()) {
-    submit(seed.trim());
+    onSubmit(seed.trim());
   }
 });
 
 watch(
   () => route.query.session,
   async (sid) => {
-    if (typeof sid === "string" && sid) {
+    if (typeof sid !== "string" || !sid) {
+      sessionLoading.value = false;
+      sessionLoadError.value = "";
+      return;
+    }
+    sessionLoading.value = true;
+    sessionLoadError.value = "";
+    try {
       const { getSession } = await import("@/api/sessions");
-      try {
-        const s = await getSession(sid);
-        store.sessionId = s.id;
-        messages.value = (s.messages || [])
-          .filter((m) => m.role === "user" || m.role === "assistant")
-          .map((m) => ({ role: m.role as "user" | "assistant", content: m.content }));
-      } catch {
-        /* ignore */
-      }
+      const s = await getSession(sid);
+      store.sessionId = s.id;
+      messages.value = (s.messages || [])
+        .filter((m) => m.role === "user" || m.role === "assistant")
+        .map((m) => ({ role: m.role as "user" | "assistant", content: m.content }));
+    } catch (e) {
+      sessionLoadError.value = friendlyError(e);
+      messages.value = [];
+      // Do not keep a prior session id — avoids sending into the wrong thread
+      store.sessionId = null;
+    } finally {
+      sessionLoading.value = false;
     }
   },
   { immediate: true },
@@ -118,6 +144,9 @@ watch(
             </div>
           </button>
         </div>
+        <p v-if="sideError" class="note" style="margin: 0; text-align: left; color: var(--color-primary)">
+          {{ sideError }}
+        </p>
         <h2>本机记忆快照</h2>
         <p class="note" style="margin: 0; text-align: left">
           昵称：{{ nickname || "（未设）" }}
@@ -179,11 +208,29 @@ watch(
           <button type="button" class="btn btn-secondary" disabled title="会话已自动保存到服务端">
             已自动保存
           </button>
-          <button type="button" class="btn btn-secondary" @click="clear()">清空屏幕</button>
+          <button type="button" class="btn btn-secondary" @click="onClear()">清空屏幕</button>
         </div>
 
         <div ref="listEl" class="chat-messages">
-          <p v-if="!messages.length" class="note" style="margin: auto; text-align: center">
+          <p
+            v-if="sessionLoading"
+            class="note"
+            style="margin: auto; text-align: center"
+          >
+            正在加载会话…
+          </p>
+          <p
+            v-else-if="sessionLoadError"
+            class="note"
+            style="margin: auto; text-align: center; color: var(--color-primary)"
+          >
+            {{ sessionLoadError }}
+          </p>
+          <p
+            v-else-if="!messages.length"
+            class="note"
+            style="margin: auto; text-align: center"
+          >
             {{ emptyHint }}
           </p>
           <ChatBubble
@@ -197,8 +244,13 @@ watch(
 
         <p v-if="error" class="note" style="color: var(--color-primary)">{{ error }}</p>
 
-        <TopicCards :topics="topics" :disabled="streaming" @pick="submit" />
-        <ChatComposer v-model="input" :disabled="streaming" @send="submit()" @stop="stop()" />
+        <TopicCards :topics="topics" :disabled="streaming || sessionLoading" @pick="onSubmit" />
+        <ChatComposer
+          v-model="input"
+          :disabled="streaming || sessionLoading"
+          @send="onSubmit()"
+          @stop="stop()"
+        />
       </section>
     </div>
   </main>

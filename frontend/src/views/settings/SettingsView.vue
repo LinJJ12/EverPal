@@ -3,6 +3,8 @@ import { computed, onMounted, ref } from "vue";
 import { RouterLink } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useProfileStore } from "@/stores/profile";
+import { resetClientId } from "@/utils/clientId";
+import { friendlyError } from "@/utils/errors";
 import { iconAdult, iconChild } from "@/utils/avatars";
 import type { Mode } from "@/types";
 
@@ -27,27 +29,26 @@ const summary = computed(() => {
 });
 
 async function setMode(m: Mode) {
-  await store.save({ mode: m });
+  if (m === mode.value) return;
+  hint.value = "";
+  try {
+    await store.save({ mode: m });
+  } catch (e) {
+    hint.value = friendlyError(e);
+  }
 }
 
-async function resetLocal() {
+function resetLocal() {
   if (
     !confirm(
-      "确定重置本机档案到默认？将恢复儿童模式、空昵称、空喜好与小暖，并新建会话标识（不清除服务端旧会话）。",
+      "确定重置本机档案到默认？将换用新的本机标识并刷新页面；聊天与档案会回到默认（不清除服务端旧会话）。",
     )
   ) {
     return;
   }
-  localStorage.removeItem("jiuban_client_id");
-  await store.save({
-    nickname: "",
-    mode: "child",
-    companion_id: "nuan",
-    likes: [],
-  });
+  resetClientId();
   store.sessionId = null;
-  store.memories = [];
-  hint.value = "已恢复默认档案。刷新页面后会使用新的本机标识。";
+  location.reload();
 }
 </script>
 
@@ -92,7 +93,7 @@ async function resetLocal() {
           <button type="button" class="btn btn-secondary btn-block" @click="resetLocal">
             重置本机档案
           </button>
-          <p v-if="hint" class="note" style="margin: 0; text-align: left; color: var(--color-secondary)">
+          <p v-if="hint" class="note" style="margin: 0; text-align: left; color: var(--color-primary)">
             {{ hint }}
           </p>
           <p class="note" style="margin: 0; text-align: left">
