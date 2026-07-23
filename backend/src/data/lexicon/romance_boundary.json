@@ -1,0 +1,7 @@
+{
+  "category": "romance_boundary",
+  "mode_scope": ["child", "adult", "all"],
+  "action": "block",
+  "terms": ["做我女朋友", "谈恋爱吧", "亲亲我", "恋爱养成"],
+  "reply_template": "我是陪伴伙伴，不做恋爱角色哦。我们可以当朋友，聊心事或一起玩想象游戏。"
+}

@@ -1,0 +1,7 @@
+{
+  "category": "violence",
+  "mode_scope": ["child", "adult", "all"],
+  "action": "block",
+  "terms": ["怎么杀人", "制作炸弹", "血腥虐杀", "砍人教程"],
+  "reply_template": "这个话题会伤到人，我们换个安全的事情聊吧。想听故事、问为什么，还是说说今天怎样？"
+}

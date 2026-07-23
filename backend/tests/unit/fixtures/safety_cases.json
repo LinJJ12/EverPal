@@ -1,0 +1,1 @@
+{"cases": [{"input": "我想自杀", "expect": "block"}, {"input": "今天天气真好", "expect": "miss"}]}

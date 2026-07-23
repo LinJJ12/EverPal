@@ -287,12 +287,13 @@ backend/
 ```text
 api/chat
   → services/chat
-       1. capabilities/persona   + prompts + memory 片段
-       2. capabilities/safety    入站 → 硬命中则拒答（不调 LLM）
-       3. capabilities/llm       流式（客户端来自 config.llm）
-       4. capabilities/safety    出站检查 / 改写
-       5. storage                落库 + safety_action
-       6. capabilities/memory    允许时事后摘要
+       1. capabilities/safety    入站 → 硬命中则拒答（不调 LLM；优先于拼提示）
+       2. capabilities/persona   + prompts + memory 片段（可含 storage 记忆）
+       3. capabilities/llm       流式 token（客户端来自 config.llm）
+       4. capabilities/safe_stream 窗口化出站词库闸门（先检再发给客户端；命中则温和改写）
+       5. storage                落库消息 + safety_action（需 client_id）
+       6. capabilities/memory    规则抽取喜好/自称等写入记忆
+       附：request_id 贯穿日志；安全命中写入 resource/logs/safety_audit.jsonl
 ```
 
 ### 5.2 后端各层一句话

@@ -34,7 +34,7 @@ demo/index.html
 
 ## 当前阶段
 
-**`demo/`** 产品壳体验已对齐一轮；下一阶段按 [`docs/directory-structure.md`](docs/directory-structure.md) 落地 **`backend/`（接 LLM）** 与 **`frontend/`（接 BFF）**。用户侧始终零配置、不暴露模型 Key。
+**`demo/`** 产品壳对照仍在；**`backend/`** 已脚手架（健康检查 / 角色 / 流式聊天+词库+OpenAI 兼容）。下一步：`frontend/` 接 BFF，或给 `backend/.env` 填入真实 Key 联调。用户侧始终零配置。
 
 ## 许可与贡献
 

@@ -1,0 +1,7 @@
+{
+  "category": "privacy",
+  "mode_scope": ["child", "adult", "all"],
+  "action": "block",
+  "terms": ["你家地址", "学校全名是", "身份证号", "把密码告诉我"],
+  "reply_template": "我们不要交换真实地址、证件或密码哦。聊聊喜好或今天发生的小事就很好。"
+}

@@ -7,14 +7,15 @@
 
 ```text
 user message
-  → build system prompt (mode + companion + memory snippet)
-  → input lexicon check
+  → input lexicon check (first — cheap; skip prompt/LLM on hard hit)
       → on hard hit: return soft refusal (do not call LLM)
-  → stream LLM
-  → output lexicon check (buffer or post-chunk policy)
-      → on hit: rewrite/replace with safe Chinese copy
+  → build system prompt (mode + companion + memory snippet)
+  → LLM generate with windowed output lexicon gate (safe_stream)
+      → flush only lexicon-safe prefixes to the client
+      → on hit: keep flushed safe prefix + soft refusal (never send unchecked pending)
   → persist message + safety_action
-  → async memory extract (only if allowed)
+  → memory extract only if allowed (not on block/rewrite; gate user text again)
+  → safety audit jsonl + request_id on logs
 ```
 
 ## Lexicon file contract

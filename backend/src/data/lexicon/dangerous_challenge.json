@@ -1,0 +1,7 @@
+{
+  "category": "dangerous_challenge",
+  "mode_scope": ["child", "adult", "all"],
+  "action": "block",
+  "terms": ["烟花爆炸怎么做", "自制火药", "挑战窒息", "喝清洁剂"],
+  "reply_template": "这听起来不安全。我们换个好玩又安全的主意——要不要假装太空探险，或听个短故事？"
+}
