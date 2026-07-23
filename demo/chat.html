@@ -23,8 +23,8 @@
         <h2>我的伙伴</h2>
         <div class="side-list" id="sideList"></div>
         <h2>本机记忆快照</h2>
-        <div class="tag-cloud" id="sideLikes"></div>
         <p class="note" style="margin:0;text-align:left" id="sideNick"></p>
+        <div class="tag-cloud" id="sideLikes"></div>
         <a class="btn btn-secondary btn-block" href="scenes.html">情境对话</a>
         <a class="btn btn-secondary btn-block" href="memory.html">记忆面板</a>
         <a class="btn btn-secondary btn-block" href="settings.html">本地设置</a>
@@ -130,16 +130,31 @@
       document.getElementById("headerAvatar").innerHTML = DemoStore.avatarSvg(companion.id);
       document.getElementById("headerName").textContent = companion.name;
       const likes = DemoStore.likeLabels();
+      const nickLabel = state.nickname || nick;
       document.getElementById("headerSub").textContent = likes.length
-        ? `${nick}，我记得你喜欢${likes.slice(0, 2).join("、")}～`
-        : state.mode === "child"
-          ? `${nick}，今天想听故事还是问问题？`
-          : `${nick}，我听着呢，你慢慢说。`;
-      document.getElementById("sideNick").textContent = `称呼：${nick || "（未设）"}`;
+        ? `${nickLabel}，我记得你喜欢${likes.slice(0, 2).join("、")}～`
+        : state.nickname
+          ? state.mode === "child"
+            ? `${state.nickname}，今天想听故事还是问问题？`
+            : `${state.nickname}，我听着呢，你慢慢说。`
+          : state.mode === "child"
+            ? "今天想听故事还是问问题？"
+            : "我听着呢，你慢慢说。";
+      document.getElementById("sideNick").textContent = state.nickname
+        ? `称呼：${state.nickname}`
+        : "称呼：（未设）";
       const sideLikes = document.getElementById("sideLikes");
-      sideLikes.innerHTML = likes.length
-        ? likes.map((l) => `<span class="tag on">${l}</span>`).join("")
-        : `<span class="note">暂无喜好</span>`;
+      if (likes.length) {
+        sideLikes.replaceChildren();
+        likes.forEach((l) => {
+          const tag = document.createElement("span");
+          tag.className = "tag on";
+          tag.textContent = l;
+          sideLikes.appendChild(tag);
+        });
+      } else {
+        sideLikes.innerHTML = `<span class="note">还没有喜好，可去<a href="nickname.html">档案</a>点选</span>`;
+      }
 
       const sideList = document.getElementById("sideList");
       sideList.innerHTML = "";
@@ -147,7 +162,12 @@
         const a = document.createElement("button");
         a.type = "button";
         a.className = "side-link" + (c.id === companion.id ? " active" : "");
-        a.innerHTML = `<span class="side-avatar avatar ${c.id}">${DemoStore.avatarSvg(c.id)}</span><span>${c.name}</span>`;
+        const av = document.createElement("span");
+        av.className = "side-avatar avatar " + c.id;
+        av.innerHTML = DemoStore.avatarSvg(c.id);
+        const name = document.createElement("span");
+        name.textContent = c.name;
+        a.append(av, name);
         a.addEventListener("click", () => {
           if (scene) return alert("场景播放中，请先退出场景再换角色");
           DemoStore.save({ companionId: c.id });
@@ -246,64 +266,18 @@
     let freeTurn = 0;
 
     function freeReply(userText) {
-      const hit = DemoStore.matchSafety(userText);
-      if (hit) return hit.reply;
-      const likes = DemoStore.likeLabels();
-      const t = userText.trim();
       freeTurn += 1;
-
-      if (/无聊/.test(t)) {
-        return state.mode === "child"
-          ? `${nick}，无聊其实是「想找点有意思的事」。要听短故事，还是脑筋急转弯？`
-          : `${nick}，有点空的时候，我们可以随便聊聊今天哪里卡住了，或者只是坐一会儿。`;
-      }
-      if (/故事/.test(t)) {
-        return state.mode === "child"
-          ? `好呀。从前有一颗会发光的小种子，装在狐狸口袋里。每当有人说「谢谢」，它就亮一点点。你想让种子变成星星，还是变成灯笼？`
-          : `那我讲个很短的：有人把一天切成「必须做」和「对自己好一点」两格。你今天更缺哪一格？`;
-      }
-      if (/天.*蓝|为什么.*蓝|天空/.test(t)) {
-        return `阳光像一盒彩色小积木。空气更容易把「蓝积木」撞得到处飞，所以眼睛看到的天空常常是蓝的。还想问太阳，还是月亮？`;
-      }
-      if (/太空|假装|探险|宇宙/.test(t)) {
-        return likes.includes("宇宙") || /宇宙/.test(t)
-          ? `${nick}，出发！我们坐上想象号飞船。先给飞船起个名字？还是先选要去的星球？`
-          : `太好了，我们假装去太空！你当船长，我当通讯员。先说飞船叫什么名字？`;
-      }
-      if (/恐龙|画画|足球|小猫|音乐|看书|小游戏|游戏/.test(t)) {
-        const m = t.match(/恐龙|画画|足球|小猫|音乐|看书|小游戏|游戏/);
-        const topic = m ? m[0] : (likes[0] || "好玩的事");
-        return `说到${topic}我就来劲！你想听一点小知识，还是我们一起编个关于它的小故事？`;
-      }
-      if (/累|烦|难过|压力|废|空空|开会/.test(t)) {
-        return `${nick}，我听到了。先不用急着解决问题——你更希望我陪着听，还是一起挑一件最小的下一步？`;
-      }
-      if (/鼓励/.test(t)) {
-        return `你已经撑过今天很不容易了。不用立刻变好，先喝口水、伸个懒腰也算前进。我在这儿。`;
-      }
-      if (likes.length && /喜欢|爱好/.test(t)) {
-        return `嗯，我记得你提过喜欢${likes[0]}。今天想围绕它聊，还是换点新的？`;
-      }
-      if (likes.length && freeTurn % 4 === 0) {
-        return `对了，你不是喜欢${likes[0]}吗？要不要从那儿聊起，或者继续说你刚才那句？`;
-      }
-
-      const childFallbacks = [
-        `${nick}，我听见啦。你刚才说的是「${t.slice(0, 18)}${t.length > 18 ? "…" : ""}」。想让我接着问，还是换个话题卡？`,
-        `有意思！关于这个，你更想听我瞎猜一版，还是你再多说一点细节？`,
-        `嗯嗯，我跟着你的节奏。要不要玩「三选一」：听故事、问为什么、还是假装冒险？`,
-        `收到！那我们慢慢聊。你希望我认真回答，还是先逗你开心一下？`,
-      ];
-      const adultFallbacks = [
-        `我听懂了，${nick}。谢谢你愿意说出来。你希望我只是陪着听，还是一起想想下一步？`,
-        `嗯，我抓住了你话里的重点。你更想被理解，还是想要一句具体建议？`,
-        `可以说得再随意一点。我在这儿，不催你。`,
-        `我记下了。若你愿意，我们把这件事拆成「现在能做的一件小事」。`,
-      ];
-      const pool = state.mode === "child" ? childFallbacks : adultFallbacks;
-      let sum = freeTurn;
-      for (let i = 0; i < t.length; i++) sum += t.charCodeAt(i);
-      return pool[sum % pool.length];
+      // Prefer prior turns only: sendUser may have already pushed the current user bubble.
+      const prior = log.length && log[log.length - 1].role === "user" && log[log.length - 1].text === userText
+        ? log.slice(0, -1)
+        : log;
+      return DemoStore.freeReply(userText, {
+        recent: prior.slice(-6),
+        nick,
+        mode: state.mode,
+        likes: DemoStore.likeLabels(),
+        freeTurn,
+      });
     }
 
     function renderTopics() {
@@ -381,15 +355,19 @@
 
     function seedGreeting() {
       const opener = DemoStore.companionOpener(companion);
-      const emptyHint = document.createElement("p");
-      emptyHint.className = "note chat-empty-hint";
-      emptyHint.style.cssText = "margin:0 0 4px;align-self:flex-start;max-width:90%";
       const likes = DemoStore.likeLabels();
       const s = DemoStore.load();
       if (s.nickname || likes.length) {
-        emptyHint.textContent = likes.length
-          ? `记得你：${DemoStore.displayName()} · 喜欢${likes.slice(0, 2).join("、")}`
-          : `记得你：${DemoStore.displayName()}`;
+        const emptyHint = document.createElement("p");
+        emptyHint.className = "note chat-empty-hint";
+        emptyHint.style.cssText = "margin:0 0 4px;align-self:flex-start;max-width:90%";
+        if (s.nickname && likes.length) {
+          emptyHint.textContent = `记得你：${s.nickname} · 喜欢${likes.slice(0, 2).join("、")}`;
+        } else if (s.nickname) {
+          emptyHint.textContent = `记得你：${s.nickname}`;
+        } else {
+          emptyHint.textContent = `记得你喜欢${likes.slice(0, 2).join("、")}`;
+        }
         messagesEl.appendChild(emptyHint);
       }
       addBubble(opener, "bot", { stream: true });

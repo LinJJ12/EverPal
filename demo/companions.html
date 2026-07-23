@@ -4,26 +4,26 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>选择角色 · 玖伴</title>
+  <link rel="icon" type="image/png" href="assets/brand/logo.png" />
   <link rel="stylesheet" href="css/cartoon.css" />
 </head>
 <body>
   <header class="site-header" data-demo-header></header>
 
-  <main class="page">
-    <div class="page-head">
-      <div>
-        <h1>今天想找谁聊？</h1>
-        <p class="lead" style="margin:0">三位官方伙伴，各有性格与开场白。点选一位，再去场景或聊天。</p>
+  <main class="page page-path">
+    <section class="path-stage shell-stage" aria-label="选择角色">
+      <div class="path-stage-glow shell-stage-glow" aria-hidden="true"></div>
+      <h1>今天想找谁聊？</h1>
+      <p class="lead">三位官方伙伴，各有性格与开场白。点选一位，再去场景或聊天。</p>
+      <div class="path-stage-body">
+        <div class="companion-grid" id="list"></div>
       </div>
-    </div>
-
-    <div class="companion-grid" id="list"></div>
-
-    <div class="footer-actions">
-      <a class="btn btn-secondary" href="nickname.html">上一步</a>
-      <a class="btn btn-mint" href="scenes.html">去场景</a>
-      <a class="btn btn-secondary" href="chat.html">先自由聊</a>
-    </div>
+      <div class="shell-hero-actions footer-actions">
+        <a class="btn btn-secondary btn-lg" href="nickname.html">上一步</a>
+        <a class="btn btn-mint btn-lg" href="scenes.html">去场景</a>
+        <a class="btn btn-secondary btn-lg" href="chat.html">先自由聊</a>
+      </div>
+    </section>
   </main>
 
   <script src="js/store.js"></script>
@@ -32,20 +32,33 @@
     const list = document.getElementById("list");
 
     function render() {
-      list.innerHTML = "";
+      list.replaceChildren();
       Object.values(DemoStore.companions).forEach((c) => {
         const el = document.createElement("button");
         el.type = "button";
         el.className = "companion" + (state.companionId === c.id ? " selected" : "");
-        el.innerHTML = `
-          <div class="avatar ${c.id}">${DemoStore.avatarSvg(c.id)}</div>
-          <div class="companion-meta">${c.role}</div>
-          <div>
-            <div class="choice-title">${c.name}${state.companionId === c.id ? " · 已选" : ""}</div>
-            <div class="choice-desc">${c.blurb}</div>
-            <div class="sample-line">「${DemoStore.companionOpener(c)}」</div>
-          </div>
-        `;
+
+        const avatar = document.createElement("div");
+        avatar.className = "avatar " + c.id;
+        avatar.innerHTML = DemoStore.avatarSvg(c.id);
+
+        const meta = document.createElement("div");
+        meta.className = "companion-meta";
+        meta.textContent = c.role;
+
+        const body = document.createElement("div");
+        const title = document.createElement("div");
+        title.className = "choice-title";
+        title.textContent = c.name + (state.companionId === c.id ? " · 已选" : "");
+        const desc = document.createElement("div");
+        desc.className = "choice-desc";
+        desc.textContent = c.blurb;
+        const sample = document.createElement("div");
+        sample.className = "sample-line";
+        sample.textContent = "「" + DemoStore.companionOpener(c) + "」";
+        body.append(title, desc, sample);
+
+        el.append(avatar, meta, body);
         el.addEventListener("click", () => {
           state.companionId = c.id;
           DemoStore.save({ companionId: c.id });

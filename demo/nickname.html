@@ -4,38 +4,36 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>档案 · 玖伴</title>
+  <link rel="icon" type="image/png" href="assets/brand/logo.png" />
   <link rel="stylesheet" href="css/cartoon.css" />
 </head>
 <body>
   <header class="site-header" data-demo-header></header>
 
-  <main class="page page-narrow">
-    <div class="page-head">
-      <div>
-        <h1>你的小档案</h1>
-        <p class="lead" style="margin:0">留下昵称和喜好，伙伴之后会自然提起。也可以先跳过。</p>
+  <main class="page page-path">
+    <section class="path-stage shell-stage" aria-label="小档案">
+      <div class="path-stage-glow shell-stage-glow" aria-hidden="true"></div>
+      <h1>你的小档案</h1>
+      <p class="lead">留下昵称和喜好，伙伴之后会自然提起。也可以先跳过。</p>
+      <div class="path-stage-body">
+        <section class="card stack">
+          <div class="field">
+            <label for="nickname">昵称</label>
+            <input id="nickname" type="text" maxlength="12" placeholder="例如：豆豆、小明…" autocomplete="nickname" />
+          </div>
+        </section>
+        <section class="card stack">
+          <div class="choice-title">我喜欢…（可多选）</div>
+          <p class="note" style="margin:0;text-align:left">点选后会进入本机记忆，聊天招呼里可能被自然提起。</p>
+          <div class="tag-cloud" id="likes"></div>
+        </section>
       </div>
-      <span class="chip">本机保存</span>
-    </div>
-
-    <section class="card stack" style="margin-bottom:16px">
-      <div class="field">
-        <label for="nickname">昵称</label>
-        <input id="nickname" type="text" maxlength="12" placeholder="例如：豆豆、小明…" autocomplete="nickname" />
+      <div class="shell-hero-actions footer-actions">
+        <a class="btn btn-secondary btn-lg" href="mode.html">上一步</a>
+        <button type="button" class="btn btn-primary btn-lg" id="saveBtn">选角色</button>
+        <a class="btn btn-secondary btn-lg" href="companions.html">暂时跳过</a>
       </div>
     </section>
-
-    <section class="card stack">
-      <div class="choice-title">我喜欢…（可多选）</div>
-      <p class="note" style="margin:0;text-align:left">点选后会进入本机记忆，聊天招呼里可能被自然提起。</p>
-      <div class="tag-cloud" id="likes"></div>
-    </section>
-
-    <div class="footer-actions">
-      <a class="btn btn-secondary" href="mode.html">上一步</a>
-      <button type="button" class="btn btn-primary" id="saveBtn">选角色</button>
-      <a class="btn btn-secondary" href="companions.html">暂时跳过</a>
-    </div>
   </main>
 
   <script src="js/store.js"></script>

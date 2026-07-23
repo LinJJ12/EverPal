@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/frontend/index.md", "reason": "Verify hard rules after polish"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Chat scroll/busy-lock and copy checks"}
+{"file": ".trellis/spec/frontend/directory-structure.md", "reason": "demo path and free-chat contracts"}
+{"file": ".trellis/spec/guides/product-constraints.md", "reason": "Brand and zero-config acceptance"}

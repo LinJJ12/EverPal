@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/frontend/index.md", "reason": "Hard rules check"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Reset and copy checks"}
+{"file": ".trellis/spec/frontend/directory-structure.md", "reason": "path-stage consistency"}
+{"file": ".trellis/spec/guides/product-constraints.md", "reason": "Brand acceptance"}

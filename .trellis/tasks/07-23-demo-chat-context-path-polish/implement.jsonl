@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/frontend/index.md", "reason": "Cartoon product-shell hard rules; no model UI"}
+{"file": ".trellis/spec/frontend/directory-structure.md", "reason": "demo layout, chat scroll, freeReply notes"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Chat busy-lock, no Tour/meta UI, DOM text rules"}
+{"file": ".trellis/spec/guides/product-constraints.md", "reason": "Brand and phase-1 companion constraints"}

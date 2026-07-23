@@ -43,6 +43,7 @@ Until `web/` lands, UX ships as `demo/*.html` + `demo/js/store.js` + `demo/css/c
 
 - **Home**: `index.html` uses full-bleed `.shell-hero` (brand-dominant first viewport) + benefit list + explore hub; keep existing cartoon color tokens / font families unless a task explicitly changes them.
 - **Welcome**: `welcome.html` shows current companion avatar, optional memory chips, and next-step hub links.
+- **Path-stage pages**: onboarding (`mode` / `nickname` / `companions` / `scenes`) and secondary (`memory` / `history` / `safety-demo` / `settings`) use `.page-path` + `.path-stage.shell-stage` (glow, `path-stage-body`, footer `shell-hero-actions`); do not regress those pages to thin `.page-head` + lone card stacks.
 - **No Tour-bar**: do **not** add `TOUR_STEPS` / `mountTourBar`; navigation is `NAV_PRIMARY` + `NAV_MORE` + page CTAs only.
 - **Copy**: no user-visible PRD version, 「讲解」, timing tips, or 「不接真实大模型」; developer notes stay in README / `docs/`.
 - **Full reset**: settings「重置演示」→ `confirm` → `DemoStore.resetDemo()` must rewrite full `defaults` (includes `gameScores`).
@@ -53,5 +54,5 @@ Until `web/` lands, UX ships as `demo/*.html` + `demo/js/store.js` + `demo/css/c
 - **Scores**: `companion_demo_v2.gameScores` via `getGameHigh` / `submitGameScore` (puzzle is lower-better / `null` = no record).
 - **Nested paths**: pages under `demo/games/` must use `../` for css/js/assets; `DemoStore.demoRootPrefix()` prefixes injected nav/favicon.
 - **Chat layout**: `body:has(.page-chat)` is a flex column filling the viewport; `.chat-shell` stretches; `.chat-messages` is the only scrolling pane (`flex:1; min-height:0; overflow:auto`). Do not let bubbles grow document height.
-- **Free chat**: local heuristic replies in `chat.html` (`freeReply`) — expand intent matches for topic chips; never rely on one default line. Guard concurrent sends with a busy lock and `cancelStream()` on stop/clear/exit.
+- **Free chat**: local heuristic replies via `DemoStore.freeReply` in `store.js` (wired from `chat.html`) — near-log window, follow-up + theme, intent matches for topic chips; never rely on one default line. Guard concurrent sends with a busy lock and `cancelStream()` on stop/clear/exit.
 - **User text in DOM**: prefer `textContent` / `createElement` for nickname, memory lines, and history titles (avoid raw `innerHTML` with user data).

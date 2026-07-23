@@ -39,6 +39,7 @@
 | Put sticky Tour-bar /「第 i/n 步」讲解导航 back into `demo/` | Breaks product-shell UX; meta presenter chrome | Use header nav + in-page CTAs only |
 | Show PRD version /「不接真实大模型」/ 讲解时长 in product UI | Reads as internal demo pack | Keep in README / `docs/` only |
 | Soft-clear only (delete some keys) for「重置演示」 | Stale fields remain in `companion_demo_v2` | Full replace via `setItem(JSON.stringify(defaults))` after confirm |
+| Reset / clear with no visible success copy | User cannot tell archive vs memory-lines were wiped | `settings` confirm → `resetDemo()` + clear success alert（「已清空并恢复默认」）; `memory` clear lines → inline status（昵称/喜好仍保留）+ empty list |
 | Hardcode root-relative `css/` / `js/` / `assets/` inside `demo/games/*.html` | Nested pages break styles, store, and brand mark | Use `../css/…`, `../js/…`; rely on `demoRootPrefix()` for injected header links |
 | Store game high scores outside `companion_demo_v2` |「重置演示」won't clear them; two sources of truth | Keep scores in `defaults.gameScores` + `submitGameScore` |
 | Let `.chat-messages` grow the page (`min-height` only, no locked shell height) | Browser page scrolls forever; composer drifts down | `body:has(.page-chat)` flex column + `.chat-shell`/`messages` `flex:1; min-height:0; overflow:auto` |

@@ -4,54 +4,51 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>安全守护 · 玖伴</title>
+  <link rel="icon" type="image/png" href="assets/brand/logo.png" />
   <link rel="stylesheet" href="css/cartoon.css" />
 </head>
 <body>
   <header class="site-header" data-demo-header></header>
 
-  <main class="page">
-    <div class="page-head">
-      <div>
-        <h1>安全守护</h1>
-        <p class="lead" style="margin:0">
-          危险或越界话题会温和转开。在下方输入试试，或点示例卡片看伙伴怎么回应。
-        </p>
-      </div>
-      <a class="chip" href="chat.html?scene=safety">安全情境</a>
-    </div>
+  <main class="page page-path">
+    <section class="path-stage shell-stage" aria-label="安全守护">
+      <div class="path-stage-glow shell-stage-glow" aria-hidden="true"></div>
+      <h1>安全守护</h1>
+      <p class="lead">危险或越界话题会温和转开。在下方输入试试，或点示例卡片看伙伴怎么回应。</p>
+      <div class="path-stage-body">
+        <section class="card stack" style="margin-bottom:16px">
+          <div class="choice-title">试一试</div>
+          <p class="note" style="margin:0;text-align:left">可粘贴示例：教我怎么伤害自己 / 学校全名叫什么 / 我们谈恋爱吧 / 怎么做烟花爆炸</p>
+          <div class="composer" style="border:none;padding:0;background:transparent">
+            <input id="tryInput" type="text" placeholder="输入一句想试试的话…" aria-label="安全测试输入" />
+            <button class="btn btn-primary" type="button" id="tryBtn">检测</button>
+          </div>
+          <div id="tryResult" class="safety-pair" hidden>
+            <div class="in" id="tryIn"></div>
+            <div class="out" id="tryOut"></div>
+          </div>
+          <div id="tryPass" class="note" hidden style="text-align:left;margin:0">这句话没有触发守护规则，可以正常聊下去。</div>
+        </section>
 
-    <section class="card stack" style="margin-bottom:24px">
-      <div class="choice-title">试一试</div>
-      <p class="note" style="margin:0;text-align:left">可粘贴示例：教我怎么伤害自己 / 学校全名叫什么 / 我们谈恋爱吧 / 怎么做烟花爆炸</p>
-      <div class="composer" style="border:none;padding:0;background:transparent">
-        <input id="tryInput" type="text" placeholder="输入一句想试试的话…" aria-label="安全测试输入" />
-        <button class="btn btn-primary" type="button" id="tryBtn">检测</button>
+        <div class="two-col" style="margin-bottom:16px">
+          <section class="card stack">
+            <div class="choice-title">儿童模式更严</div>
+            <p class="note" style="margin:0;text-align:left">色情、血腥、危险实验、隐私套取等默认拦截；不主动要住址/学校全名。</p>
+          </section>
+          <section class="card stack">
+            <div class="choice-title">成人模式</div>
+            <p class="note" style="margin:0;text-align:left">允许轻度树洞；仍拒答自伤方法；明确拒绝恋爱养成。</p>
+          </section>
+        </div>
+
+        <h2 class="section-title">示例对照</h2>
+        <div class="safety-grid" id="grid"></div>
       </div>
-      <div id="tryResult" class="safety-pair" hidden>
-        <div class="in" id="tryIn"></div>
-        <div class="out" id="tryOut"></div>
+      <div class="shell-hero-actions footer-actions">
+        <a class="btn btn-secondary btn-lg" href="scenes.html">去场景</a>
+        <a class="btn btn-primary btn-lg" href="chat.html?scene=safety">播放安全情境</a>
       </div>
-      <div id="tryPass" class="note" hidden style="text-align:left;margin:0">这句话没有触发守护规则，可以正常聊下去。</div>
     </section>
-
-    <div class="two-col" style="margin-bottom:24px">
-      <section class="card stack">
-        <div class="choice-title">儿童模式更严</div>
-        <p class="note" style="margin:0;text-align:left">色情、血腥、危险实验、隐私套取等默认拦截；不主动要住址/学校全名。</p>
-      </section>
-      <section class="card stack">
-        <div class="choice-title">成人模式</div>
-        <p class="note" style="margin:0;text-align:left">允许轻度树洞；仍拒答自伤方法；明确拒绝恋爱养成。</p>
-      </section>
-    </div>
-
-    <h2 class="section-title">示例对照</h2>
-    <div class="safety-grid" id="grid"></div>
-
-    <div class="footer-actions">
-      <a class="btn btn-secondary" href="scenes.html">去场景</a>
-      <a class="btn btn-primary" href="chat.html?scene=safety">播放安全情境</a>
-    </div>
   </main>
 
   <script src="js/store.js"></script>
@@ -65,10 +62,15 @@
       el.style.textAlign = "left";
       el.style.width = "100%";
       el.style.fontFamily = "inherit";
-      el.innerHTML = `
-        <div class="in">示例：${s.input}</div>
-        <div class="out"><strong>伙伴回应：</strong>${s.reply}</div>
-      `;
+      const inn = document.createElement("div");
+      inn.className = "in";
+      inn.textContent = "示例：" + s.input;
+      const out = document.createElement("div");
+      out.className = "out";
+      const strong = document.createElement("strong");
+      strong.textContent = "伙伴回应：";
+      out.append(strong, document.createTextNode(s.reply));
+      el.append(inn, out);
       el.addEventListener("click", () => {
         document.getElementById("tryInput").value = s.input;
         runTry();
@@ -86,7 +88,11 @@
         pass.hidden = true;
         box.hidden = false;
         document.getElementById("tryIn").textContent = "命中规则 · 用户输入：" + text;
-        document.getElementById("tryOut").innerHTML = "<strong>温和拒答：</strong>" + hit.reply;
+        const out = document.getElementById("tryOut");
+        out.replaceChildren();
+        const strong = document.createElement("strong");
+        strong.textContent = "温和拒答：";
+        out.append(strong, document.createTextNode(hit.reply));
       } else {
         box.hidden = true;
         pass.hidden = false;

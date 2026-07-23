@@ -4,42 +4,42 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>选择模式 · 玖伴</title>
+  <link rel="icon" type="image/png" href="assets/brand/logo.png" />
   <link rel="stylesheet" href="css/cartoon.css" />
 </head>
 <body>
   <header class="site-header" data-demo-header></header>
 
-  <main class="page page-narrow">
-    <div class="page-head">
-      <div>
-        <h1>选一个模式</h1>
-        <p class="lead" style="margin:0">儿童与成人两种陪伴语气。可随时在设置里再改。</p>
+  <main class="page page-path">
+    <section class="path-stage shell-stage" aria-label="选择模式">
+      <div class="path-stage-glow shell-stage-glow" aria-hidden="true"></div>
+      <h1>选一个模式</h1>
+      <p class="lead">儿童与成人两种陪伴语气。可随时在设置里再改。</p>
+      <div class="path-stage-body">
+        <section class="card">
+          <div class="choice" id="modeChoices">
+            <button type="button" class="choice-item" data-mode="child">
+              <div class="choice-icon child" id="iconChild"></div>
+              <div>
+                <div class="choice-title">儿童模式</div>
+                <div class="choice-desc">短句、比喻、更浅话题；守护更严。适合小学生闲聊、听故事、问为什么。</div>
+              </div>
+            </button>
+            <button type="button" class="choice-item adult-tone" data-mode="adult">
+              <div class="choice-icon adult" id="iconAdult"></div>
+              <div>
+                <div class="choice-title">成人模式</div>
+                <div class="choice-desc">可轻度树洞，先共情再给可选建议；不做恋爱角色。语气更成熟，仍守安全边界。</div>
+              </div>
+            </button>
+          </div>
+        </section>
       </div>
-    </div>
-
-    <section class="card" style="margin-bottom:16px">
-      <div class="choice" id="modeChoices">
-        <button type="button" class="choice-item" data-mode="child">
-          <div class="choice-icon child" id="iconChild"></div>
-          <div>
-            <div class="choice-title">儿童模式</div>
-            <div class="choice-desc">短句、比喻、更浅话题；守护更严。适合小学生闲聊、听故事、问为什么。</div>
-          </div>
-        </button>
-        <button type="button" class="choice-item adult-tone" data-mode="adult">
-          <div class="choice-icon adult" id="iconAdult"></div>
-          <div>
-            <div class="choice-title">成人模式</div>
-            <div class="choice-desc">可轻度树洞，先共情再给可选建议；不做恋爱角色。语气更成熟，仍守安全边界。</div>
-          </div>
-        </button>
+      <div class="shell-hero-actions footer-actions">
+        <a class="btn btn-secondary btn-lg" href="welcome.html">上一步</a>
+        <a class="btn btn-primary btn-lg" href="nickname.html">填写档案</a>
       </div>
     </section>
-
-    <div class="footer-actions">
-      <a class="btn btn-secondary" href="welcome.html">上一步</a>
-      <a class="btn btn-primary" href="nickname.html">填写档案</a>
-    </div>
   </main>
 
   <script src="js/store.js"></script>

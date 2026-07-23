@@ -4,27 +4,25 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>场景 · 玖伴</title>
+  <link rel="icon" type="image/png" href="assets/brand/logo.png" />
   <link rel="stylesheet" href="css/cartoon.css" />
 </head>
 <body>
   <header class="site-header" data-demo-header></header>
 
-  <main class="page">
-    <div class="page-head">
-      <div>
-        <h1>情境对话</h1>
-        <p class="lead" style="margin:0">
-          挑一个日常情境，跟着对话走几轮——感受共情、分龄语气与安全守护。
-        </p>
+  <main class="page page-path">
+    <section class="path-stage shell-stage" aria-label="情境对话">
+      <div class="path-stage-glow shell-stage-glow" aria-hidden="true"></div>
+      <h1>情境对话</h1>
+      <p class="lead">挑一个日常情境，跟着对话走几轮——感受共情、分龄语气与安全守护。</p>
+      <div class="path-stage-body">
+        <div class="scene-grid" id="sceneGrid"></div>
       </div>
-    </div>
-
-    <div class="scene-grid" id="sceneGrid"></div>
-
-    <div class="footer-actions">
-      <a class="btn btn-secondary" href="companions.html">返回角色</a>
-      <a class="btn btn-primary" href="chat.html">去自由聊天</a>
-    </div>
+      <div class="shell-hero-actions footer-actions">
+        <a class="btn btn-secondary btn-lg" href="companions.html">返回角色</a>
+        <a class="btn btn-primary btn-lg" href="chat.html">去自由聊天</a>
+      </div>
+    </section>
   </main>
 
   <script src="js/store.js"></script>

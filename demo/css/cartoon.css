@@ -63,6 +63,10 @@ html { scroll-behavior: smooth; }
   .shell-hero-glow,
   .welcome-stage,
   .welcome-stage-glow,
+  .path-stage,
+  .path-stage-glow,
+  .shell-stage,
+  .shell-stage-glow,
   .welcome-avatar.avatar {
     animation: none !important;
   }
@@ -331,13 +335,20 @@ input:focus-visible {
   border-radius: 18px;
 }
 
-/* Path welcome stage */
+/* Path / welcome product shell stage */
 .page-welcome {
   width: min(920px, calc(100% - 48px));
   padding-top: 28px;
 }
 
-.welcome-stage {
+.page-path {
+  width: min(920px, calc(100% - 48px));
+  padding-top: 28px;
+}
+
+.shell-stage,
+.welcome-stage,
+.path-stage {
   position: relative;
   isolation: isolate;
   display: flex;
@@ -354,7 +365,9 @@ input:focus-visible {
   animation: hero-rise 0.55s ease both;
 }
 
-.welcome-stage-glow {
+.shell-stage-glow,
+.welcome-stage-glow,
+.path-stage-glow {
   position: absolute;
   inset: -30% -20% auto;
   height: 120%;
@@ -403,7 +416,9 @@ input:focus-visible {
   font-size: 0.95rem;
 }
 
-.welcome-stage h1 {
+.shell-stage h1,
+.welcome-stage h1,
+.path-stage h1 {
   margin: 0 0 12px;
   font-family: var(--font-display);
   font-size: clamp(2.1rem, 4.5vw, 2.85rem);
@@ -411,7 +426,9 @@ input:focus-visible {
   letter-spacing: -0.02em;
 }
 
-.welcome-stage .lead {
+.shell-stage .lead,
+.welcome-stage .lead,
+.path-stage .lead {
   margin: 0 auto 18px;
   max-width: 34em;
   font-size: 1.08rem;
@@ -436,8 +453,53 @@ input:focus-visible {
   font-weight: 700;
 }
 
-.welcome-stage .shell-hero-actions {
+.shell-stage .shell-hero-actions,
+.welcome-stage .shell-hero-actions,
+.path-stage .shell-hero-actions {
   width: 100%;
+}
+
+.path-stage-body {
+  width: 100%;
+  text-align: left;
+  margin-top: 8px;
+}
+
+.path-stage-body .card {
+  margin-bottom: 16px;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.path-stage-body .card:last-child {
+  margin-bottom: 0;
+}
+
+.path-stage .footer-actions,
+.path-stage .shell-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 28px;
+  width: 100%;
+}
+
+.path-stage .companion-grid,
+.path-stage .scene-grid {
+  margin-top: 4px;
+}
+
+.path-stage-body .section-title {
+  margin: 20px 0 12px;
+  text-align: left;
+}
+
+.path-stage-body .safety-grid {
+  margin-bottom: 0;
+}
+
+.path-stage-body .history-item {
+  background: rgba(255, 255, 255, 0.92);
 }
 
 .welcome-next {
@@ -452,7 +514,9 @@ input:focus-visible {
   .hub-grid-welcome {
     grid-template-columns: 1fr;
   }
-  .welcome-stage {
+  .shell-stage,
+  .welcome-stage,
+  .path-stage {
     padding: 32px 18px 32px;
   }
 }

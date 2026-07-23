@@ -4,51 +4,50 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>设置 · 玖伴</title>
+  <link rel="icon" type="image/png" href="assets/brand/logo.png" />
   <link rel="stylesheet" href="css/cartoon.css" />
 </head>
 <body>
   <header class="site-header" data-demo-header></header>
 
-  <main class="page page-narrow">
-    <div class="page-head">
-      <div>
-        <h1>本地设置</h1>
-        <p class="lead" style="margin:0">只保留陪伴相关选项——没有模型列表、温度或接口配置。</p>
-      </div>
-      <span class="chip">无登录</span>
-    </div>
-
-    <section class="card stack">
-      <div>
-        <div class="choice-title">当前档案</div>
-        <p class="note" style="margin:8px 0 0" id="summary">—</p>
-      </div>
-
-      <div class="choice">
-        <button type="button" class="choice-item" data-mode="child">
-          <div class="choice-icon child" id="iconChild"></div>
+  <main class="page page-path">
+    <section class="path-stage shell-stage" aria-label="本地设置">
+      <div class="path-stage-glow shell-stage-glow" aria-hidden="true"></div>
+      <h1>本地设置</h1>
+      <p class="lead">只保留陪伴相关选项——没有模型列表、温度或接口配置。数据都在本机，无需登录。</p>
+      <div class="path-stage-body">
+        <section class="card stack">
           <div>
-            <div class="choice-title">儿童模式</div>
-            <div class="choice-desc">短句、更严守护</div>
+            <div class="choice-title">当前档案</div>
+            <p class="note" style="margin:8px 0 0" id="summary">—</p>
           </div>
-        </button>
-        <button type="button" class="choice-item adult-tone" data-mode="adult">
-          <div class="choice-icon adult" id="iconAdult"></div>
-          <div>
-            <div class="choice-title">成人模式</div>
-            <div class="choice-desc">可轻度倾诉，非恋爱</div>
-          </div>
-        </button>
-      </div>
 
-      <button type="button" class="btn btn-secondary btn-block" id="resetBtn">重置演示</button>
-      <p class="note" style="margin:0;text-align:left" id="resetHint">确认后恢复默认：儿童模式、空昵称、空喜好、小暖、无会话无记忆、无游戏纪录。</p>
+          <div class="choice">
+            <button type="button" class="choice-item" data-mode="child">
+              <div class="choice-icon child" id="iconChild"></div>
+              <div>
+                <div class="choice-title">儿童模式</div>
+                <div class="choice-desc">短句、更严守护</div>
+              </div>
+            </button>
+            <button type="button" class="choice-item adult-tone" data-mode="adult">
+              <div class="choice-icon adult" id="iconAdult"></div>
+              <div>
+                <div class="choice-title">成人模式</div>
+                <div class="choice-desc">可轻度倾诉，非恋爱</div>
+              </div>
+            </button>
+          </div>
+
+          <button type="button" class="btn btn-secondary btn-block" id="resetBtn">重置演示</button>
+          <p class="note" style="margin:0;text-align:left" id="resetHint">确认后恢复默认：儿童模式、空昵称、空喜好、小暖、无会话无记忆、无游戏纪录。</p>
+        </section>
+      </div>
+      <div class="shell-hero-actions footer-actions">
+        <a class="btn btn-secondary btn-lg" href="index.html">回首页</a>
+        <a class="btn btn-primary btn-lg" href="scenes.html">去场景</a>
+      </div>
     </section>
-
-    <div class="footer-actions">
-      <a class="btn btn-secondary" href="index.html">回首页</a>
-      <a class="btn btn-primary" href="scenes.html">去场景</a>
-    </div>
   </main>
 
   <script src="js/store.js"></script>
@@ -80,7 +79,7 @@
       if (!ok) return;
       DemoStore.resetDemo();
       refresh();
-      alert("已重置，刷新后仍保持干净状态");
+      alert("已清空并恢复默认。档案、记忆、会话与游戏纪录均已重置。");
     });
 
     refresh();

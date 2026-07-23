@@ -4,29 +4,31 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>会话历史 · 玖伴</title>
+  <link rel="icon" type="image/png" href="assets/brand/logo.png" />
   <link rel="stylesheet" href="css/cartoon.css" />
 </head>
 <body>
   <header class="site-header" data-demo-header></header>
 
-  <main class="page page-narrow">
-    <div class="page-head">
-      <div>
-        <h1>会话历史</h1>
-        <p class="lead" style="margin:0">在聊天页点「保存本段对话」后，会出现在这里，方便回看。</p>
+  <main class="page page-path">
+    <section class="path-stage shell-stage" aria-label="会话历史">
+      <div class="path-stage-glow shell-stage-glow" aria-hidden="true"></div>
+      <h1>会话历史</h1>
+      <p class="lead">在聊天页点「保存本段对话」后，会出现在这里，方便回看。</p>
+      <div class="path-stage-body">
+        <div class="stack" id="list"></div>
+        <p class="note" id="clearHint" hidden style="margin:12px 0 0;text-align:left;color:var(--color-secondary)" role="status" aria-live="polite"></p>
       </div>
-    </div>
-
-    <div class="stack" id="list"></div>
-
-    <div class="footer-actions">
-      <button type="button" class="btn btn-secondary" id="clearAll">清空历史</button>
-      <a class="btn btn-primary" href="chat.html">去聊天</a>
-    </div>
+      <div class="shell-hero-actions footer-actions">
+        <button type="button" class="btn btn-secondary btn-lg" id="clearAll">清空历史</button>
+        <a class="btn btn-primary btn-lg" href="chat.html">去聊天</a>
+      </div>
+    </section>
   </main>
 
   <script src="js/store.js"></script>
   <script>
+    let clearHintTimer = 0;
     function refresh() {
       const sessions = DemoStore.load().sessions || [];
       const list = document.getElementById("list");
@@ -53,8 +55,18 @@
       });
     }
     document.getElementById("clearAll").addEventListener("click", () => {
+      const ok = confirm("确定清空全部会话历史？此操作不可撤销。");
+      if (!ok) return;
       DemoStore.save({ sessions: [] });
       refresh();
+      const hint = document.getElementById("clearHint");
+      hint.hidden = false;
+      hint.textContent = "已清空会话历史";
+      clearTimeout(clearHintTimer);
+      clearHintTimer = setTimeout(() => {
+        hint.hidden = true;
+        hint.textContent = "";
+      }, 4000);
     });
     refresh();
   </script>
