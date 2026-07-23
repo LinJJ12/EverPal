@@ -1,0 +1,374 @@
+/* Kids games hub + boards — reuses cartoon.css variables */
+
+.games-hub-lead {
+  margin: 0 0 20px;
+  color: var(--color-muted);
+  max-width: 40rem;
+}
+
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.game-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px 18px 16px;
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
+  transition: transform var(--ease), border-color var(--ease);
+  min-height: 132px;
+}
+
+.game-card:hover,
+.game-card:focus-visible {
+  border-color: var(--color-secondary);
+  transform: translateY(-2px);
+  outline: none;
+}
+
+.game-card-kicker {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--color-secondary);
+  text-transform: none;
+}
+
+.game-card strong {
+  font-family: var(--font-display);
+  font-size: calc(1.25rem * var(--demo-font-scale));
+  color: var(--color-foreground);
+}
+
+.game-card span.blurb {
+  color: var(--color-muted);
+  font-size: calc(0.92rem * var(--demo-font-scale));
+  line-height: 1.4;
+  flex: 1;
+}
+
+.game-card .record {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  padding-top: 4px;
+  border-top: 1px dashed var(--color-border);
+}
+
+.game-card .record b {
+  color: var(--color-primary);
+  font-weight: 800;
+}
+
+/* ——— Play page chrome ——— */
+.game-page {
+  max-width: 720px;
+}
+
+.game-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 12px;
+  margin-bottom: 12px;
+}
+
+.game-toolbar h1 {
+  flex: 1 1 auto;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: calc(1.45rem * var(--demo-font-scale));
+  min-width: 0;
+}
+
+.game-scores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  background: var(--color-muted-bg);
+  border-radius: var(--radius-sm);
+  font-size: calc(0.98rem * var(--demo-font-scale));
+}
+
+.game-scores strong {
+  color: var(--color-primary);
+  font-weight: 800;
+}
+
+.game-board-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 0 auto 16px;
+  width: 100%;
+}
+
+.game-msg {
+  text-align: center;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  border-radius: var(--radius-sm);
+  background: #fff3e0;
+  border: 2px solid var(--color-accent);
+  font-weight: 700;
+  color: var(--color-foreground);
+}
+
+.game-msg.is-win {
+  background: #e6f8f4;
+  border-color: var(--color-secondary);
+}
+
+.game-msg.is-lose {
+  background: #ffe8e4;
+  border-color: var(--color-primary);
+}
+
+.game-hint {
+  margin: 0 0 12px;
+  color: var(--color-muted);
+  font-size: calc(0.9rem * var(--demo-font-scale));
+  text-align: center;
+}
+
+.game-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.game-controls .pad {
+  display: grid;
+  grid-template-columns: repeat(3, 64px);
+  grid-template-rows: repeat(3, 56px);
+  gap: 8px;
+  justify-content: center;
+}
+
+.game-controls .pad .btn,
+.game-controls > .btn,
+.mode-toggle .btn {
+  min-height: 48px;
+  min-width: 48px;
+  font-weight: 700;
+  touch-action: manipulation;
+}
+
+.game-controls .pad .ghost {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.mode-toggle {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.mode-toggle .btn.active {
+  background: var(--color-secondary);
+  color: #fff;
+  border-color: var(--color-secondary);
+}
+
+/* Canvas / board surfaces */
+.game-canvas {
+  display: block;
+  width: min(100%, 420px);
+  height: auto;
+  max-width: 100%;
+  border-radius: var(--radius-md);
+  border: 3px solid var(--color-border);
+  background: #fff;
+  touch-action: none;
+}
+
+.board-grid {
+  display: grid;
+  gap: 6px;
+  width: min(100%, 420px);
+  margin: 0 auto;
+  padding: 10px;
+  background: var(--color-muted-bg);
+  border-radius: var(--radius-md);
+  border: 3px solid var(--color-border);
+  touch-action: manipulation;
+}
+
+.board-grid button,
+.board-grid .cell {
+  aspect-ratio: 1;
+  border: none;
+  border-radius: 10px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(0.85rem, 4vw, 1.35rem);
+  background: var(--color-surface);
+  color: var(--color-foreground);
+  box-shadow: var(--shadow-press);
+  touch-action: manipulation;
+  min-height: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.board-grid button:active {
+  transform: scale(0.96);
+}
+
+/* 2048 tiles */
+.g2048 {
+  gap: 8px;
+  background: #bbada0;
+  border-color: #a89888;
+  touch-action: none;
+}
+
+.g2048 .cell {
+  background: #cdc1b4;
+  color: #776e65;
+  box-shadow: none;
+}
+
+.g2048 .t2 { background: #eee4da; }
+.g2048 .t4 { background: #ede0c8; }
+.g2048 .t8 { background: #f2b179; color: #f9f6f2; }
+.g2048 .t16 { background: #f59563; color: #f9f6f2; }
+.g2048 .t32 { background: #f67c5f; color: #f9f6f2; }
+.g2048 .t64 { background: #f65e3b; color: #f9f6f2; }
+.g2048 .t128,
+.g2048 .t256,
+.g2048 .t512,
+.g2048 .t1024,
+.g2048 .t2048 {
+  background: #edc22e;
+  color: #f9f6f2;
+  font-size: clamp(0.7rem, 3.2vw, 1.1rem);
+}
+
+/* Mines */
+.mines-grid .cell.covered {
+  background: var(--color-secondary);
+  color: #fff;
+}
+.mines-grid .cell.open { background: #fff; box-shadow: none; }
+.mines-grid .cell.flag { background: var(--color-accent); color: #2a3140; }
+.mines-grid .cell.mine { background: var(--color-primary); color: #fff; }
+.mines-grid .cell.n1 { color: #1f5f99; }
+.mines-grid .cell.n2 { color: #2bb3a3; }
+.mines-grid .cell.n3 { color: #e85d4c; }
+.mines-grid .cell.n4 { color: #7b5ea7; }
+
+/* Gomoku */
+.gomoku-wrap {
+  width: min(100%, 440px);
+  margin: 0 auto;
+}
+.gomoku-wrap canvas {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: var(--radius-md);
+  border: 3px solid var(--color-border);
+  background: #f0d9a8;
+  touch-action: manipulation;
+}
+
+/* Tetris */
+.tetris-layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+}
+.tetris-layout canvas {
+  width: min(100%, 280px);
+  height: auto;
+  border-radius: var(--radius-md);
+  border: 3px solid var(--color-border);
+  background: #2a3140;
+}
+
+/* Puzzle */
+.puzzle-grid .cell.empty {
+  background: transparent;
+  box-shadow: none;
+  cursor: default;
+}
+.puzzle-grid .cell {
+  background: var(--color-child);
+  color: #fff;
+  font-size: clamp(1.1rem, 5vw, 1.6rem);
+}
+
+/* Match3 */
+.match3-grid {
+  width: min(100%, 380px);
+  gap: 5px;
+}
+.match3-grid .cell {
+  border-radius: 12px;
+  font-size: clamp(1rem, 4.5vw, 1.35rem);
+  min-height: 40px;
+}
+.match3-grid .cell.selected {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 1px;
+}
+.match3-grid .c0 { background: #ff8fab; }
+.match3-grid .c1 { background: #2bb3a3; color: #fff; }
+.match3-grid .c2 { background: #f0b429; }
+.match3-grid .c3 { background: #4f9fd8; color: #fff; }
+.match3-grid .c4 { background: #e85d4c; color: #fff; }
+
+@media (max-width: 480px) {
+  .game-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .game-toolbar h1 {
+    text-align: center;
+    order: -1;
+  }
+  .game-controls .pad {
+    grid-template-columns: repeat(3, minmax(56px, 1fr));
+    width: 100%;
+    max-width: 240px;
+    margin: 0 auto;
+  }
+  .mines-grid,
+  .match3-grid,
+  .g2048 {
+    width: 100%;
+    max-width: none;
+  }
+  .gomoku-wrap {
+    width: 100%;
+  }
+  .board-grid {
+    gap: 4px;
+    padding: 8px;
+  }
+  .match3-grid .cell {
+    min-height: 36px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .game-card:hover {
+    transform: none;
+  }
+}

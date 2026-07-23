@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>消消乐 · 玖伴</title>
+  <link rel="stylesheet" href="cartoon.css" />
+  <link rel="stylesheet" href="games.css" />
+</head>
+<body>
+  <main class="page game-page">
+    <div class="game-toolbar">
+      <a class="btn btn-secondary" href="/games">回大厅</a>
+      <h1>消消乐</h1>
+      <button type="button" class="btn btn-primary" id="restartBtn">再来一局</button>
+    </div>
+    <div class="game-scores">
+      <span>本局：<strong id="scoreNow">0</strong></span>
+      <span>纪录：<strong id="scoreBest">0</strong></span>
+    </div>
+    <p class="game-hint">点两格相邻的颜色交换，三个及以上连成一线就消除</p>
+    <div id="gameMsg" class="game-msg" hidden></div>
+    <div class="game-board-wrap">
+      <div id="board" class="board-grid match3-grid" style="grid-template-columns:repeat(7,1fr)" aria-label="消消乐棋盘"></div>
+    </div>
+  </main>
+  <script src="store.js"></script>
+  <script src="games-common.js"></script>
+  <script src="js/match3.js"></script>
+</body>
+</html>

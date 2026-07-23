@@ -1,0 +1,26 @@
+# Frontend
+
+Vue 3 + Vite + TypeScript + Vue Router + Pinia.
+
+- UI: ported from `demo/` product shell (`themes/cartoon/cartoon.css`)
+- Chat: `POST /v1/chat/stream` SSE via `src/api/`
+- Games: hub at `/games`; boards under `public/games/*.html`
+
+Backend uses Conda env **`chatbot`** — see `docs/dev-setup.md`.
+
+## Run
+
+```powershell
+# terminal 1
+conda activate chatbot
+cd backend
+python main.py
+
+# terminal 2
+cd frontend
+copy .env.example .env
+npm install
+npm run dev
+```
+
+Open http://localhost:5173 . Only `VITE_API_BASE_URL` in frontend `.env` (no LLM keys).

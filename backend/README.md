@@ -2,15 +2,16 @@
 
 陪伴 BFF：人设 + 分龄 + 词库安全 + OpenAI 兼容流式。目录约定见仓库 [`docs/directory-structure.md`](../docs/directory-structure.md)。
 
+> **虚拟环境约定**：本项目 Python 后端统一使用 Conda 环境 **`chatbot`**。完整说明见 [`docs/dev-setup.md`](../docs/dev-setup.md)。
+
 ## 快速开始
 
 ```powershell
+conda activate chatbot
 cd backend
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
 pip install -e ".[dev]"
 copy .env.example .env
-# 编辑 .env：填入 LLM_API_KEY（可先留空，安全拦截与 mock 流仍可测）
+# 编辑 .env：填入 LLM_API_KEY（可先留空做安全拦截等非 LLM 测试）
 python main.py
 ```
 
@@ -56,10 +57,18 @@ python main.py
 }
 ```
 
-## �ֲ������
+## 分层与规则
 
-- �ֲ㣺`src/README.md`
-- Ӳ����`docs/guide/rules.md`
-- ��ȫ��ƣ�`resource/logs/safety_audit.jsonl`������ʱ���ɣ�
-- ��վ�����ڻ� gated ��ʽ��`OUTPUT_FLUSH_CHARS`��Ĭ�� 48��
+- 分层：`src/README.md`
+- 硬规则：`docs/guide/rules.md`
+- 安全审计：`resource/logs/safety_audit.jsonl`（运行时生成）
+- 出站：窗口化 gated 流式（`OUTPUT_FLUSH_CHARS`，默认 48）
 
+依赖清单：`pyproject.toml`（`pip install -e ".[dev]"`）。不强制维护 `requirements.txt`。
+
+联调冒烟（需已 `python main.py`）：
+
+```powershell
+conda activate chatbot
+python scripts/e2e_smoke.py
+```

@@ -82,6 +82,8 @@ VITE_API_BASE_URL=http://localhost:8000
 
 根 `.gitignore` 已忽略 `.env` / `.env.*` 并放行 `!.env.example`。Docker 用 `env_file: backend/.env`，勿把 Key 写进已提交的 compose。
 
+**Python 虚拟环境**：本仓库后端统一用 Conda 环境名 **`chatbot`**（勿默认再建 `backend/.venv`）。步骤见 [`docs/dev-setup.md`](./dev-setup.md)。
+
 ---
 
 ## 2. 分层心智（先懂再找文件）
@@ -165,12 +167,14 @@ frontend/
 ├── .env.example
 ├── .env                          # gitignore
 ├── index.html
-├── public/brand/logo.png
-├── README.md                     # 工程怎么起（脚手架时写）
+├── public/
+│   ├── brand/logo.png
+│   └── games/                    # 七款本地小游戏静态页（由 /games 大厅进入）
+├── README.md                     # 工程怎么起
 ├── src/
-│   ├── README.md                 # 前端分层入口（脚手架时写）
+│   ├── README.md                 # 前端分层入口
 │   ├── main.ts
-│   ├── App.vue | App.tsx         # 根壳：顶栏；无模型配置入口
+│   ├── App.vue                   # 根壳：顶栏；无模型配置入口
 │   ├── router/
 │   ├── api/                      # 【关键】唯一 HTTP
 │   │   ├── http.ts               # baseURL、错误 → 人话
@@ -178,31 +182,30 @@ frontend/
 │   │   ├── companions.ts
 │   │   ├── sessions.ts
 │   │   └── profile.ts
-│   ├── views/                    # 一界面一目录（对齐 OmniStream；勿与 api 同名混淆）
-│   │   ├── home/                 # 品牌首页                         UI-01
+│   ├── views/                    # 一界面一目录
+│   │   ├── home/                 # 品牌首页（shell-hero）           UI-01
 │   │   ├── welcome/              # 欢迎 / 回访                      CMP-01
 │   │   ├── mode/                 # 儿童 / 成人                      PER-02
 │   │   ├── profile/              # 昵称 + 喜好                      MEM-01/02
 │   │   ├── companions/           # ≥3 官方角色；无恋爱               PER-01, CMP-07
-│   │   ├── scenes/               # 场景入口 → chat 深链              P1
-│   │   ├── chat/                 # 流式聊 / 停止 / 话题卡            CMP-02~05
+│   │   ├── scenes/               # 场景入口 → chat seed             P1
+│   │   ├── chat/                 # 流式聊 / 停止 / 话题卡 / 侧栏     CMP-02~05
 │   │   ├── history/              # 本机会话                         UI-02
 │   │   ├── memory/               # 记忆查看 / 清除                  MEM-03
-│   │   └── settings/             # 本地设置；无 API Key UI           UI-04
-│   ├── composables/              # 交互逻辑；页级命名 useXxxPage（与 views/<name> 对应）
+│   │   ├── settings/             # 本地设置；无 API Key UI           UI-04
+│   │   ├── games/                # 益智游戏大厅
+│   │   └── safety/               # 安全边界示例入口
+│   ├── composables/
 │   │   ├── useChatPage.ts
-│   │   ├── useChatStream.ts      # 流式消费（多页复用可平铺于此）
-│   │   └── …
+│   │   └── useChatStream.ts
 │   ├── components/
-│   │   ├── layout/
-│   │   ├── chat/                 # Bubble、Composer、Stop、TopicCards
-│   │   ├── companion/
-│   │   ├── memory/
-│   │   └── ui/
-│   ├── stores/                   # 模式、当前角色、档案缓存等
-│   ├── themes/cartoon/           # tokens.css；二期再加 neutral/
+│   │   ├── layout/               # AppHeader（NAV_PRIMARY + 更多）
+│   │   ├── chat/                 # Bubble、Composer、TopicCards
+│   │   └── companions/           # CompanionAvatar
+│   ├── stores/
+│   ├── themes/cartoon/           # cartoon.css + games.css（自 demo 迁入）
 │   ├── types/
-│   └── utils/                    # 无业务语义工具
+│   └── utils/                    # avatars、clientId、errors 等
 └── tests/
 ```
 
@@ -224,7 +227,7 @@ frontend/
 1. 无 `LLM_*` / `OPENAI_API_KEY` 进入前端环境变量。  
 2. 词库拦截、提示词组装、温和拒答主逻辑在后端。  
 3. 产品 UI 无 Tour / PRD 版本 /「不接真实大模型」。  
-4. 益智游戏一期可留 `demo/games/`；迁正式 App 时加 `views/games/`，不塞进 `views/chat`。
+4. 益智游戏：大厅在 `views/games/`；具体对局静态页在 `public/games/`（自 demo 迁入）。`demo/games/` 仍作对照。
 
 ---
 

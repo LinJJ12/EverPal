@@ -1,0 +1,8 @@
+{
+  "id": "frontend-demo-ui-port",
+  "name": "frontend-demo-ui-port",
+  "title": "将 demo 产品壳 UI 迁入 frontend",
+  "status": "completed",
+  "priority": "P1",
+  "createdAt": "2026-07-23"
+}

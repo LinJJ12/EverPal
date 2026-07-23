@@ -4,19 +4,29 @@
 
 面向小孩（小学生为主）与普通人的 AI 陪伴助手：温暖、零配置、卡通 Web。一期不做登录、不做恋爱角色；安全靠提示词 + 规则词库。
 
-## 快速打开 Demo
+## 快速体验
 
-用浏览器打开：
+**正式联调（推荐）**：Conda 环境 `chatbot` + `frontend` / `backend`，见 [`docs/dev-setup.md`](docs/dev-setup.md)。
 
-```text
-demo/index.html
+**Demo 对照（不接真模型）**：浏览器打开 `demo/index.html`。
+
+## 本地联调（摘要）
+
+Python 后端统一使用 Conda 环境 **`chatbot`**，完整步骤见 [`docs/dev-setup.md`](docs/dev-setup.md)。
+
+```powershell
+# 终端 1
+conda activate chatbot
+cd backend
+pip install -e ".[dev]"
+python main.py
+
+# 终端 2
+cd frontend
+npm run dev
 ```
 
-纯 HTML **产品壳**演示，**不接真实大模型**（技术说明仅见于仓库文档，不出现在产品 UI）。
-
-建议路径：首页 → 欢迎 → 模式 → 档案 / 角色 → 场景或聊天；顶栏也可直达游戏大厅。设置页可「重置演示」。
-
-聊天页为固定视口高度、消息区内滚动；自由聊为本地规则回复（非真模型），话题卡应得到差异化回应。
+打开 http://localhost:5173 ：产品壳视觉已迁入 Vue；聊天走真实 BFF 流式。
 
 ## 仓库导航
 
@@ -25,16 +35,17 @@ demo/index.html
 | [`docs/PRD.md`](docs/PRD.md) | 产品需求（v0.4） |
 | [`docs/diagrams.md`](docs/diagrams.md) | 流程 / 架构图 |
 | [`docs/directory-structure.md`](docs/directory-structure.md) | **`frontend/` · `backend/` 目录与文件约定**（按 PRD） |
-| [`demo/`](demo/) | 界面 Demo（HTML 产品壳对照） |
+| [`docs/dev-setup.md`](docs/dev-setup.md) | **本地开发 / Conda `chatbot` / Git 提交边界** |
+| [`demo/`](demo/) | HTML 产品壳对照（本地启发式，不接真模型） |
 | [`demo/assets/brand/`](demo/assets/brand/) | 品牌图标（玖伴） |
-| [`frontend/`](frontend/) | 正式 Web 前端（规划中，见目录约定） |
-| [`backend/`](backend/) | 陪伴 BFF（规划中，见目录约定） |
+| [`frontend/`](frontend/) | 正式 Web（Vue；UI 对齐 demo；接 BFF 流式 + 游戏大厅） |
+| [`backend/`](backend/) | 陪伴 BFF（FastAPI：健康检查 / 档案 / 会话 / 流式聊天） |
 | [`.trellis/`](.trellis/) | Trellis 规格与工作流 |
 | [`vendor/`](vendor/) | 第三方参考（本地，勿当产品运行时） |
 
 ## 当前阶段
 
-**`demo/`** 产品壳对照仍在；**`backend/`** 已脚手架（健康检查 / 角色 / 流式聊天+词库+OpenAI 兼容）。下一步：`frontend/` 接 BFF，或给 `backend/.env` 填入真实 Key 联调。用户侧始终零配置。
+**`frontend/` + `backend/`** 可本地联调（Conda：`chatbot`）。正式前端已迁入 demo 产品壳布局；聊天接真实 LLM（Key 仅 `backend/.env`）。`demo/` 仍作无后端对照体验。
 
 ## 许可与贡献
 

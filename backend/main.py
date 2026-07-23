@@ -1,8 +1,9 @@
 """玖伴 backend 入口。
 
-在 backend/ 目录：
-  python -m venv .venv
-  .venv\\Scripts\\activate   # Windows
+约定：使用 Conda 环境 chatbot（见 docs/dev-setup.md）。
+
+  conda activate chatbot
+  cd backend
   pip install -e ".[dev]"
   copy .env.example .env    # 填入 LLM_API_KEY（可选）
   python main.py
