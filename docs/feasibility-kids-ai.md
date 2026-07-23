@@ -114,7 +114,7 @@ kids-ai 是一个**日本家庭自用、儿童向、MIT、可跑通**的陪伴�
 | 路径 | 预估 | 说明 |
 |------|------|------|
 | **Fork kids-ai → 对齐 PRD** | **5–8 周** | 中文化 + 换模型 + 拆掉发明/讲解 + 重做 UI + 加成人模式/多角色；期间还在与单体 HTML 搏斗 |
-| **自建 + 移植 2 个核心库** | **4–6 周**（与原计划一致） | 按 `diagrams.md` 建 web/server；`safety_gate`/`memory` 改编为中文模块 |
+| **自建 + 移植 2 个核心库** | **4–6 周**（与原计划一致） | 按 `docs/directory-structure.md` 建 `frontend/` + `backend/`；`safety_gate`/`memory` 改编为中文模块 |
 | **仅参考文档不搬代码** | 计划不变 | 提示词与词库自己写，质量取决于投入 |
 
 → **时间上 fork 并不更快，干净度更差。**
@@ -129,10 +129,10 @@ kids-ai 是一个**日本家庭自用、儿童向、MIT、可跑通**的陪伴�
 
 ### 阶段 1（建议下一步）
 
-1. **自建** `server/` + `web/`（或 monorepo），OpenAI 兼容流式聊天。  
+1. **自建** `backend/` + `frontend/`（见 `docs/directory-structure.md`），OpenAI 兼容流式聊天。  
 2. **移植改编**：
-   - `vendor/kids-ai/lib/safety_gate.py` → `server/.../safety.py`（词库改简体中文 + 儿童/成人 scope）  
-   - `vendor/kids-ai/lib/memory.py` → `server/.../memory.py`  
+   - `vendor/kids-ai/lib/safety_gate.py` → `backend/.../safety.py`（词库改简体中文 + 儿童/成人 scope）  
+   - `vendor/kids-ai/lib/memory.py` → `backend/.../memory.py`  
 3. **重写** 中文儿童/成人 system prompt（结构抄 `chat-kids-v1.md`，内容按 PRD）。  
 4. **前端新建** 卡通皮肤 + 多角色 + 话题卡（不要改那份 7k HTML）。
 
@@ -178,4 +178,4 @@ flowchart LR
 | 能不能当主仓库改？ | **能，但不值** |
 | 下一步最合理动作？ | **自建骨架 + 移植 safety/memory（MIT 注明来源）** |
 
-若你确认走「推荐路径」，下一步可直接：初始化项目骨架，并把 `safety_gate` / `memory` 改编进 `server/`。
+若你确认走「推荐路径」，下一步可直接：按 `docs/directory-structure.md` 初始化骨架，并把 `safety_gate` / `memory` 改编进 `backend/`。

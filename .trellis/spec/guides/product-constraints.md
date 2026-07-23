@@ -22,8 +22,9 @@
 - Light memory (nickname, preferences)
 - Safety = prompt rules + lexicon
 - Server-managed LLM (OpenAI-compatible)
-- Ship UX via HTML `demo/` **product shell** for now (no separate SPA framework in this phase)
+- UX reference ships as HTML `demo/` **product shell**; formal app roots are **`frontend/`** + **`backend/`** (see `docs/directory-structure.md`)
 - Demo UI must read as a companion product, not an internal PRD/Tour presenter pack
+- Do not put LLM API keys in `frontend/`; lexicon and prompt assembly live in `backend/`
 
 ## Phase-1 must not
 
@@ -41,6 +42,7 @@
 |-----|-----|
 | `docs/PRD.md` | Requirements |
 | `docs/diagrams.md` | Flows / architecture |
+| `docs/directory-structure.md` | `frontend/` + `backend/` folder & file contracts |
 | `demo/README.md` | How to run the HTML demo |
 | `docs/feasibility-kids-ai.md` | What to copy vs discard from kids-ai |
 | `docs/research-companions.md` | Landscape |

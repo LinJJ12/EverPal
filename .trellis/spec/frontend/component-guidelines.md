@@ -10,7 +10,7 @@
 ## Example shape (planned)
 
 ```tsx
-// web/src/components/chat/TopicCards.tsx
+// frontend/src/components/chat/TopicCards.tsx
 export interface TopicCardsProps {
   topics: { id: string; label: string }[];
   onSelect: (id: string) => void;

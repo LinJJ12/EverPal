@@ -240,49 +240,45 @@ sequenceDiagram
 
 ### 3.3 推荐仓库目录结构（落地参考）
 
+> **完整文件级约定（含 PRD 对照、放置规则）**：见 [`docs/directory-structure.md`](./directory-structure.md)。  
+> 正式目录名为 **`frontend/`**、**`backend/`**（不再使用计划旧称 `web/`、`server/`）。
+
 ```mermaid
 flowchart TB
     ROOT[chatbot/]
-    ROOT --> DOCS[docs/<br/>PRD · 本图文档]
-    ROOT --> DEMO[demo/<br/>当前 HTML 原型]
-    ROOT --> SERVER[server/<br/>BFF 计划中]
+    ROOT --> DOCS[docs/<br/>PRD · 目录约定 · 本图]
+    ROOT --> DEMO[demo/<br/>HTML 产品壳对照]
+    ROOT --> FE[frontend/<br/>正式 Web UI]
+    ROOT --> BE[backend/<br/>陪伴 BFF]
 
     DEMO --> D1[pages · store.js · cartoon.css]
     DEMO --> D2[assets/brand 玖伴图标]
 
-    SERVER --> S1[routes/chat · sessions · companions]
-    SERVER --> S2[services/persona · memory · safety · llm]
-    SERVER --> S3[data/lexicon.json]
-    SERVER --> S4[prompts]
-    SERVER --> S5[store/sqlite]
+    FE --> F1[views · composables · themes/cartoon]
+    FE --> F2[api 唯一 HTTP · stores]
+
+    BE --> S1[api/chat · sessions · companions · profile]
+    BE --> S2[services/chat 编排]
+    BE --> S3[capabilities/persona · memory · safety · llm]
+    BE --> S4[prompts · data/lexicon · storage · config]
 ```
 
-**文字版目录（便于复制）：**
+**文字版目录（摘要；细目见 directory-structure.md）：**
 
 ```text
 chatbot/
 ├── README.md
 ├── docs/
-│   ├── PRD.md               ← 玖伴需求 v0.4
-│   └── diagrams.md          ← 本文件
-├── demo/                    ← 当前可演示 HTML（本阶段唯一前端）
-│   ├── index.html
-│   ├── assets/brand/        # logo.png
-│   ├── css/cartoon.css
-│   └── js/store.js
-├── server/                  ← 计划：陪伴 BFF
-│   ├── src/
-│   │   ├── routes/          # chat / sessions / companions
-│   │   ├── services/
-│   │   │   ├── persona.ts   # 人设 + 儿童/成人模式
-│   │   │   ├── memory.ts    # 轻量记忆
-│   │   │   ├── safety.ts    # 提示词约束 + 词库
-│   │   │   └── llm.ts       # OpenAI 兼容流式代理
-│   │   ├── prompts/         # 分龄 / 分角色系统提示
-│   │   ├── data/lexicon/    # 规则词库
-│   │   └── store/           # SQLite 等
-│   └── package.json
-└── docker-compose.yml       # 运营侧部署（用户无感）
+│   ├── PRD.md
+│   ├── diagrams.md              ← 本文件
+│   └── directory-structure.md   ← frontend/backend 文件级约定
+├── demo/                        ← HTML 产品壳对照（不接真模型）
+├── frontend/                    ← 正式前端（接 BFF；views + api 垂直对齐）
+│   └── src/{views,api,composables,components,stores,themes…}
+├── backend/                     ← 陪伴 BFF（api → services/chat → capabilities）
+│   └── src/{api,services,capabilities,prompts,storage,config…}
+├── vendor/                      ← 参考源码，非运行时
+└── docker-compose.yml           ← 可选本地起 backend（用户无感）
 ```
 
 ### 3.4 数据关系（概念）
@@ -349,7 +345,7 @@ flowchart TB
 |----|------|
 | §1 流程图 | 产品/研发对齐「用户怎么走、消息怎么过安全」 |
 | §2 思维导图 | 范围边界、模块拆分、防范围膨胀 |
-| §3 架构图 | 前后端边界、目录落地、数据关系 |
+| §3 架构图 | 前后端边界、目录落地、数据关系（文件级约定见 `directory-structure.md`） |
 | §4 信息架构 | 页面有哪些、没有哪些 |
 
 如需导出 PNG/SVG，可用 Mermaid CLI 或 IDE 插件对上述代码块导出。

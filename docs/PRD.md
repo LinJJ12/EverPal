@@ -368,28 +368,28 @@
 | 4 | 品牌与皮肤 | 规划**两套皮肤**；**目前先做卡通**；产品名暂定 **玖伴**（寓意：九久相伴，永远有人回应） | 卡通 → 一期；中性皮肤 → 二期；定名可再迭代 |
 | 5 | 分发渠道 | **先做 Web** | 小程序/App → 三期 |
 | 6 | 内容安全 | 一期 = **提示词约束 + 规则词库** | 第三方审核 API → 二期可选 |
-| 7 | 界面原型 | 一期先用 **纯 HTML Demo**（`demo/`）对齐 PRD 并持续打磨 | Demo → 当前阶段 |
+| 7 | 界面原型 | 一期先用 **纯 HTML Demo**（`demo/`）对齐体验；正式交付目录为 **`frontend/` + `backend/`**（见 `docs/directory-structure.md`） | Demo 对照 → 正式前后端 |
 
 ---
 
 ## 15. 界面 Demo（对照本 PRD）
 
-本地打开 **`demo/index.html`**（建议讲解 8–12 分钟）。不接真实大模型，用剧本与模拟流式演示。
+本地打开 **`demo/index.html`**。当前为 **产品壳** 对照（非讲解 Tour）：不接真实大模型，用剧本与模拟流式演示体验。正式交付见 `frontend/` + `backend/`（[`directory-structure.md`](./directory-structure.md)）。
 
 | 页面 | 用途 |
 |------|------|
-| `index.html` | 原则导览 + 推荐演示顺序 |
+| `index.html` | 品牌首页（全幅首屏）+ 能力与入口 |
 | `welcome.html` | 欢迎 / 回访招呼 |
 | `mode.html` | 儿童 / 成人模式 |
-| `nickname.html` | 昵称 + 喜好（轻量记忆） |
+| `nickname.html` | 昵称 + 喜好（轻量记忆；正式前端对应 `views/profile`） |
 | `companions.html` | 官方角色（小暖 / 跳跳 / 阿茶） |
 | `scenes.html` + `chat.html?scene=` | 六大核心场景逐步播放 |
 | `chat.html` | 自由聊、流式、停止、重说、保存 |
 | `memory.html` / `history.html` | 记忆面板 / 会话历史 |
-| `safety-demo.html` | 词库拦截可交互试玩 |
+| `safety-demo.html` | 词库拦截可交互试玩（对照用；正式安全主逻辑在 backend） |
 | `settings.html` | 本地设置（无模型配置） |
 
-品牌资源：`demo/assets/brand/logo.png`（透明底图标）。
+品牌资源：`demo/assets/brand/logo.png`（透明底图标）。产品 UI **不出现** PRD 版本、讲解时长、Tour 步进或「不接真实大模型」等元信息。
 
 ---
 
@@ -416,3 +416,5 @@
 | v0.2 | 2026-07-22 | — | 转向：小孩与普通人、主打陪伴；重写用户、场景、安全与 MVP 优先级 |
 | v0.3 | 2026-07-22 | — | 锁定开放问题：小学生可、无登录、可树洞不做恋爱、先卡通 Web、提示词+词库安全 |
 | v0.4 | 2026-07-22 | — | 产品名暂定玖伴；补充 HTML Demo 页面索引；明确当前阶段以 Demo 为主 |
+| v0.4.1 | 2026-07-23 | — | 正式目录约定为 `frontend/` + `backend/`；详见 `docs/directory-structure.md` |
+| v0.4.2 | 2026-07-23 | — | §15 Demo 改为产品壳表述；去掉讲解时长 / 导览口吻 |

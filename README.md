@@ -24,14 +24,17 @@ demo/index.html
 |------|------|
 | [`docs/PRD.md`](docs/PRD.md) | 产品需求（v0.4） |
 | [`docs/diagrams.md`](docs/diagrams.md) | 流程 / 架构图 |
-| [`demo/`](demo/) | 界面 Demo（当前可演示的产品壳） |
+| [`docs/directory-structure.md`](docs/directory-structure.md) | **`frontend/` · `backend/` 目录与文件约定**（按 PRD） |
+| [`demo/`](demo/) | 界面 Demo（HTML 产品壳对照） |
 | [`demo/assets/brand/`](demo/assets/brand/) | 品牌图标（玖伴） |
+| [`frontend/`](frontend/) | 正式 Web 前端（规划中，见目录约定） |
+| [`backend/`](backend/) | 陪伴 BFF（规划中，见目录约定） |
 | [`.trellis/`](.trellis/) | Trellis 规格与工作流 |
 | [`vendor/`](vendor/) | 第三方参考（本地，勿当产品运行时） |
 
 ## 当前阶段
 
-持续完善 **`demo/` HTML 产品壳**，对齐 PRD 体验，直到满意。后端 BFF + 真实大模型接入另开阶段；用户侧始终零配置。
+**`demo/`** 产品壳体验已对齐一轮；下一阶段按 [`docs/directory-structure.md`](docs/directory-structure.md) 落地 **`backend/`（接 LLM）** 与 **`frontend/`（接 BFF）**。用户侧始终零配置、不暴露模型 Key。
 
 ## 许可与贡献
 

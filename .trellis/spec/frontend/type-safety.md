@@ -3,14 +3,15 @@
 ## Conventions
 
 - TypeScript strict mode when scaffolding
-- Shared DTO types either duplicated thinly or imported from a shared package later — MVP may keep `web/src/types/chat.ts`
+- Shared DTO types either duplicated thinly or imported from a shared package later — MVP may keep `frontend/src/types/chat.ts`
+
 - Mode union: `type UserMode = 'child' | 'adult'`
 - Roles: `type MessageRole = 'user' | 'assistant' | 'system'` (system not shown as bubble)
 
 ## Example
 
 ```ts
-// web/src/types/chat.ts
+// frontend/src/types/chat.ts
 export type UserMode = 'child' | 'adult';
 
 export interface Companion {
