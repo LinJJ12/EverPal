@@ -135,6 +135,10 @@ function toggleSpeakAt(index: number) {
   if (!canSpeakMessage(index)) return;
   const text = messages.value[index]?.content?.trim();
   if (!text) return;
+  // Stop previous without clearing index via speaking-watch race: set index after speak starts.
+  if (speaking.value) {
+    stopSpeak();
+  }
   speakingIndex.value = index;
   speak(text, companion.value?.id || store.companionId || "nuan");
 }
@@ -261,7 +265,12 @@ watch(streaming, (busy) => {
 });
 
 watch(speaking, (on) => {
-  if (!on) speakingIndex.value = null;
+  if (on) return;
+  // speak() briefly sets speaking=false during cancel when switching bubbles;
+  // defer so the new speak() can set speaking=true before we clear the index.
+  queueMicrotask(() => {
+    if (!speaking.value) speakingIndex.value = null;
+  });
 });
 
 // History list → /chat?session= while ChatView may already be mounted
