@@ -305,3 +305,36 @@
 ### Next Steps
 
 - None - task complete
+
+
+## Session 10: 语音交互：点按说话与气泡朗读
+
+**Date**: 2026-07-24
+**Task**: 语音交互：点按说话与气泡朗读
+**Branch**: `feature/voice-ux-bubble`
+
+### Summary
+
+点我说话/说完了；每条助手回复下朗读这条；去掉顶栏全局朗读。
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `HEAD` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
