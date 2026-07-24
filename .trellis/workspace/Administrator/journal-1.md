@@ -105,3 +105,37 @@
 ### Next Steps
 
 - None - task complete
+
+
+## Session 4: 会话边界行为 bug 收口
+
+**Date**: 2026-07-24
+**Task**: 会话边界行为 bug 收口
+**Branch**: `main`
+
+### Summary
+
+修复 regen 重复 user、历史回看恢复人设/模式、seed 新开会话、自伤走查词对齐、场景保存失败不跳转；写入 frontend/backend 相关约定；归档 session-boundary-bugs 与遗留的 frontend-demo-ui-port。
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `17abacd` | (see git log) |
+| `e0f996b` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
