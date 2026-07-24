@@ -20,7 +20,7 @@ async def gated_llm_deltas(
     token_iter: AsyncIterator[str],
     *,
     mode: Mode | str,
-    flush_chars: int = 48,
+    flush_chars: int = 16,
 ) -> AsyncIterator[tuple[str, str | SafeStreamResult]]:
     """Windowed output gate: flush only lexicon-safe prefixes to the client.
 
@@ -30,13 +30,15 @@ async def gated_llm_deltas(
     released = ""
     pending = ""
     mode_e = Mode(mode) if not isinstance(mode, Mode) else mode
+    # Prefer snappy first paint; still batch a little for the output lexicon window.
+    flush_at = max(8, flush_chars)
 
     def try_flush(force: bool = False) -> tuple[str | None, SafeStreamResult | None]:
         nonlocal released, pending
         if not pending:
             return None, None
-        should = force or len(pending) >= flush_chars or (
-            len(pending) >= 8 and pending[-1] in _FLUSH_PUNCT
+        should = force or len(pending) >= flush_at or (
+            len(pending) >= 4 and pending[-1] in _FLUSH_PUNCT
         )
         if not should:
             return None, None
@@ -44,12 +46,12 @@ async def gated_llm_deltas(
         if force:
             cut = len(pending)
         else:
-            cut = min(len(pending), flush_chars)
+            cut = min(len(pending), flush_at)
             punct_at = -1
-            for i, ch in enumerate(pending[:flush_chars]):
+            for i, ch in enumerate(pending[:flush_at]):
                 if ch in _FLUSH_PUNCT:
                     punct_at = i + 1
-            if punct_at >= 8:
+            if punct_at >= 4:
                 cut = punct_at
 
         chunk = pending[:cut]

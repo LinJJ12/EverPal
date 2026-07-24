@@ -5,6 +5,7 @@ import { storeToRefs } from "pinia";
 import { useProfileStore } from "@/stores/profile";
 import CompanionAvatar from "@/components/companions/CompanionAvatar.vue";
 import { COMPANION_SAMPLES } from "@/utils/avatars";
+import { setActiveSessionId, getSessionForCompanion, setSessionForCompanion } from "@/utils/activeSession";
 
 const store = useProfileStore();
 const { companions, companionId, nickname, likeLabels } = storeToRefs(store);
@@ -22,8 +23,26 @@ function opener(id: string, name: string) {
 }
 
 async function pick(id: string) {
+  if (id === companionId.value) return;
   try {
     await store.save({ companion_id: id });
+    // Point active session at this companion's last thread (if known)
+    let sid = getSessionForCompanion(id);
+    if (!sid) {
+      try {
+        const { listSessions } = await import("@/api/sessions");
+        const res = await listSessions();
+        const hit = (res.sessions || []).find((s) => s.companion_id === id);
+        if (hit?.id) {
+          sid = hit.id;
+          setSessionForCompanion(id, sid);
+        }
+      } catch {
+        /* ignore */
+      }
+    }
+    store.sessionId = sid;
+    setActiveSessionId(sid);
   } catch (e) {
     alert(e instanceof Error ? e.message : "保存失败，请确认后端已启动");
   }

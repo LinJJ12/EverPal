@@ -1,10 +1,11 @@
 import { defineStore } from "pinia";
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import type { Companion, Mode, Profile } from "@/types";
 import { fetchCompanions } from "@/api/companions";
 import { fetchProfile, patchProfile } from "@/api/profile";
 import { ApiError } from "@/api/http";
 import { LIKE_OPTIONS } from "@/types";
+import { getActiveSessionId, setActiveSessionId } from "@/utils/activeSession";
 
 export const useProfileStore = defineStore("profile", () => {
   const nickname = ref("");
@@ -13,10 +14,18 @@ export const useProfileStore = defineStore("profile", () => {
   const likes = ref<string[]>([]);
   const memories = ref<Profile["memories"]>([]);
   const companions = ref<Companion[]>([]);
-  const sessionId = ref<string | null>(null);
+  const sessionId = ref<string | null>(getActiveSessionId());
   const ready = ref(false);
   /** True when first hydrate failed because the backend was unreachable. */
   const backendUnreachable = ref(false);
+
+  watch(
+    sessionId,
+    (id) => {
+      setActiveSessionId(id);
+    },
+    { flush: "sync" },
+  );
 
   const companion = computed(
     () => companions.value.find((c) => c.id === companionId.value) || companions.value[0],

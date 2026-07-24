@@ -130,7 +130,7 @@ async def run_chat_stream(
     mode = Mode(req.mode)
     companion_id = req.companion_id or "nuan"
     client_id = (req.client_id or "").strip()
-    flush_chars = max(16, int(getattr(s, "output_flush_chars", 48) or 48))
+    flush_chars = max(8, int(getattr(s, "output_flush_chars", 16) or 16))
 
     log.info(
         "chat start mode=%s companion=%s persist=%s",

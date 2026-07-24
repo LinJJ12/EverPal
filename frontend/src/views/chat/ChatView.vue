@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
-import { RouterLink, useRoute } from "vue-router";
+import { RouterLink, useRoute, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useProfileStore } from "@/stores/profile";
 import { useChatPage } from "@/composables/useChatPage";
@@ -10,6 +10,8 @@ import TopicCards from "@/components/chat/TopicCards.vue";
 import CompanionAvatar from "@/components/companions/CompanionAvatar.vue";
 import { COMPANION_SAMPLES } from "@/utils/avatars";
 import { friendlyError } from "@/utils/errors";
+import { ApiError } from "@/api/http";
+import { getActiveSessionId, setActiveSessionId, getSessionForCompanion, setSessionForCompanion } from "@/utils/activeSession";
 
 /** Shared across ChatView remounts so a stale getSession cannot reattach sessionId. */
 let chatSessionLoadSeq = 0;
@@ -28,6 +30,7 @@ const {
   clear,
 } = useChatPage();
 const route = useRoute();
+const router = useRouter();
 const sideOpen = ref(false);
 const sessionLoading = ref(false);
 const sessionLoadError = ref("");
@@ -55,9 +58,38 @@ async function pickCompanion(id: string) {
   sideError.value = "";
   try {
     await store.save({ companion_id: id });
+    chatSessionLoadSeq += 1;
+    sessionLoadError.value = "";
+    stop();
+    // Switch to this companion's last thread (if any); do not wipe other companions' maps
+    const sid = await resolveSessionForCompanion(id);
+    if (sid) {
+      await loadSessionById(sid);
+    } else {
+      messages.value = [];
+      store.sessionId = null;
+      setActiveSessionId(null);
+    }
   } catch (e) {
     sideError.value = friendlyError(e);
   }
+}
+
+async function resolveSessionForCompanion(companionId: string): Promise<string | null> {
+  const cached = getSessionForCompanion(companionId);
+  if (cached) return cached;
+  try {
+    const { listSessions } = await import("@/api/sessions");
+    const res = await listSessions();
+    const hit = (res.sessions || []).find((s) => s.companion_id === companionId);
+    if (hit?.id) {
+      setSessionForCompanion(companionId, hit.id);
+      return hit.id;
+    }
+  } catch {
+    /* offline — fall through to empty */
+  }
+  return null;
 }
 
 function onSubmit(text?: string) {
@@ -73,8 +105,6 @@ function onClear() {
 function regen() {
   const lastUser = [...messages.value].reverse().find((m) => m.role === "user");
   if (!lastUser || streaming.value) return;
-  // Drop trailing assistant, then the last user — submit will re-add user once
-  // so UI and history sent to the backend stay a single user turn.
   if (messages.value.length && messages.value[messages.value.length - 1].role === "assistant") {
     messages.value.pop();
   }
@@ -84,64 +114,105 @@ function regen() {
   onSubmit(lastUser.content);
 }
 
-onMounted(() => {
+async function stripSeedQuery() {
+  if (route.path !== "/chat") return;
+  if (typeof route.query.seed !== "string" || !route.query.seed) return;
+  const nextQuery = { ...route.query };
+  delete nextQuery.seed;
+  await router.replace({ path: "/chat", query: nextQuery });
+}
+
+async function loadSessionById(sid: string): Promise<boolean> {
+  const gen = ++chatSessionLoadSeq;
+  sessionLoading.value = true;
+  sessionLoadError.value = "";
+  try {
+    const { getSession } = await import("@/api/sessions");
+    const s = await getSession(sid);
+    if (gen !== chatSessionLoadSeq) return false;
+    store.sessionId = s.id;
+    setActiveSessionId(s.id);
+    setSessionForCompanion(s.companion_id || store.companionId, s.id);
+    messages.value = (s.messages || [])
+      .filter((m) => m.role === "user" || m.role === "assistant")
+      .map((m) => ({ role: m.role as "user" | "assistant", content: m.content }));
+
+    const companion_id = s.companion_id || store.companionId;
+    const restoredMode = s.mode === "adult" || s.mode === "child" ? s.mode : store.mode;
+    if (gen !== chatSessionLoadSeq) return false;
+    try {
+      await store.save({ companion_id, mode: restoredMode });
+    } catch {
+      if (gen !== chatSessionLoadSeq) return false;
+      store.companionId = companion_id;
+      store.mode = restoredMode;
+      store.applyModeChrome();
+    }
+    return true;
+  } catch (e) {
+    if (gen !== chatSessionLoadSeq) return false;
+    sessionLoadError.value = friendlyError(e);
+    messages.value = [];
+    // Keep id on network errors so refresh can retry; only drop on definitive miss
+    if (e instanceof ApiError && e.code === "not_found") {
+      store.sessionId = null;
+      setActiveSessionId(null);
+    }
+    return false;
+  } finally {
+    if (gen === chatSessionLoadSeq) {
+      sessionLoading.value = false;
+    }
+  }
+}
+
+/**
+ * Refresh-safe bootstrap:
+ * 1) ?session= from history
+ * 2) persisted active session (leftover ?seed= must NOT start a new chat)
+ * 3) fresh ?seed= only when there is no active session
+ */
+async function bootstrapChat() {
+  const qSession = route.query.session;
+  if (typeof qSession === "string" && qSession.trim()) {
+    await loadSessionById(qSession.trim());
+    return;
+  }
+
+  const active = (store.sessionId || getActiveSessionId() || "").trim();
+  if (active) {
+    if (typeof route.query.seed === "string" && route.query.seed.trim()) {
+      await stripSeedQuery();
+    }
+    await loadSessionById(active);
+    return;
+  }
+
   const seed = route.query.seed;
   if (typeof seed === "string" && seed.trim()) {
-    // New-session intent from scenes/safety: do not attach to a prior thread
+    const text = seed.trim();
     chatSessionLoadSeq += 1;
     store.sessionId = null;
+    setActiveSessionId(null);
     messages.value = [];
-    onSubmit(seed.trim());
+    // Remove seed from the URL first so a refresh cannot re-fire a new opener
+    await stripSeedQuery();
+    await onSubmit(text);
   }
+}
+
+onMounted(() => {
+  void bootstrapChat();
 });
 
+// History list → /chat?session= while ChatView may already be mounted
 watch(
   () => route.query.session,
-  async (sid) => {
-    if (typeof sid !== "string" || !sid) {
-      sessionLoading.value = false;
-      sessionLoadError.value = "";
-      return;
-    }
-    const gen = ++chatSessionLoadSeq;
-    sessionLoading.value = true;
-    sessionLoadError.value = "";
-    try {
-      const { getSession } = await import("@/api/sessions");
-      const s = await getSession(sid);
-      // Stale: newer session load or seed new-session started while in flight
-      if (gen !== chatSessionLoadSeq) return;
-      store.sessionId = s.id;
-      messages.value = (s.messages || [])
-        .filter((m) => m.role === "user" || m.role === "assistant")
-        .map((m) => ({ role: m.role as "user" | "assistant", content: m.content }));
-
-      // Restore companion + mode for this session (chrome + continue-chat)
-      const companion_id = s.companion_id || store.companionId;
-      const restoredMode = s.mode === "adult" || s.mode === "child" ? s.mode : store.mode;
-      if (gen !== chatSessionLoadSeq) return;
-      try {
-        await store.save({ companion_id, mode: restoredMode });
-      } catch {
-        if (gen !== chatSessionLoadSeq) return;
-        // Profile sync failed — keep session values locally so this chat stays correct
-        store.companionId = companion_id;
-        store.mode = restoredMode;
-        store.applyModeChrome();
-      }
-    } catch (e) {
-      if (gen !== chatSessionLoadSeq) return;
-      sessionLoadError.value = friendlyError(e);
-      messages.value = [];
-      // Do not keep a prior session id — avoids sending into the wrong thread
-      store.sessionId = null;
-    } finally {
-      if (gen === chatSessionLoadSeq) {
-        sessionLoading.value = false;
-      }
+  (sid, prev) => {
+    if (typeof sid === "string" && sid.trim() && sid !== prev) {
+      void loadSessionById(sid.trim());
     }
   },
-  { immediate: true },
 );
 </script>
 
@@ -268,7 +339,7 @@ watch(
             v-for="(m, i) in messages"
             :key="i"
             :role="m.role"
-            :text="m.content || (streaming && i === messages.length - 1 ? '…' : '')"
+            :text="m.content"
             :streaming="streaming && m.role === 'assistant' && i === messages.length - 1"
           />
         </div>

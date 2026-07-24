@@ -34,4 +34,4 @@ LLM 客户端只出自 config/llm
 ## 4. 环境
 
 - 密钥只在 `backend/.env`；`ALLOW_MOCK_LLM` 生产为 `false`。  
-- `OUTPUT_FLUSH_CHARS`（可选）控制出站窗口大小，默认 48。
+- `OUTPUT_FLUSH_CHARS`（可选）控制出站窗口大小，默认 16。

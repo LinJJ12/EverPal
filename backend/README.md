@@ -62,7 +62,7 @@ python main.py
 - 分层：`src/README.md`
 - 硬规则：`docs/guide/rules.md`
 - 安全审计：`resource/logs/safety_audit.jsonl`（运行时生成）
-- 出站：窗口化 gated 流式（`OUTPUT_FLUSH_CHARS`，默认 48）
+- 出站：窗口化 gated 流式（`OUTPUT_FLUSH_CHARS`，默认 16）
 
 依赖清单：`pyproject.toml`（`pip install -e ".[dev]"`）。不强制维护 `requirements.txt`。
 

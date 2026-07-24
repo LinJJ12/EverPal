@@ -2,6 +2,10 @@ import { nextTick, ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useProfileStore } from "@/stores/profile";
 import { useChatStream } from "@/composables/useChatStream";
+import {
+  setActiveSessionId,
+  setSessionForCompanion,
+} from "@/utils/activeSession";
 import type { ChatMessage } from "@/types";
 
 const TOPICS = [
@@ -18,6 +22,13 @@ export function useChatPage() {
   const messages = ref<{ role: "user" | "assistant"; content: string }[]>([]);
   const input = ref("");
   const listEl = ref<HTMLElement | null>(null);
+
+  function rememberSession(sid?: string | null) {
+    if (!sid) return;
+    store.sessionId = sid;
+    setActiveSessionId(sid);
+    setSessionForCompanion(companionId.value, sid);
+  }
 
   async function scrollBottom() {
     await nextTick();
@@ -58,7 +69,7 @@ export function useChatPage() {
           }
         },
         onDone: (sid) => {
-          if (sid) store.sessionId = sid;
+          rememberSession(sid);
           if (error.value && assistantIdx >= 0 && !messages.value[assistantIdx].content) {
             messages.value[assistantIdx].content = error.value;
           }
@@ -70,10 +81,14 @@ export function useChatPage() {
     }
   }
 
+  /** Empty the screen and detach the *current* companion's active thread (others kept). */
   function clear() {
     stop();
     messages.value = [];
+    const cid = companionId.value;
     store.sessionId = null;
+    setActiveSessionId(null);
+    setSessionForCompanion(cid, null);
   }
 
   return {

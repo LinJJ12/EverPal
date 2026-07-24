@@ -30,7 +30,7 @@ class Settings(BaseSettings):
     database_url: str = "sqlite:///./data/companion.db"
     allow_mock_llm: bool = False
     # Window size for gated streaming (chars). Smaller = faster first bytes; still lexicon-gated.
-    output_flush_chars: int = 48
+    output_flush_chars: int = 16
 
     @property
     def cors_origin_list(self) -> list[str]:
