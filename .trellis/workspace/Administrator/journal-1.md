@@ -272,3 +272,36 @@
 ### Next Steps
 
 - None - task complete
+
+
+## Session 9: 语音切片审查修复与文档同步
+
+**Date**: 2026-07-24
+**Task**: 语音切片审查修复与文档同步
+**Branch**: `feature/voice-hardening`
+
+### Summary
+
+加固 Web Speech（TTS/abort/转写清洗）；同步 directory-structure、README、PRD、规格；build 通过并归档。
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `HEAD` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 8
+- **Total Sessions**: 9
 - **Last Active**: 2026-07-24
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~274 | Active |
+| `journal-1.md` | ~307 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 9 | 2026-07-24 | 语音切片审查修复与文档同步 | HEAD | `feature/voice-hardening` |
 | 8 | 2026-07-24 | 语音陪伴：按住说话与朗读 | `0403b67` | `feature/voice-companion` |
 | 7 | 2026-07-24 | 一期结项与二期规划收敛 | `217c804` | `main` |
 | 6 | 2026-07-24 | 去掉成人模式，专注儿童与初中生 | `12b3be4`, `324abcb` | `feature/kids-only-focus` |
