@@ -139,3 +139,36 @@
 ### Next Steps
 
 - None - task complete
+
+
+## Session 5: 记忆分类增强收口
+
+**Date**: 2026-07-24
+**Task**: 记忆分类增强收口
+**Branch**: `main`
+
+### Summary
+
+完成 memories.category（like/dislike/event/preference）：同表存储与旧库 ALTER 迁移、规则提取与 snippet 排序、记忆页中文标签；单测 10 通过；并清理无关 WIP（按伙伴记 session、缩短流式窗口）以便 finish-work。
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `a2905f5` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

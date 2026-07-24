@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 4
+- **Total Sessions**: 5
 - **Last Active**: 2026-07-24
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~141 | Active |
+| `journal-1.md` | ~174 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 5 | 2026-07-24 | 记忆分类增强收口 | `a2905f5` | `main` |
 | 4 | 2026-07-24 | 会话边界行为 bug 收口 | `17abacd`, `e0f996b` | `main` |
 | 3 | 2026-07-23 | MVP 缺口收口：前端状态闭环打磨 | `db654ce`, `46ee828` | `main` |
 | 2 | 2026-07-23 | 自由聊上下文与路径/次要页 stage 收尾 | `2adafec` | `main` |
