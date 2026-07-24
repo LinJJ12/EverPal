@@ -338,3 +338,36 @@
 ### Next Steps
 
 - None - task complete
+
+
+## Session 11: 语音检查修复与推送
+
+**Date**: 2026-07-24
+**Task**: 语音检查修复与推送
+**Branch**: `main`
+
+### Summary
+
+审查并加固 companion TTS/STT；更新说明文档；归档后推送 origin/main。
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `HEAD` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
