@@ -136,7 +136,7 @@ function toggleSpeakAt(index: number) {
   const text = messages.value[index]?.content?.trim();
   if (!text) return;
   speakingIndex.value = index;
-  speak(text);
+  speak(text, companion.value?.id || store.companionId || "nuan");
 }
 
 function onStopStream() {

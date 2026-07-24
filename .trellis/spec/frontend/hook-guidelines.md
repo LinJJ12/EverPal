@@ -23,6 +23,7 @@
 3. On network/API failure, map to Chinese soft copy (see quality guidelines) — never throw raw upstream text into UI.
 4. Memory clear must go through an explicit hook/API, not ad-hoc `localStorage.clear()` in components.
 5. Browser voice STT must write into the composer and use the existing send path (same backend safety as typing); do not add cloud STT/TTS keys to the frontend for this slice.
+6. Browser TTS should vary by companion (`utils/companionVoice.ts` pitch/rate + system voice pick); do not assume a single global voice.
 
 ## Forbidden
 

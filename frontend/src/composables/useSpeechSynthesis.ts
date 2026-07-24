@@ -1,11 +1,13 @@
 import { ref } from "vue";
 import { speechSynthesisSupported } from "@/utils/speech";
+import { pickCompanionVoice, voiceProfileFor } from "@/utils/companionVoice";
 
 export function useSpeechSynthesis() {
   const supported = speechSynthesisSupported();
   const speaking = ref(false);
   const error = ref("");
   let speakTimer: number | null = null;
+  let voicesLoaded = false;
 
   function clearError() {
     error.value = "";
@@ -18,6 +20,19 @@ export function useSpeechSynthesis() {
     }
   }
 
+  function ensureVoices(): SpeechSynthesisVoice[] {
+    if (!supported) return [];
+    let list = window.speechSynthesis.getVoices();
+    if (!list.length && !voicesLoaded) {
+      // Chrome loads voices async
+      window.speechSynthesis.onvoiceschanged = () => {
+        voicesLoaded = true;
+      };
+      list = window.speechSynthesis.getVoices();
+    }
+    return list;
+  }
+
   function stop() {
     clearSpeakTimer();
     if (!supported) {
@@ -28,7 +43,7 @@ export function useSpeechSynthesis() {
     speaking.value = false;
   }
 
-  function speak(text: string) {
+  function speak(text: string, companionId?: string | null) {
     error.value = "";
     const t = text.trim();
     if (!t) return;
@@ -38,8 +53,16 @@ export function useSpeechSynthesis() {
     }
     // Chrome: cancel() then immediate speak() often no-ops — defer one tick.
     stop();
+    const profile = voiceProfileFor(companionId);
     const u = new SpeechSynthesisUtterance(t);
     u.lang = "zh-CN";
+    u.rate = profile.rate;
+    u.pitch = profile.pitch;
+    const voice = pickCompanionVoice(companionId, ensureVoices());
+    if (voice) {
+      u.voice = voice;
+      if (voice.lang) u.lang = voice.lang;
+    }
     u.onend = () => {
       speaking.value = false;
     };
@@ -55,6 +78,14 @@ export function useSpeechSynthesis() {
     speakTimer = window.setTimeout(() => {
       speakTimer = null;
       try {
+        // Re-pick if voices arrived after first call
+        if (!u.voice) {
+          const late = pickCompanionVoice(companionId, ensureVoices());
+          if (late) {
+            u.voice = late;
+            if (late.lang) u.lang = late.lang;
+          }
+        }
         window.speechSynthesis.speak(u);
       } catch {
         speaking.value = false;
