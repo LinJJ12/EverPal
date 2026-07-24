@@ -4,10 +4,25 @@ import { RouterLink } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useProfileStore } from "@/stores/profile";
 import { clearMemories, fetchProfile } from "@/api/profile";
+import type { MemoryCategory } from "@/types";
 
 const store = useProfileStore();
 const { nickname, likeLabels, memories, companion, mode } = storeToRefs(store);
 const hint = ref("");
+
+const CATEGORY_LABELS: Record<MemoryCategory, string> = {
+  like: "喜欢",
+  dislike: "不喜欢",
+  event: "事件",
+  preference: "偏好",
+};
+
+function categoryLabel(category?: string): string {
+  if (category && category in CATEGORY_LABELS) {
+    return CATEGORY_LABELS[category as MemoryCategory];
+  }
+  return "偏好";
+}
 
 onMounted(async () => {
   try {
@@ -52,7 +67,10 @@ async function clear() {
           <div class="memory-list">
             <p v-if="!memories.length" class="note" style="margin: 0">暂无记忆条。</p>
             <div v-for="m in memories" :key="m.id || m.text" class="memory-item">
-              <div>{{ m.text }}</div>
+              <div>
+                <span class="tag on" style="margin-right: 8px">{{ categoryLabel(m.category) }}</span>
+                {{ m.text }}
+              </div>
               <time v-if="m.created_at">{{ new Date(m.created_at * 1000).toLocaleString() }}</time>
             </div>
           </div>

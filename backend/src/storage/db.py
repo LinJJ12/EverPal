@@ -3,9 +3,9 @@ from __future__ import annotations
 import sqlite3
 from collections.abc import Iterator
 from contextlib import contextmanager
+from pathlib import Path
 
 from src.config.settings import BACKEND_ROOT, get_settings
-from pathlib import Path
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS profiles (
@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS memories (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   client_id TEXT NOT NULL,
   text TEXT NOT NULL,
+  category TEXT NOT NULL DEFAULT 'preference',
   created_at REAL NOT NULL,
   FOREIGN KEY (client_id) REFERENCES profiles(client_id)
 );
@@ -80,9 +81,23 @@ def connect() -> sqlite3.Connection:
     return conn
 
 
+def _ensure_memories_category(conn: sqlite3.Connection) -> None:
+    """Add memories.category on existing DBs created before the column existed."""
+    cols = {row[1] for row in conn.execute("PRAGMA table_info(memories)").fetchall()}
+    if cols and "category" not in cols:
+        conn.execute(
+            "ALTER TABLE memories ADD COLUMN category TEXT NOT NULL DEFAULT 'preference'"
+        )
+
+
 def init_db() -> None:
     with connect() as conn:
         conn.executescript(_SCHEMA)
+        _ensure_memories_category(conn)
+        conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_memories_client_cat "
+            "ON memories(client_id, category, created_at DESC)"
+        )
         conn.commit()
 
 

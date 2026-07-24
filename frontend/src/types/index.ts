@@ -12,13 +12,22 @@ export interface ChatMessage {
   content: string;
 }
 
+export type MemoryCategory = "like" | "dislike" | "event" | "preference";
+
+export interface MemoryItem {
+  id?: number;
+  text: string;
+  category?: MemoryCategory;
+  created_at?: number;
+}
+
 export interface Profile {
   client_id: string;
   nickname: string;
   mode: Mode;
   companion_id: string;
   likes: string[];
-  memories: { id?: number; text: string; created_at?: number }[];
+  memories: MemoryItem[];
 }
 
 export interface SessionSummary {

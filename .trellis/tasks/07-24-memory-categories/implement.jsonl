@@ -1,0 +1,6 @@
+{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/spec/backend/database-guidelines.md", "reason": "MVP memory categories and persistence rules"}
+{"file": ".trellis/spec/backend/safety-pipeline.md", "reason": "Memory extract sits after safety gate"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Snippet must not inject discarded categories"}
+{"file": ".trellis/spec/frontend/state-management.md", "reason": "Profile memories hydrate and clear semantics"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Memory clear UX copy constraints"}
