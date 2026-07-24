@@ -14,7 +14,7 @@ Formal app lives in `frontend/` (Vue + Pinia). Device identity is `jiuban_client
 
 ## Rules
 
-1. Mode (`child` / `adult`) is **global profile state**, not per-message.
+1. Profile `mode` is always **`child`** (minors-only product). Do not expose adult/child toggles.
 2. Do not sync across devices in MVP (no login).
 3. Clearing memory is user-initiated and must call backend + refresh store memories. Memory list items may include `category` (`like` / `dislike` / `event` / `preference`); `MemoryView` shows Chinese labels and falls back to「偏好」. Clear still keeps nickname + archive likes.
 4. **Optimistic profile writes must roll back** local Pinia fields if `patchProfile` fails (avoid fake success UI).

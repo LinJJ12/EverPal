@@ -25,7 +25,7 @@ COMPANION_META = {
         "id": "cha",
         "name": "阿茶",
         "role": "稳重听友型",
-        "blurb": "少说教、多倾听，适合大人树洞和心事倾诉。",
+        "blurb": "少说教、多倾听，愿意听你说说心里话。",
     },
 }
 
@@ -50,7 +50,7 @@ def build_system(
     cid = (companion_id or "nuan").strip()
     if cid not in COMPANION_META:
         raise AppError("invalid_companion", "伙伴不正确", 400)
-    mode_e = Mode(mode) if not isinstance(mode, Mode) else mode
+    mode_e = Mode.coerce(mode)
     companion = _read(PROMPTS / "companions" / f"{cid}.md")
     mode_prompt = _read(PROMPTS / "modes" / f"{mode_e.value}.md")
     parts = [companion, mode_prompt]

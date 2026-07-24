@@ -30,7 +30,7 @@ Backend is a **companion BFF**, not a multi-provider chat workbench. Users never
 2. Chat path always: **persona + mode → memory snippet → input lexicon → LLM stream → output lexicon**.
 3. Do **not** vendor-fork `vendor/kids-ai` as the app; **adapt** `safety_gate` / `memory` ideas under MIT with attribution if copied.
 4. No romance personas in `prompts/` or companion seed data.
-5. Adult mode may allow mild venting; child mode uses stricter lexicon + shorter replies.
+5. Minors-only product: short replies + strict lexicon; mild feelings talk allowed in prompt, not a separate adult mode.
 
 ---
 

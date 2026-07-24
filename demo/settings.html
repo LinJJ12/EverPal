@@ -22,25 +22,8 @@
             <p class="note" style="margin:8px 0 0" id="summary">—</p>
           </div>
 
-          <div class="choice">
-            <button type="button" class="choice-item" data-mode="child">
-              <div class="choice-icon child" id="iconChild"></div>
-              <div>
-                <div class="choice-title">儿童模式</div>
-                <div class="choice-desc">短句、更严守护</div>
-              </div>
-            </button>
-            <button type="button" class="choice-item adult-tone" data-mode="adult">
-              <div class="choice-icon adult" id="iconAdult"></div>
-              <div>
-                <div class="choice-title">成人模式</div>
-                <div class="choice-desc">可轻度倾诉，非恋爱</div>
-              </div>
-            </button>
-          </div>
-
           <button type="button" class="btn btn-secondary btn-block" id="resetBtn">重置演示</button>
-          <p class="note" style="margin:0;text-align:left" id="resetHint">确认后恢复默认：儿童模式、空昵称、空喜好、小暖、无会话无记忆、无游戏纪录。</p>
+          <p class="note" style="margin:0;text-align:left" id="resetHint">确认后恢复默认：空昵称、空喜好、小暖、无会话无记忆、无游戏纪录。</p>
         </section>
       </div>
       <div class="shell-hero-actions footer-actions">
@@ -52,30 +35,16 @@
 
   <script src="js/store.js"></script>
   <script>
-    document.getElementById("iconChild").innerHTML = DemoStore.iconChild();
-    document.getElementById("iconAdult").innerHTML = DemoStore.iconAdult();
-
     function refresh() {
       const s = DemoStore.load();
       const c = DemoStore.companion();
       const likes = DemoStore.likeLabels().join("、") || "无";
       document.getElementById("summary").textContent =
-        `昵称：${s.nickname || "（未设置）"} · 模式：${s.mode === "child" ? "儿童" : "成人"} · 伙伴：${c.name} · 喜好：${likes} · 记忆 ${(s.memories || []).length} 条 · 历史 ${(s.sessions || []).length} 段`;
-      document.querySelectorAll(".choice-item").forEach((el) => {
-        el.classList.toggle("active", el.dataset.mode === s.mode);
-      });
+        `昵称：${s.nickname || "（未设置）"} · 未成年人陪伴 · 伙伴：${c.name} · 喜好：${likes} · 记忆 ${(s.memories || []).length} 条 · 历史 ${(s.sessions || []).length} 段`;
     }
 
-    document.querySelectorAll(".choice-item").forEach((el) => {
-      el.addEventListener("click", () => {
-        DemoStore.save({ mode: el.dataset.mode });
-        DemoStore.applyModeChrome();
-        refresh();
-      });
-    });
-
     document.getElementById("resetBtn").addEventListener("click", () => {
-      const ok = confirm("确定重置演示？将清除本机全部数据（含游戏纪录），并恢复默认（儿童 · 小暖 · 空档案）。");
+      const ok = confirm("确定重置演示？将清除本机全部数据（含游戏纪录），并恢复默认（小暖 · 空档案）。");
       if (!ok) return;
       DemoStore.resetDemo();
       refresh();

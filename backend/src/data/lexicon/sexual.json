@@ -1,7 +1,15 @@
 {
   "category": "sexual",
-  "mode_scope": ["child", "adult", "all"],
+  "mode_scope": [
+    "child",
+    "all"
+  ],
   "action": "block",
-  "terms": ["色情", "约炮", "性爱细节", "黄片"],
+  "terms": [
+    "色情",
+    "约炮",
+    "性爱细节",
+    "黄片"
+  ],
   "reply_template": "这个话题不适合我们聊。我们可以聊聊兴趣、心情，或者你想听的小故事。"
 }

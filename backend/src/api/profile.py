@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Header, HTTPException, Query
 from pydantic import BaseModel, Field
+from typing import Literal
 
 from src.storage import memory_repo, profile_repo
 
@@ -19,7 +20,7 @@ class ProfileOut(BaseModel):
 
 class ProfilePatch(BaseModel):
     nickname: str | None = None
-    mode: str | None = None
+    mode: Literal["child"] | None = None
     companion_id: str | None = None
     likes: list[str] | None = None
 

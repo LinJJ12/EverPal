@@ -32,7 +32,7 @@ def clear_lexicon_cache() -> None:
 
 
 def check_input(text: str, mode: Mode | str) -> SafetyHit | None:
-    mode_s = Mode(mode) if not isinstance(mode, Mode) else mode
+    mode_s = Mode.coerce(mode)
     lowered = (text or "").strip()
     if not lowered:
         return None

@@ -29,7 +29,7 @@ async def gated_llm_deltas(
     """
     released = ""
     pending = ""
-    mode_e = Mode(mode) if not isinstance(mode, Mode) else mode
+    mode_e = Mode.coerce(mode)
     # Prefer snappy first paint; still batch a little for the output lexicon window.
     flush_at = max(8, flush_chars)
 

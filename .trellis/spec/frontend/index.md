@@ -28,7 +28,7 @@ Frontend is a **mobile-first cartoon companion UI**. Hide all LLM/provider confi
 
 1. **Cartoon skin is default** (phase 1). Neutral adult skin is phase 2.
 2. **No model picker, temperature, API key, or endpoint UI** for end users.
-3. **Child / adult mode** affects copy size, topic cards, and safety tone — not a developer settings panel.
+3. **Child / adult mode** is removed — product is minors-only; do not add adult UI.
 4. **No romance / dating character UI.**
 5. Errors use plain Chinese, never raw HTTP/API messages.
 6. Prefer large tap targets; phone is the primary device.

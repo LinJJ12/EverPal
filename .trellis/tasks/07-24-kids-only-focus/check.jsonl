@@ -1,0 +1,6 @@
+{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/spec/guides/product-constraints.md", "reason": "Verify kids-only product constraints"}
+{"file": ".trellis/spec/backend/safety-pipeline.md", "reason": "Verify no adult-loosened safety path"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Verify prompt quality after adult removal"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Verify UI has no adult mode entry"}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "Cross-layer docs/UI/API consistency"}

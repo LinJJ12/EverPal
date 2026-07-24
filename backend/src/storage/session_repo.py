@@ -22,18 +22,19 @@ def create_session(
     sid = "s_" + uuid.uuid4().hex[:12]
     now = time.time()
     title_s = (title or "").strip() or "新会话"
+    mode_s = "child"
     with db_session() as conn:
         conn.execute(
             "INSERT INTO sessions (id, client_id, title, companion_id, mode, updated_at) "
             "VALUES (?, ?, ?, ?, ?, ?)",
-            (sid, cid, title_s, companion_id, mode, now),
+            (sid, cid, title_s, companion_id, mode_s, now),
         )
     return get_session(sid) or {
         "id": sid,
         "client_id": cid,
         "title": title_s,
         "companion_id": companion_id,
-        "mode": mode,
+        "mode": mode_s,
         "updated_at": now,
         "messages": [],
     }
@@ -144,7 +145,7 @@ def _session_row(row: Any, *, messages: list[dict[str, Any]]) -> dict[str, Any]:
         "client_id": row["client_id"],
         "title": row["title"],
         "companion_id": row["companion_id"],
-        "mode": row["mode"],
+        "mode": "child",
         "updated_at": row["updated_at"],
         "messages": messages,
     }

@@ -86,7 +86,7 @@ async function save() {
         </div>
       </div>
       <div class="shell-hero-actions footer-actions">
-        <RouterLink class="btn btn-secondary btn-lg" to="/mode">上一步</RouterLink>
+        <RouterLink class="btn btn-secondary btn-lg" to="/welcome">上一步</RouterLink>
         <button type="button" class="btn btn-primary btn-lg" :disabled="saving" @click="save">
           选角色
         </button>

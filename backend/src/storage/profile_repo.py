@@ -50,7 +50,7 @@ def upsert_profile(
 ) -> dict[str, Any]:
     profile = ensure_profile(client_id)
     nick = profile["nickname"] if nickname is None else nickname.strip()
-    md = profile["mode"] if mode is None else mode
+    md = "child" if mode is None else _normalize_mode(mode)
     comp = profile["companion_id"] if companion_id is None else companion_id
     like_list = profile["likes"] if likes is None else likes
     now = time.time()
@@ -66,12 +66,16 @@ def upsert_profile(
         return _row_to_profile(row)
 
 
+def _normalize_mode(mode: str | None) -> str:
+    return "child"
+
+
 def _row_to_profile(row: Any) -> dict[str, Any]:
     likes = json.loads(row["likes_json"] or "[]")
     return {
         "client_id": row["client_id"],
         "nickname": row["nickname"] or "",
-        "mode": row["mode"] or "child",
+        "mode": _normalize_mode(row["mode"]),
         "companion_id": row["companion_id"] or "nuan",
         "likes": likes if isinstance(likes, list) else [],
         "updated_at": row["updated_at"],

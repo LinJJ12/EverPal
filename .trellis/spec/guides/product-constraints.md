@@ -1,6 +1,6 @@
 # Product Constraints (玖伴)
 
-> Binding decisions from `docs/PRD.md` v0.4. If code conflicts with this file, **this file wins** until the PRD is revised.
+> Binding decisions from `docs/PRD.md`. If code conflicts with this file, **this file wins** until the PRD is revised.
 
 ## Brand (provisional)
 
@@ -10,24 +10,26 @@
 
 ## Audience
 
-- Primary: elementary-age children (~6–12) and ordinary non-technical adults
-- Not primary: developers wanting a multi-model workbench
+- Primary: **minors under 18**, mainly elementary and junior-high students (~6–15)
+- Not primary: adults seeking venting/companionship modes; developers wanting a multi-model workbench
 
 ## Phase-1 must
 
 - Web, cartoon skin
 - No login
-- Child / adult modes
-- Official companions (warm roles only)
+- **Single minors experience** (no adult mode switch)
+- Official companions (warm roles only; no romance)
 - Light memory (nickname, preferences)
-- Safety = prompt rules + lexicon
+- Mild “talk about feelings” allowed inside minors prompt (empathy + steer to trusted adults) — **not** an adult treehole mode
+- Safety = prompt rules + lexicon (minors-strict)
 - Server-managed LLM (OpenAI-compatible)
-- UX reference ships as HTML `demo/` **product shell**; formal app roots are **`frontend/`** + **`backend/`** (see `docs/directory-structure.md`)
+- UX reference ships as HTML `demo/` **product shell**; formal app roots are **`frontend/`** + **`backend/`**
 - Demo UI must read as a companion product, not an internal PRD/Tour presenter pack
 - Do not put LLM API keys in `frontend/`; lexicon and prompt assembly live in `backend/`
 
 ## Phase-1 must not
 
+- Adult / child dual mode UI or looser adult safety path
 - Login / phone auth
 - Parental consent flow (deferred)
 - Romance / dating characters
@@ -36,18 +38,7 @@
 - Third-party moderation API (optional later)
 - Shipping `vendor/kids-ai` as the product
 
-## Reference docs in repo
-
-| Doc | Use |
-|-----|-----|
-| `docs/PRD.md` | Requirements |
-| `docs/diagrams.md` | Flows / architecture |
-| `docs/directory-structure.md` | `frontend/` + `backend/` folder & file contracts |
-| `demo/README.md` | How to run the HTML demo |
-| `docs/feasibility-kids-ai.md` | What to copy vs discard from kids-ai |
-| `docs/research-companions.md` | Landscape |
-
 ## Decision test for new features
 
-Ask: **Does this increase safe companionship for kids/ordinary adults?**  
-If it only helps power users or tooling, defer or reject.
+Ask: **Does this increase safe companionship for elementary/junior-high kids?**  
+If it only helps adults or power users, defer or reject.

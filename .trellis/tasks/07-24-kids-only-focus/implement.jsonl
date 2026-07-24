@@ -1,0 +1,6 @@
+{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/spec/guides/product-constraints.md", "reason": "Phase-1 audience and must/must-not"}
+{"file": ".trellis/spec/backend/safety-pipeline.md", "reason": "Mode scope and safety path"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Prompt and mode quality rules"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "UI copy and mode UX"}
+{"file": ".trellis/spec/frontend/state-management.md", "reason": "Global mode state rules"}

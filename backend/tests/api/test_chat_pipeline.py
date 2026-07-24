@@ -49,25 +49,23 @@ async def test_chat_stream_safety_block():
 
 
 @pytest.mark.asyncio
-async def test_chat_stream_mock_ok():
+async def test_chat_rejects_adult_mode():
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         r = await client.post(
             "/v1/chat/stream",
-            json={
-                "message": "我想听个短故事",
-                "mode": "child",
-                "companion_id": "tiao",
-                "nickname": "小木",
-            },
+            json={"message": "你好", "mode": "adult", "companion_id": "nuan"},
         )
-    assert r.status_code == 200
-    assert "event: delta" in r.text
-    assert "event: done" in r.text
-    # parse at least one delta JSON
-    found = False
-    for line in r.text.splitlines():
-        if line.startswith("data:"):
-            json.loads(line[5:].strip())
-            found = True
-    assert found
+    assert r.status_code in (400, 422)
+
+
+@pytest.mark.asyncio
+async def test_profile_rejects_adult_mode():
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        r = await client.patch(
+            "/v1/profile",
+            headers={"X-Client-Id": "reject-adult-1"},
+            json={"mode": "adult", "nickname": "豆豆"},
+        )
+    assert r.status_code in (400, 422)

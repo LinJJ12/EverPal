@@ -45,7 +45,7 @@ onMounted(load);
             >
               <strong>{{ s.title || "未命名会话" }}</strong>
               <span class="note">
-                {{ s.mode === "child" ? "儿童" : "成人" }} ·
+                陪伴 ·
                 {{ new Date(s.updated_at * 1000).toLocaleString() }}
               </span>
             </button>

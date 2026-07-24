@@ -47,7 +47,7 @@
       id: "cha",
       name: "阿茶",
       role: "稳重听友型",
-      blurb: "少说教、多倾听，适合大人树洞和心事倾诉。",
+      blurb: "少说教、多倾听，愿意听你说说心里话。",
       sample: "我听着呢，你慢慢说。不用说得很整齐也没关系。",
       tone: "cha",
     },
@@ -164,15 +164,15 @@
       ],
     },
     {
-      id: "vent",
-      mode: "adult",
-      title: "工作好累（树洞）",
-      prd: "轻度倾诉",
-      desc: "先被好好听见，再一起挑一件最小的下一步",
+      id: "tired",
+      mode: "child",
+      title: "今天有点累",
+      prd: "说说心事",
+      desc: "少说教、先听你说；想找人倾诉时来找阿茶",
       companionId: "cha",
       turns: [
-        { role: "user", text: "今天开会开到很晚，整个人空空的。" },
-        { role: "bot", text: "听起来今天被掏空了。先不用急着「振作」，空空的感觉本身就值得被承认一下。" },
+        { role: "user", text: "今天有点累，想聊聊。" },
+        { role: "bot", text: "听起来你今天有点沉沉的。先不用急着振作，这种感觉本身就值得被看见一下。" },
         { role: "user", text: "回家只想躺着，又觉得自己很废。" },
         {
           role: "bot",
@@ -182,14 +182,20 @@
               label: "只想有人听着",
               userText: "你听着就好。",
               follow: [
-                { role: "bot", text: "好。我就在这儿。你不用说得很整齐，想到什么说什么都行；也可以安静一会儿。" },
+                {
+                  role: "bot",
+                  text: "好。我就在这儿。你不用说得很整齐；也可以安静一会儿。若心里太难受，记得跟信任的大人说一声。",
+                },
               ],
             },
             {
               label: "帮我挑一件小事",
               userText: "帮我挑一件最小的下一步吧。",
               follow: [
-                { role: "bot", text: "那就只选一件：喝口水，或把明天最烦的一件事写三个字。做完就可以停。你想先做哪件？" },
+                {
+                  role: "bot",
+                  text: "那就只选一件：喝口水，或把明天最烦的一件事写三个字。做完就可以停。你想先做哪件？",
+                },
               ],
             },
           ],
@@ -534,13 +540,7 @@
       `嗯嗯，我跟着你的节奏。要不要玩「三选一」：听故事、问为什么、还是假装冒险？`,
       `收到！那我们慢慢聊。你希望我认真回答，还是先逗你开心一下？`,
     ];
-    const adultFallbacks = [
-      `我听懂了，${nick}。谢谢你愿意说出来。你希望我只是陪着听，还是一起想想下一步？`,
-      `嗯，我抓住了你话里的重点。你更想被理解，还是想要一句具体建议？`,
-      `可以说得再随意一点。我在这儿，不催你。`,
-      `我记下了。若你愿意，我们把这件事拆成「现在能做的一件小事」。`,
-    ];
-    const pool = mode === "child" ? childFallbacks : adultFallbacks;
+    const pool = childFallbacks;
     let sum = freeTurn;
     for (let i = 0; i < t.length; i++) sum += t.charCodeAt(i);
     return pool[sum % pool.length];
@@ -550,6 +550,8 @@
     try {
       const raw = { ...defaults, ...JSON.parse(localStorage.getItem(KEY) || "{}") };
       raw.gameScores = { ...defaults.gameScores, ...(raw.gameScores || {}) };
+      // Minors-only: never keep legacy adult mode from old localStorage
+      raw.mode = "child";
       return raw;
     } catch {
       return cloneDefaults();
@@ -582,11 +584,9 @@
   }
 
   function save(patch) {
-    const next = { ...load(), ...patch };
+    const next = { ...load(), ...patch, mode: "child" };
     localStorage.setItem(KEY, JSON.stringify(next));
-    if (patch && Object.prototype.hasOwnProperty.call(patch, "mode")) {
-      applyModeChrome();
-    }
+    applyModeChrome();
     return next;
   }
 
@@ -624,7 +624,7 @@
     return {
       eyebrow: "无需登录 · 开箱即聊",
       title: "你好呀，我在这儿",
-      lead: "玖伴是面向小孩与普通人的 AI 陪伴助手——九久相伴，永远有人回应。耐心听完、说话好懂、记得你是谁。",
+      lead: "玖伴是面向小学生与初中生的 AI 陪伴助手——九久相伴，永远有人回应。耐心听完、说话好懂、记得你是谁。",
     };
   }
 
@@ -664,9 +664,8 @@
   }
 
   function applyModeChrome() {
-    const s = load();
-    const mode = s.mode === "adult" ? "adult" : "child";
-    document.documentElement.setAttribute("data-demo-mode", mode);
+    document.documentElement.setAttribute("data-demo-mode", "child");
+    document.documentElement.setAttribute("data-mode", "child");
   }
 
   function addMemory(text) {
@@ -703,7 +702,7 @@
   ];
 
   const NAV_MORE = [
-    ["mode.html", "模式"],
+    ["nickname.html", "档案"],
     ["nickname.html", "档案"],
     ["companions.html", "角色"],
     ["memory.html", "记忆"],
@@ -816,7 +815,8 @@
   }
 
   function iconAdult() {
-    return '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="8" r="3.5" stroke="#1f5f99" stroke-width="2"/><path d="M4 20c1.2-4 4-6 8-6s6.8 2 8 6" stroke="#1f5f99" stroke-width="2" stroke-linecap="round"/></svg>';
+    // Legacy export; product is minors-only
+    return iconChild();
   }
 
   function streamText(el, text, opts) {

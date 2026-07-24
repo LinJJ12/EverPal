@@ -263,7 +263,7 @@ backend/
     │   ├── safety.py             # 入站/出站词库 + 拒答               SAF
     │   └── llm.py                # OpenAI 兼容流式                    CMP-02
     ├── prompts/                  # 纯文本提示词（便于 diff）
-    │   ├── modes/child.md | adult.md
+    │   ├── modes/child.md
     │   ├── companions/nuan.md | tiao.md | cha.md
     │   └── safety/               # 可选危机附加
     ├── data/

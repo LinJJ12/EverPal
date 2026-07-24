@@ -15,7 +15,6 @@ const PRIMARY = [
 ];
 
 const MORE = [
-  { to: "/mode", label: "模式" },
   { to: "/profile", label: "档案" },
   { to: "/companions", label: "角色" },
   { to: "/memory", label: "记忆" },

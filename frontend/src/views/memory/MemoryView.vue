@@ -7,7 +7,7 @@ import { clearMemories, fetchProfile } from "@/api/profile";
 import type { MemoryCategory } from "@/types";
 
 const store = useProfileStore();
-const { nickname, likeLabels, memories, companion, mode } = storeToRefs(store);
+const { nickname, likeLabels, memories, companion } = storeToRefs(store);
 const hint = ref("");
 
 const CATEGORY_LABELS: Record<MemoryCategory, string> = {
@@ -52,9 +52,7 @@ async function clear() {
         <section class="card stack">
           <div class="choice-title">档案摘要</div>
           <p class="note" style="margin: 0">
-            昵称：{{ nickname || "（未设）" }} · 模式：{{
-              mode === "child" ? "儿童" : "成人"
-            }}
+            昵称：{{ nickname || "（未设）" }} · 未成年人陪伴
             · 伙伴：{{ companion?.name || "—" }}
           </p>
           <div class="tag-cloud">

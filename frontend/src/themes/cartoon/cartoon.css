@@ -14,7 +14,6 @@
   --color-muted-bg: #f3eee6;
   --color-border: #eadfce;
   --color-child: #ff8fab;
-  --color-adult: #4f9fd8;
   --color-ring: #e85d4c;
   --shadow-soft: 0 10px 30px rgba(42, 49, 64, 0.08);
   --shadow-press: 0 4px 12px rgba(42, 49, 64, 0.1);
@@ -32,10 +31,6 @@
 
 html[data-demo-mode="child"] {
   --demo-font-scale: 1.12;
-}
-
-html[data-demo-mode="adult"] {
-  --demo-font-scale: 1;
 }
 
 *,
@@ -792,12 +787,6 @@ input:focus-visible {
   box-shadow: 0 0 0 3px rgba(232, 93, 76, 0.15);
 }
 
-.choice-item.adult-tone { background: #f3f9ff; }
-.choice-item.adult-tone.active {
-  border-color: var(--color-adult);
-  box-shadow: 0 0 0 3px rgba(79, 159, 216, 0.18);
-}
-
 .choice-icon {
   width: 56px;
   height: 56px;
@@ -808,7 +797,6 @@ input:focus-visible {
 }
 
 .choice-icon.child { background: #ffe0ea; }
-.choice-icon.adult { background: #d6ecff; }
 
 .choice-icon svg { width: 28px; height: 28px; }
 
@@ -922,7 +910,6 @@ input:focus-visible {
 }
 
 .mode-badge.child { background: #ffe0ea; color: #a02858; border-color: transparent; }
-.mode-badge.adult { background: #d6ecff; color: #1f5f99; border-color: transparent; }
 
 /* ——— Desktop chat layout ——— */
 .chat-layout {
@@ -1521,7 +1508,6 @@ body:has(.page-chat) .page-chat {
 
 /* Vue frontend uses data-mode; keep parity with demo data-demo-mode */
 html[data-mode="child"] { --demo-font-scale: 1.12; }
-html[data-mode="adult"] { --demo-font-scale: 1; }
 body { font-size: calc(16px * var(--demo-font-scale, 1)); }
 
 #app { min-height: 100dvh; display: flex; flex-direction: column; }

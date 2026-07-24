@@ -1,4 +1,4 @@
-export type Mode = "child" | "adult";
+export type Mode = "child";
 
 export interface Companion {
   id: string;

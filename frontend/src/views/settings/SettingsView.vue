@@ -4,39 +4,17 @@ import { RouterLink } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useProfileStore } from "@/stores/profile";
 import { resetClientId } from "@/utils/clientId";
-import { friendlyError } from "@/utils/errors";
-import { iconAdult, iconChild } from "@/utils/avatars";
-import type { Mode } from "@/types";
 
 const store = useProfileStore();
-const { nickname, mode, companion, likeLabels, memories } = storeToRefs(store);
-const childIcon = ref("");
-const adultIcon = ref("");
+const { nickname, companion, likeLabels, memories } = storeToRefs(store);
 const hint = ref("");
-
-onMounted(() => {
-  childIcon.value = iconChild();
-  adultIcon.value = iconAdult();
-});
 
 const summary = computed(() => {
   const likes = likeLabels.value.join("、") || "无";
-  return `昵称：${nickname.value || "（未设置）"} · 模式：${
-    mode.value === "child" ? "儿童" : "成人"
-  } · 伙伴：${companion.value?.name || "—"} · 喜好：${likes} · 记忆 ${
-    (memories.value || []).length
-  } 条`;
+  return `昵称：${nickname.value || "（未设置）"} · 未成年人陪伴 · 伙伴：${
+    companion.value?.name || "—"
+  } · 喜好：${likes} · 记忆 ${(memories.value || []).length} 条`;
 });
-
-async function setMode(m: Mode) {
-  if (m === mode.value) return;
-  hint.value = "";
-  try {
-    await store.save({ mode: m });
-  } catch (e) {
-    hint.value = friendlyError(e);
-  }
-}
 
 function resetLocal() {
   if (
@@ -63,32 +41,6 @@ function resetLocal() {
           <div>
             <div class="choice-title">当前档案</div>
             <p class="note" style="margin: 8px 0 0">{{ summary }}</p>
-          </div>
-          <div class="choice">
-            <button
-              type="button"
-              class="choice-item"
-              :class="{ active: mode === 'child' }"
-              @click="setMode('child')"
-            >
-              <div class="choice-icon child" v-html="childIcon" />
-              <div>
-                <div class="choice-title">儿童模式</div>
-                <div class="choice-desc">短句、更严守护</div>
-              </div>
-            </button>
-            <button
-              type="button"
-              class="choice-item adult-tone"
-              :class="{ active: mode === 'adult' }"
-              @click="setMode('adult')"
-            >
-              <div class="choice-icon adult" v-html="adultIcon" />
-              <div>
-                <div class="choice-title">成人模式</div>
-                <div class="choice-desc">可轻度倾诉，非恋爱</div>
-              </div>
-            </button>
           </div>
           <button type="button" class="btn btn-secondary btn-block" @click="resetLocal">
             重置本机档案

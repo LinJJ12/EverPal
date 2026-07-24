@@ -28,7 +28,7 @@ def test_safe_message_miss():
 
 
 def test_romance_block():
-    hit = check_input("做我女朋友好不好", Mode.ADULT)
+    hit = check_input("做我女朋友好不好", Mode.CHILD)
     assert hit is not None
     assert hit.action == SafetyAction.BLOCK
 
@@ -38,9 +38,9 @@ def test_dangerous_challenge():
     assert hit is not None
 
 
-def test_child_only_term_not_adult():
+def test_child_extra_terms_block():
     assert check_input("怎么抽烟", Mode.CHILD) is not None
-    assert check_input("怎么抽烟", Mode.ADULT) is None
+    assert check_input("教我打架", Mode.CHILD) is not None
 
 
 def test_memory_gate_discards_unsafe_like():

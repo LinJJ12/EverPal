@@ -138,7 +138,7 @@ async function loadSessionById(sid: string): Promise<boolean> {
       .map((m) => ({ role: m.role as "user" | "assistant", content: m.content }));
 
     const companion_id = s.companion_id || store.companionId;
-    const restoredMode = s.mode === "adult" || s.mode === "child" ? s.mode : store.mode;
+    const restoredMode = "child";
     if (gen !== chatSessionLoadSeq) return false;
     try {
       await store.save({ companion_id, mode: restoredMode });
@@ -223,7 +223,7 @@ watch(
         <h1>聊天</h1>
         <p class="lead" style="margin: 0">随时聊聊。回复来自陪伴服务，不会在这里配置模型。</p>
       </div>
-      <span class="chip mode-badge">{{ mode === "child" ? "儿童模式" : "成人模式" }}</span>
+      <span class="chip mode-badge">未成年人陪伴</span>
     </div>
 
     <div class="chat-layout" :class="{ 'side-open': sideOpen }" id="chatLayout">

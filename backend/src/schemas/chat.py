@@ -12,7 +12,7 @@ class ChatMessage(BaseModel):
 
 class ChatStreamRequest(BaseModel):
     message: str = Field(min_length=1, max_length=4000)
-    mode: Literal["child", "adult"] = "child"
+    mode: Literal["child"] = "child"
     companion_id: str = "nuan"
     nickname: str = ""
     likes: list[str] = Field(default_factory=list)

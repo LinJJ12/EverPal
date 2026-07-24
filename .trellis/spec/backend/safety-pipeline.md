@@ -23,7 +23,7 @@ user message
 ```json
 {
   "category": "self_harm",
-  "mode_scope": ["child", "adult", "all"],
+  "mode_scope": ["child", "all"],
   "action": "block",
   "terms": ["…"],
   "reply_template": "…温和中文…"
@@ -32,7 +32,7 @@ user message
 
 | Field | Meaning |
 |-------|---------|
-| `mode_scope` | Which modes apply |
+| `mode_scope` | Apply to minors (`child`) and/or `all`. Do not add adult-only looser scopes. |
 | `action` | `block` \| `rewrite` \| `watch` |
 | `terms` | Substrings or regexes (document which) |
 

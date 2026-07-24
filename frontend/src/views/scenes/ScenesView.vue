@@ -54,9 +54,7 @@ function companionName(id: string) {
             <h3>{{ s.title }}</h3>
             <p class="choice-desc" style="margin: 0">{{ s.desc }}</p>
             <p class="note" style="margin: 0; text-align: left">
-              伙伴：{{ companionName(s.companion_id) }} · 模式：{{
-                s.mode === "child" ? "儿童" : "成人"
-              }}
+              伙伴：{{ companionName(s.companion_id) }}
             </p>
             <span class="btn btn-primary" style="align-self: flex-start; pointer-events: none">
               进入对话

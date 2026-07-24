@@ -127,7 +127,7 @@ async def run_chat_stream(
     settings: Settings | None = None,
 ) -> AsyncIterator[StreamEvent]:
     s = settings or get_settings()
-    mode = Mode(req.mode)
+    mode = Mode.coerce(req.mode)
     companion_id = req.companion_id or "nuan"
     client_id = (req.client_id or "").strip()
     flush_chars = max(8, int(getattr(s, "output_flush_chars", 16) or 16))

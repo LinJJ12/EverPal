@@ -38,9 +38,8 @@ export const useProfileStore = defineStore("profile", () => {
   );
 
   function applyModeChrome() {
-    const m = mode.value === "adult" ? "adult" : "child";
-    document.documentElement.setAttribute("data-mode", m);
-    document.documentElement.setAttribute("data-demo-mode", m);
+    document.documentElement.setAttribute("data-mode", "child");
+    document.documentElement.setAttribute("data-demo-mode", "child");
   }
 
   function isNetworkError(err: unknown): boolean {
@@ -62,7 +61,7 @@ export const useProfileStore = defineStore("profile", () => {
     try {
       const p = await fetchProfile();
       nickname.value = p.nickname || "";
-      mode.value = (p.mode as Mode) || "child";
+      mode.value = "child";
       companionId.value = p.companion_id || "nuan";
       likes.value = p.likes || [];
       memories.value = p.memories || [];

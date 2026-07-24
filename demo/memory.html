@@ -42,7 +42,7 @@
       const s = DemoStore.load();
       const likes = DemoStore.likeLabels();
       document.getElementById("summary").textContent =
-        `昵称：${s.nickname || "（未设）"} · 模式：${s.mode === "child" ? "儿童" : "成人"} · 伙伴：${DemoStore.companion().name}`;
+        `昵称：${s.nickname || "（未设）"} · 未成年人陪伴 · 伙伴：${DemoStore.companion().name}`;
       const tags = document.getElementById("likeTags");
       tags.replaceChildren();
       if (likes.length) {

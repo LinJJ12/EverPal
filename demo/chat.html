@@ -124,7 +124,7 @@
       companion = DemoStore.companion();
       nick = DemoStore.displayName();
       const modeBadge = document.getElementById("modeBadge");
-      modeBadge.textContent = state.mode === "child" ? "儿童模式" : "成人模式";
+      modeBadge.textContent = "未成年人陪伴";
       modeBadge.className = "chip mode-badge " + state.mode;
       document.getElementById("headerAvatar").className = "mini-avatar avatar " + companion.id;
       document.getElementById("headerAvatar").innerHTML = DemoStore.avatarSvg(companion.id);

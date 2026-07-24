@@ -28,7 +28,7 @@ import { RouterLink } from "vue-router";
           </li>
           <li>
             <strong>安心边界</strong>
-            <span>儿童更严守护；危险话题温和转开</span>
+            <span>危险话题会温和转开，守护更严</span>
           </li>
           <li>
             <strong>记得你</strong>
@@ -36,7 +36,7 @@ import { RouterLink } from "vue-router";
           </li>
           <li>
             <strong>温暖不越界</strong>
-            <span>可以树洞倾诉，明确不做恋爱角色</span>
+            <span>可以说说心事，明确不做恋爱角色</span>
           </li>
         </ul>
       </section>
@@ -49,10 +49,10 @@ import { RouterLink } from "vue-router";
             <strong>欢迎</strong>
             <span>认识玖伴</span>
           </RouterLink>
-          <RouterLink class="hub-item" to="/mode">
-            <span class="step">分龄</span>
-            <strong>儿童 / 成人</strong>
-            <span>语气与守护强度</span>
+          <RouterLink class="hub-item" to="/profile">
+            <span class="step">档案</span>
+            <strong>昵称与喜好</strong>
+            <span>告诉伙伴怎么称呼你</span>
           </RouterLink>
           <RouterLink class="hub-item" to="/companions">
             <span class="step">伙伴</span>
@@ -62,7 +62,7 @@ import { RouterLink } from "vue-router";
           <RouterLink class="hub-item" to="/scenes">
             <span class="step">场景</span>
             <strong>情境对话</strong>
-            <span>无聊、好奇与树洞</span>
+            <span>无聊、好奇与心事</span>
           </RouterLink>
           <RouterLink class="hub-item" to="/chat">
             <span class="step">聊天</span>

@@ -5,7 +5,7 @@ const router = createRouter({
   routes: [
     { path: "/", name: "home", component: () => import("@/views/home/HomeView.vue") },
     { path: "/welcome", name: "welcome", component: () => import("@/views/welcome/WelcomeView.vue") },
-    { path: "/mode", name: "mode", component: () => import("@/views/mode/ModeView.vue") },
+    { path: "/mode", redirect: "/profile" },
     { path: "/profile", name: "profile", component: () => import("@/views/profile/ProfileView.vue") },
     {
       path: "/companions",

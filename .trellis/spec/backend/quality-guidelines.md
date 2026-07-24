@@ -3,7 +3,8 @@
 ## Must
 
 - OpenAI-compatible streaming path works with server-side key
-- Child vs adult system prompts differ (length, vocabulary, safety strength)
+- Child (minors) system prompt: short replies, strict safety; mild empathy for feelings OK
+- Adult mode prompts and looser adult lexicon paths are **forbidden**
 - Official companions ≥2, **zero romance roles**
 - Unit tests for lexicon hits (self-harm, sexual, violence, PII solicitation)
 
@@ -14,7 +15,7 @@
 | Fork kids-ai as runtime app | Wrong product shape; JP/Anthropic coupled |
 | AGPL bases as sole dependency | License risk for closed distribution |
 | Skipping output lexicon on stream | Child safety regression |
-| Teaching-lecture every turn | Adult venting / companion PRD |
+| Teaching-lecture every turn | Minors companion PRD prefers warmth over lecture |
 | Exposing multi-model router UI APIs | Out of scope |
 
 ## Testing minimum

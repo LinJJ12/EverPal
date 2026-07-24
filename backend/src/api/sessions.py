@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Header, HTTPException, Query
 from pydantic import BaseModel, Field
+from typing import Literal
 
 from src.storage import session_repo
 
@@ -10,7 +11,7 @@ router = APIRouter(prefix="/v1", tags=["sessions"])
 
 class SessionCreate(BaseModel):
     companion_id: str = "nuan"
-    mode: str = "child"
+    mode: Literal["child"] = "child"
     title: str = ""
 
 

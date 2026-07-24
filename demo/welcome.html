@@ -19,10 +19,10 @@
         <p class="welcome-presence-note" id="compNote">在这儿等你</p>
       </div>
       <h1 id="title">你好呀，我在这儿</h1>
-      <p class="lead" id="lead">玖伴是面向小孩与普通人的 AI 陪伴助手。</p>
+      <p class="lead" id="lead">玖伴是面向小学生与初中生的 AI 陪伴助手。</p>
       <div class="welcome-memory" id="memory" hidden></div>
       <div class="shell-hero-actions">
-        <a class="btn btn-primary btn-lg" href="mode.html">选择模式</a>
+        <a class="btn btn-primary btn-lg" href="nickname.html">设置昵称</a>
         <a class="btn btn-secondary btn-lg" href="chat.html">直接聊天</a>
       </div>
     </section>
@@ -30,15 +30,15 @@
     <section class="welcome-next" aria-labelledby="next-title">
       <h2 id="next-title" class="section-title">接下来可以…</h2>
       <div class="hub-grid hub-grid-welcome">
-        <a class="hub-item" href="mode.html">
-          <span class="step">分龄</span>
-          <strong>选择模式</strong>
-          <span>儿童或成人，语气与守护强度不同</span>
+        <a class="hub-item" href="nickname.html">
+          <span class="step">档案</span>
+          <strong>告诉我怎么称呼你</strong>
+          <span>昵称与喜好留在本机</span>
         </a>
         <a class="hub-item" href="scenes.html">
           <span class="step">场景</span>
           <strong>先看情境</strong>
-          <span>无聊、好奇、树洞——跟着聊几轮</span>
+          <span>无聊、好奇、心事——跟着聊几轮</span>
         </a>
         <a class="hub-item" href="companions.html">
           <span class="step">伙伴</span>
@@ -69,8 +69,7 @@
     const memory = document.getElementById("memory");
     const bits = [];
     if (state.nickname) bits.push(`昵称 · ${state.nickname}`);
-    if (state.mode === "child") bits.push("儿童模式");
-    else if (state.mode === "adult") bits.push("成人模式");
+    bits.push("未成年人陪伴");
     likes.slice(0, 3).forEach((label) => bits.push(label));
     if (bits.length) {
       memory.hidden = false;

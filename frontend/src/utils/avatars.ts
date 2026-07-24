@@ -15,10 +15,6 @@ export function iconChild(): string {
   return '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="8" r="3.5" stroke="#b03060" stroke-width="2"/><path d="M5 19c1.5-3.5 4-5 7-5s5.5 1.5 7 5" stroke="#b03060" stroke-width="2" stroke-linecap="round"/></svg>';
 }
 
-export function iconAdult(): string {
-  return '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="8" r="3.5" stroke="#1f5f99" stroke-width="2"/><path d="M4 20c1.2-4 4-6 8-6s6.8 2 8 6" stroke="#1f5f99" stroke-width="2" stroke-linecap="round"/></svg>';
-}
-
 export const COMPANION_SAMPLES: Record<string, string> = {
   nuan: "我在呀，今天想聊点什么？要不要听个短故事？",
   tiao: "要不要来个脑筋急转弯？还是假装去太空探险？",
@@ -56,10 +52,10 @@ export const SCENE_CARDS = [
   {
     id: "tired",
     title: "今天有点累",
-    theme: "轻度树洞",
-    desc: "成人向：少说教，先听再说",
+    theme: "说说心事",
+    desc: "少说教、先听你说；想找人倾诉时来找阿茶",
     companion_id: "cha",
-    mode: "adult" as const,
+    mode: "child" as const,
     seed: "今天有点累，想聊聊",
   },
 ];

@@ -47,7 +47,7 @@
         const meta = document.createElement("div");
         meta.className = "note";
         meta.style.cssText = "margin:6px 0;text-align:left";
-        meta.textContent = `${c} · ${s.mode === "child" ? "儿童" : "成人"} · ${(s.messages || []).length} 条消息`;
+        meta.textContent = `${c} · 陪伴 · ${(s.messages || []).length} 条消息`;
         const time = document.createElement("time");
         time.textContent = new Date(s.updatedAt).toLocaleString();
         a.append(strong, meta, time);
