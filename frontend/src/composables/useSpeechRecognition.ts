@@ -1,7 +1,9 @@
 import { ref } from "vue";
 import {
   getSpeechRecognitionCtor,
+  sanitizeSpeechTranscript,
   speechRecognitionSupported,
+  transcriptFromResult,
   type JiubanSpeechRecognition,
 } from "@/utils/speech";
 
@@ -28,14 +30,32 @@ export function useSpeechRecognition() {
   let rec: JiubanSpeechRecognition | null = null;
   let finals = "";
   let endWait: ((text: string) => void) | null = null;
+  let stopTimer: number | null = null;
 
   function clearError() {
     error.value = "";
   }
 
+  function clearStopTimer() {
+    if (stopTimer !== null) {
+      window.clearTimeout(stopTimer);
+      stopTimer = null;
+    }
+  }
+
+  function finishWait(text: string) {
+    clearStopTimer();
+    const resolve = endWait;
+    endWait = null;
+    listening.value = false;
+    rec = null;
+    resolve?.(sanitizeSpeechTranscript(text));
+  }
+
   function start() {
     error.value = "";
     finals = "";
+    clearStopTimer();
     const Ctor = getSpeechRecognitionCtor();
     if (!Ctor) {
       error.value = "当前浏览器暂不支持语音，请打字聊";
@@ -48,67 +68,58 @@ export function useSpeechRecognition() {
     }
     rec = new Ctor();
     rec.lang = "zh-CN";
+    // Push-to-talk: keep session open until stop(); false auto-ends on pause.
     rec.continuous = true;
     rec.interimResults = true;
     rec.onresult = (ev) => {
-      let chunk = "";
       for (let i = ev.resultIndex; i < ev.results.length; i++) {
-        const row = ev.results[i];
-        if (row.isFinal) {
-          const t = row[0]?.transcript?.trim();
-          if (t) finals = finals ? `${finals}${t}` : t;
-        } else {
-          chunk += row[0]?.transcript || "";
-        }
+        const row = ev.results[i] ?? ev.results.item(i);
+        if (!row?.isFinal) continue;
+        const t = transcriptFromResult(row);
+        if (t) finals = finals ? `${finals}${t}` : t;
       }
-      void chunk;
     };
     rec.onerror = (ev) => {
       const msg = mapRecognitionError(ev.error);
       if (msg) error.value = msg;
     };
     rec.onend = () => {
-      listening.value = false;
-      const text = finals.trim();
-      const resolve = endWait;
-      endWait = null;
-      rec = null;
-      resolve?.(text);
+      finishWait(finals);
     };
     try {
       rec.start();
       listening.value = true;
     } catch {
       listening.value = false;
+      rec = null;
       error.value = "没听清，再试一次或打字吧";
     }
   }
 
   function stop(): Promise<string> {
     if (!rec || !listening.value) {
-      return Promise.resolve(finals.trim());
+      return Promise.resolve(sanitizeSpeechTranscript(finals));
     }
     return new Promise((resolve) => {
       endWait = resolve;
       try {
         rec?.stop();
       } catch {
-        listening.value = false;
-        endWait = null;
-        resolve(finals.trim());
+        finishWait(finals);
+        return;
       }
-      // Safety: some engines never fire onend
-      window.setTimeout(() => {
+      // Some engines never fire onend after stop()
+      stopTimer = window.setTimeout(() => {
         if (endWait === resolve) {
-          endWait = null;
-          listening.value = false;
-          resolve(finals.trim());
+          finishWait(finals);
         }
       }, 1500);
     });
   }
 
   function abort() {
+    clearStopTimer();
+    const resolve = endWait;
     endWait = null;
     try {
       rec?.abort();
@@ -117,6 +128,8 @@ export function useSpeechRecognition() {
     }
     rec = null;
     listening.value = false;
+    // Unblock any in-flight stop() promise
+    resolve?.("");
   }
 
   return {

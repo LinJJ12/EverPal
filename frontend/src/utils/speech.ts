@@ -1,14 +1,21 @@
 /** Minimal Web Speech typings (Chromium `webkitSpeechRecognition`). */
 
+export const SPEECH_TRANSCRIPT_MAX_CHARS = 500;
+
 export interface JiubanSpeechRecognitionResult {
   readonly isFinal: boolean;
-  readonly 0: { transcript: string };
   readonly length: number;
+  item(index: number): { transcript: string };
+  [index: number]: { transcript: string };
 }
 
 export interface JiubanSpeechRecognitionEvent extends Event {
   readonly resultIndex: number;
-  readonly results: ArrayLike<JiubanSpeechRecognitionResult>;
+  readonly results: {
+    readonly length: number;
+    item(index: number): JiubanSpeechRecognitionResult;
+    [index: number]: JiubanSpeechRecognitionResult;
+  };
 }
 
 export interface JiubanSpeechRecognitionErrorEvent extends Event {
@@ -30,6 +37,7 @@ export interface JiubanSpeechRecognition extends EventTarget {
 type SpeechRecognitionCtor = new () => JiubanSpeechRecognition;
 
 export function getSpeechRecognitionCtor(): SpeechRecognitionCtor | null {
+  if (typeof window === "undefined") return null;
   const w = window as Window & {
     SpeechRecognition?: SpeechRecognitionCtor;
     webkitSpeechRecognition?: SpeechRecognitionCtor;
@@ -43,4 +51,18 @@ export function speechRecognitionSupported(): boolean {
 
 export function speechSynthesisSupported(): boolean {
   return typeof window !== "undefined" && "speechSynthesis" in window;
+}
+
+/** Strip controls and cap length before putting STT text into the composer. */
+export function sanitizeSpeechTranscript(raw: string): string {
+  return raw
+    .replace(/[\u0000-\u001F\u007F]/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, SPEECH_TRANSCRIPT_MAX_CHARS);
+}
+
+export function transcriptFromResult(row: JiubanSpeechRecognitionResult): string {
+  const alt = typeof row.item === "function" ? row.item(0) : row[0];
+  return alt?.transcript?.trim() || "";
 }

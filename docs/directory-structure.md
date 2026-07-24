@@ -18,7 +18,7 @@
 | 每层 **一句话职责 + 禁止**；`lib/` 白名单 | 见 §4 / §5 |
 | 脚手架后 **每层 README** 为协作入口 | 见 §7；未建代码前以本文为准 |
 | `.env.example` 提交、`.env` 不提交；Key 只在后端 | 见 §1.1 |
-| 不预建用不到的空目录 | 一期不做 `agent/`、家长、语音等空壳 |
+| 不预建用不到的空目录 | 不做 `agent/`、家长空壳；浏览器语音已落在 `components/voice`，**勿**空建 `capabilities/speech` 除非上云端 STT/TTS |
 
 **刻意不照搬**：OmniStream 的 `pipeline/`（多步 Job）与 `agent/`（多轮工具）——玖伴 MVP 聊天是「单次流式管线」，用 `services/chat.py` 一条编排即可；日后若出现「固定多步后台 Job」再开 `pipeline/`。
 
@@ -185,11 +185,10 @@ frontend/
 │   ├── views/                    # 一界面一目录
 │   │   ├── home/                 # 品牌首页（shell-hero）           UI-01
 │   │   ├── welcome/              # 欢迎 / 回访                      CMP-01
-│   │   ├── mode/                 # 儿童 / 成人                      PER-02
 │   │   ├── profile/              # 昵称 + 喜好                      MEM-01/02
 │   │   ├── companions/           # ≥3 官方角色；无恋爱               PER-01, CMP-07
 │   │   ├── scenes/               # 场景入口 → chat seed             P1
-│   │   ├── chat/                 # 流式聊 / 停止 / 话题卡 / 侧栏     CMP-02~05
+│   │   ├── chat/                 # 流式聊 / 停止 / 话题卡 / 语音     CMP-02~05, UI-06
 │   │   ├── history/              # 本机会话                         UI-02
 │   │   ├── memory/               # 记忆查看 / 清除                  MEM-03
 │   │   ├── settings/             # 本地设置；无 API Key UI           UI-04
@@ -197,15 +196,18 @@ frontend/
 │   │   └── safety/               # 安全边界示例入口
 │   ├── composables/
 │   │   ├── useChatPage.ts
-│   │   └── useChatStream.ts
+│   │   ├── useChatStream.ts
+│   │   ├── useSpeechRecognition.ts   # 浏览器 STT（按住说话）
+│   │   └── useSpeechSynthesis.ts     # 浏览器 TTS（朗读）
 │   ├── components/
 │   │   ├── layout/               # AppHeader（NAV_PRIMARY + 更多）
 │   │   ├── chat/                 # Bubble、Composer、TopicCards
+│   │   ├── voice/                # HoldToTalkButton（二期语音）
 │   │   └── companions/           # CompanionAvatar
 │   ├── stores/
 │   ├── themes/cartoon/           # cartoon.css + games.css（自 demo 迁入）
 │   ├── types/
-│   └── utils/                    # avatars、clientId、errors 等
+│   └── utils/                    # avatars、clientId、errors、speech 等
 └── tests/
 ```
 
@@ -227,7 +229,8 @@ frontend/
 1. 无 `LLM_*` / `OPENAI_API_KEY` 进入前端环境变量。  
 2. 词库拦截、提示词组装、温和拒答主逻辑在后端。  
 3. 产品 UI 无 Tour / PRD 版本 /「不接真实大模型」。  
-4. 益智游戏：大厅在 `views/games/`；具体对局静态页在 `public/games/`（自 demo 迁入）。`demo/games/` 仍作对照。
+4. 益智游戏：大厅在 `views/games/`；具体对局静态页在 `public/games/`（自 demo 迁入）。`demo/games/` 仍作对照。  
+5. 语音（浏览器切片）：`components/voice` + `useSpeechRecognition` / `useSpeechSynthesis`；转写必须进 composer → 现有发送管线。无成人模式页（`/mode` 仅重定向）。
 
 ---
 
@@ -258,7 +261,7 @@ backend/
     ├── services/
     │   └── chat.py               # 【一期唯一编排】管线顺序见下
     ├── capabilities/             # 被编排的单能力（可调 LLM，经 config）
-    │   ├── persona.py            # 角色 + 儿童/成人提示合并           PER-*
+    │   ├── persona.py            # 角色 + 未成年人提示合并           PER-*
     │   ├── memory.py             # 轻量记忆片段                       MEM-*
     │   ├── safety.py             # 入站/出站词库 + 拒答               SAF
     │   └── llm.py                # OpenAI 兼容流式                    CMP-02
@@ -372,9 +375,10 @@ api/chat
 |------|----------|
 | 固定多步后台 Job | 再开 `backend/src/pipeline/`（参考 OmniStream） |
 | 多轮工具型智能体 | 再开 `backend/src/agent/`（非 MVP） |
-| 语音 | `frontend` components/voice；`backend` capabilities/speech |
+| 语音（浏览器 STT/TTS） | **已交付**：`frontend` `components/voice` + speech composables |
+| 语音（云端 STT/TTS） | 若需要再开 `backend/src/capabilities/speech`（当前不要空壳） |
 | 家长面板 | `views/parent` + `api/parent` |
-| 中性皮肤 | `themes/neutral/` |
+| 儿童主题皮肤变体 | `themes/` 下另议（**不做**成人向中性皮肤） |
 | 登录同步 | `api/auth` + storage 账号表 |
 
 ---

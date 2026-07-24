@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount } from "vue";
+import { onBeforeUnmount, watch } from "vue";
 import { useSpeechRecognition } from "@/composables/useSpeechRecognition";
 
 const props = defineProps<{ disabled?: boolean }>();
@@ -7,6 +7,16 @@ const emit = defineEmits<{ transcript: [text: string]; error: [message: string] 
 
 const { supported, listening, error, clearError, start, stop, abort } = useSpeechRecognition();
 let holdActive = false;
+
+watch(
+  () => props.disabled,
+  (d) => {
+    if (d && holdActive) {
+      holdActive = false;
+      abort();
+    }
+  },
+);
 
 async function onPointerDown(ev: PointerEvent) {
   if (props.disabled || !supported) return;
@@ -37,11 +47,21 @@ async function onPointerUp() {
 }
 
 function onPointerCancel() {
+  if (!holdActive) return;
   holdActive = false;
   abort();
 }
 
-onBeforeUnmount(() => abort());
+function onLostCapture() {
+  if (!holdActive) return;
+  holdActive = false;
+  abort();
+}
+
+onBeforeUnmount(() => {
+  holdActive = false;
+  abort();
+});
 </script>
 
 <template>
@@ -56,6 +76,7 @@ onBeforeUnmount(() => abort());
     @pointerdown.prevent="onPointerDown"
     @pointerup.prevent="onPointerUp"
     @pointercancel.prevent="onPointerCancel"
+    @lostpointercapture="onLostCapture"
     @contextmenu.prevent
   >
     {{ listening ? "松开结束" : "按住说话" }}

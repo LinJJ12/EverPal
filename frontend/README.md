@@ -4,6 +4,7 @@ Vue 3 + Vite + TypeScript + Vue Router + Pinia.
 
 - UI: ported from `demo/` product shell (`themes/cartoon/cartoon.css`)
 - Chat: `POST /v1/chat/stream` SSE via `src/api/`
+- Voice (browser): hold-to-talk (`components/voice`) + toolbar read-aloud; transcript → composer → same send/safety path. Prefer Chromium for STT.
 - Games: hub at `/games`; boards under `public/games/*.html`
 
 Backend uses Conda env **`chatbot`** — see `docs/dev-setup.md`.

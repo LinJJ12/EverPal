@@ -49,6 +49,9 @@
 | `?session=` 加载失败仍保留旧 `sessionId` / 空白当成功 | 后续发送挂到错误会话；用户以为回看成功 | 失败：人话错误 + `sessionId = null` + 清空消息；加载中明示「正在加载…」 |
 | 档案/模式/伙伴 `save` 先改本地再请求，失败时静默 `catch` | UI 显示已切换，服务端未改 | `save` 失败回滚 Pinia；页面用人话提示（`friendlyError`） |
 | 「重新生成」只 pop 助手再 `submit` | `onUser` 再 push → 连续两条相同 user | pop 助手 + 末条 user 后再 `submit` |
+| Chrome 里 `speechSynthesis.cancel()` 后立刻 `speak()` | 经常无声 | `cancel` 后 `setTimeout(0)` 再 `speak`；忽略 `interrupted`/`canceled` 错误 |
+| STT 转写不经 composer 另开 API | 旁路安全词库 | 只写入输入框，走现有发送 |
+| 语音 `abort()` 不结束 `stop()` 的 Promise | 卸载/取消后逻辑挂起 | `abort` 时 resolve 等待中的 Promise |
 | 场景/安全 `?seed=` 不清理 `sessionId` | 新开场白挂到旧会话 | 进聊天前 `sessionId = null`；Chat 对 seed mount 再清消息 |
 | `?seed=` 留在地址栏，刷新时 `onMounted` 再清 session 并重发 | 刷新等于新开聊，旧记录「消失」 | 有活跃 session 时优先恢复并去掉 seed；仅无活跃 session 时才发 seed，并发后立刻 `replace` 掉 seed |
 | 聊天侧栏换伙伴只改 `companion_id`、不清会话 | 新伙伴气泡里仍是旧对话，人设错位 | 换伙伴后加载该伙伴自己的最近会话（按 companion 映射）；没有则空屏 |

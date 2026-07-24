@@ -29,14 +29,16 @@ frontend/
 ├── .env                       # gitignored; never LLM keys
 ├── src/
 │   ├── api/                   # http, chat, companions, sessions, profile
-│   ├── views/                 # home, welcome, mode, profile, companions,
-│   │                          # scenes, chat, history, memory, settings
-│   ├── composables/           # useChatPage, useChatStream, …
-│   ├── components/{layout,chat,companion,memory,ui}/
+│   ├── views/                 # home, welcome, profile, companions,
+│   │                          # scenes, chat, history, memory, settings,
+│   │                          # games, safety  (/mode redirects; no ModeView)
+│   ├── composables/           # useChatPage, useChatStream,
+│   │                          # useSpeechRecognition, useSpeechSynthesis
+│   ├── components/{layout,chat,voice,companions}/
 │   ├── stores/
 │   ├── themes/cartoon/
 │   ├── types/
-│   └── utils/
+│   └── utils/                 # includes speech.ts helpers
 └── package.json
 ```
 

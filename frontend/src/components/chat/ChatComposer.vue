@@ -11,6 +11,7 @@ function onTranscript(text: string) {
   voiceHint.value = "";
   const t = text.trim();
   if (!t) return;
+  // Already sanitized in recognition stop(); keep defensive trim only.
   if (!model.value.trim()) {
     model.value = t;
   } else {

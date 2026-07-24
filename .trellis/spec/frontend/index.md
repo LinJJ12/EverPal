@@ -26,7 +26,7 @@ Frontend is a **mobile-first cartoon companion UI**. Hide all LLM/provider confi
 
 ## Product UI hard rules (always apply)
 
-1. **Cartoon skin is default** (phase 1). Neutral adult skin is phase 2.
+1. **Cartoon skin is default**. Adult-oriented second skin is **cancelled**; optional kids theme variants are undecided.
 2. **No model picker, temperature, API key, or endpoint UI** for end users.
 3. **Child / adult mode** is removed — product is minors-only; do not add adult UI.
 4. **No romance / dating character UI.**
@@ -34,6 +34,7 @@ Frontend is a **mobile-first cartoon companion UI**. Hide all LLM/provider confi
 6. Prefer large tap targets; phone is the primary device.
 7. **Product-shell copy**: user-visible UI must not expose PRD version, presenter timing, Tour steps, or 「不接真实大模型」. Keep those in repo docs only.
 8. **No Tour-bar** in `demo/` — navigation is product header (`NAV_PRIMARY` / `NAV_MORE`) + in-page CTAs only.
+9. **Voice (browser)**: hold-to-talk + manual read-aloud on chat; transcript uses the normal send path.
 
 ---
 

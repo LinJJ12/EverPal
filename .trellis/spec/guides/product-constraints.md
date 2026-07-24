@@ -42,16 +42,16 @@
 
 ## Phase-2 near-term
 
-| Priority | Item |
-|----------|------|
-| P0 | Voice companion: push-to-talk STT + read-aloud TTS (chat page, Chinese-first, no login) |
-| P1 | Stronger long-term memory + daily mood check-in |
-| P1 | Safe story library / official topic packs (after memory) |
-| P2 | Optional third-party moderation API; optional encyclopedia with **minors** safety gate |
-| Later stage | Login / family account; parental consent & panel |
-| Cancelled | Adult-oriented neutral skin |
+| Priority | Item | Status |
+|----------|------|--------|
+| P0 | Voice companion: push-to-talk STT + read-aloud TTS (chat page, Chinese-first, no login) | **Done (browser Web Speech)** — no `capabilities/speech` yet |
+| P1 | Stronger long-term memory + daily mood check-in | Next |
+| P1 | Safe story library / official topic packs (after memory) | Planned |
+| P2 | Optional third-party moderation API; optional encyclopedia with **minors** safety gate | Deferred |
+| Later stage | Login / family account; parental consent & panel | Deferred |
+| Cancelled | Adult-oriented neutral skin | — |
 
-Voice STT text must go through the same safety path as typed input. Keys stay in `backend/.env` only.
+Voice STT text must go through the same safety path as typed input. Keys stay in `backend/.env` only (LLM). Browser speech uses Web Speech APIs — no cloud speech keys in `frontend/`.
 
 ## Decision test for new features
 
