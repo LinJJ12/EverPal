@@ -2,7 +2,7 @@
 
 **九久相伴，永远有人回应。**
 
-面向小孩（小学生与初中生为主）的 AI 陪伴助手：温暖、零配置、卡通 Web。一期不做登录、不做恋爱角色、不做成人模式；安全靠提示词 + 规则词库。
+面向小孩（小学生与初中生为主）的 AI 陪伴助手：温暖、零配置、卡通 Web。不做登录、不做恋爱角色、不做成人模式；安全靠提示词 + 规则词库。
 
 ## 快速体验
 
@@ -32,7 +32,7 @@ npm run dev
 
 | 路径 | 说明 |
 |------|------|
-| [`docs/PRD.md`](docs/PRD.md) | 产品需求（v0.4） |
+| [`docs/PRD.md`](docs/PRD.md) | 产品需求（v0.5） |
 | [`docs/diagrams.md`](docs/diagrams.md) | 流程 / 架构图 |
 | [`docs/directory-structure.md`](docs/directory-structure.md) | **`frontend/` · `backend/` 目录与文件约定**（按 PRD） |
 | [`docs/dev-setup.md`](docs/dev-setup.md) | **本地开发 / Conda `chatbot` / Git 提交边界** |
@@ -45,7 +45,9 @@ npm run dev
 
 ## 当前阶段
 
-**`frontend/` + `backend/`** 可本地联调（Conda：`chatbot`）。正式前端已迁入 demo 产品壳布局；聊天接真实 LLM（Key 仅 `backend/.env`）。`demo/` 仍作无后端对照体验。
+**一期已结项**：feature-complete（**内部测试**，非对外发布）。`frontend/` + `backend/` 可本地联调（Conda：`chatbot`）；Key 仅 `backend/.env`；`demo/` 仍作无后端对照。
+
+**二期**：规划已收敛 — 首切片为 **语音陪伴（按住说话 + 朗读）**；其后为更强记忆 + 今日心情。登录 / 家长管控另阶段。详见 [`docs/PRD.md`](docs/PRD.md) §4.2 与 `.trellis/spec/guides/product-constraints.md`。
 
 ## 许可与贡献
 

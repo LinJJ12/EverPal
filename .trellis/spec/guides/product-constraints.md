@@ -13,13 +13,17 @@
 - Primary: **minors under 18**, mainly elementary and junior-high students (~6–15)
 - Not primary: adults seeking venting/companionship modes; developers wanting a multi-model workbench
 
-## Phase-1 must
+## Phase-1 status
+
+**Feature-complete for internal testing** (2026-07-24). Not an external launch. Known deferred for release: Docker / trial deploy package, formal safety sample report.
+
+## Phase-1 must (delivered)
 
 - Web, cartoon skin
 - No login
 - **Single minors experience** (no adult mode switch)
 - Official companions (warm roles only; no romance)
-- Light memory (nickname, preferences)
+- Light memory (nickname, preferences, categorized memories)
 - Mild “talk about feelings” allowed inside minors prompt (empathy + steer to trusted adults) — **not** an adult treehole mode
 - Safety = prompt rules + lexicon (minors-strict)
 - Server-managed LLM (OpenAI-compatible)
@@ -27,16 +31,27 @@
 - Demo UI must read as a companion product, not an internal PRD/Tour presenter pack
 - Do not put LLM API keys in `frontend/`; lexicon and prompt assembly live in `backend/`
 
-## Phase-1 must not
+## Phase-1 must not (still binding)
 
 - Adult / child dual mode UI or looser adult safety path
-- Login / phone auth
-- Parental consent flow (deferred)
 - Romance / dating characters
 - Multi-model user UI
 - RAG / MCP workbench features as product entry
-- Third-party moderation API (optional later)
 - Shipping `vendor/kids-ai` as the product
+- Adult-oriented second skin
+
+## Phase-2 near-term
+
+| Priority | Item |
+|----------|------|
+| P0 | Voice companion: push-to-talk STT + read-aloud TTS (chat page, Chinese-first, no login) |
+| P1 | Stronger long-term memory + daily mood check-in |
+| P1 | Safe story library / official topic packs (after memory) |
+| P2 | Optional third-party moderation API; optional encyclopedia with **minors** safety gate |
+| Later stage | Login / family account; parental consent & panel |
+| Cancelled | Adult-oriented neutral skin |
+
+Voice STT text must go through the same safety path as typed input. Keys stay in `backend/.env` only.
 
 ## Decision test for new features
 
