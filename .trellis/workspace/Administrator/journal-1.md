@@ -172,3 +172,37 @@
 ### Next Steps
 
 - None - task complete
+
+
+## Session 6: 去掉成人模式，专注儿童与初中生
+
+**Date**: 2026-07-24
+**Task**: 去掉成人模式，专注儿童与初中生
+**Branch**: `feature/kids-only-focus`
+
+### Summary
+
+完成 kids-only-focus：移除成人模式与相关入口，统一未成年人体验；pytest 27 通过、frontend build 通过；任务已归档。合入 main 供内部联调。
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `12b3be4` | (see git log) |
+| `324abcb` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
