@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 6
+- **Total Sessions**: 7
 - **Last Active**: 2026-07-24
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~208 | Active |
+| `journal-1.md` | ~241 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 7 | 2026-07-24 | 一期结项与二期规划收敛 | `217c804` | `main` |
 | 6 | 2026-07-24 | 去掉成人模式，专注儿童与初中生 | `12b3be4`, `324abcb` | `feature/kids-only-focus` |
 | 5 | 2026-07-24 | 记忆分类增强收口 | `a2905f5` | `main` |
 | 4 | 2026-07-24 | 会话边界行为 bug 收口 | `17abacd`, `e0f996b` | `main` |
