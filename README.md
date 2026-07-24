@@ -48,7 +48,7 @@ npm run dev
 **一期已结项**：feature-complete（**内部测试**，非对外发布）。`frontend/` + `backend/` 可本地联调（Conda：`chatbot`）；Key 仅 `backend/.env`；`demo/` 仍作无后端对照。
 
 **二期进展**：
-- **已交付（浏览器切片）**：聊天页 **按住说话** + **朗读回复**（Web Speech；转写走现有发送/安全管线；推荐 Chrome 自测）
+- **已交付（浏览器切片）**：聊天页 **点我说话** + 每条回复下 **朗读这条**（Web Speech；转写走现有发送/安全管线；推荐 Chrome）
 - **下一步**：更强记忆 + 今日心情打卡
 
 登录 / 家长管控仍为另阶段。详见 [`docs/PRD.md`](docs/PRD.md) §4.2 与 `.trellis/spec/guides/product-constraints.md`。

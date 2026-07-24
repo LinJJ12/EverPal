@@ -43,18 +43,8 @@ const sideOpen = ref(false);
 const sessionLoading = ref(false);
 const sessionLoadError = ref("");
 const sideError = ref("");
-
-const lastAssistantText = computed(() => {
-  for (let i = messages.value.length - 1; i >= 0; i--) {
-    const m = messages.value[i];
-    if (m.role === "assistant" && m.content.trim()) return m.content;
-  }
-  return "";
-});
-
-const canSpeak = computed(
-  () => ttsSupported && !streaming.value && !sessionLoading.value && !!lastAssistantText.value,
-);
+/** Which assistant message index is being read aloud (null = none). */
+const speakingIndex = ref<number | null>(null);
 
 const headerSub = computed(() => {
   if (nickname.value && likeLabels.value.length) {
@@ -81,6 +71,7 @@ async function pickCompanion(id: string) {
     chatSessionLoadSeq += 1;
     sessionLoadError.value = "";
     stopSpeak();
+    speakingIndex.value = null;
     stop();
     // Switch to this companion's last thread (if any); do not wipe other companions' maps
     const sid = await resolveSessionForCompanion(id);
@@ -120,20 +111,36 @@ function onSubmit(text?: string) {
 
 function onClear() {
   sessionLoadError.value = "";
+  speakingIndex.value = null;
   stopSpeak();
   clear();
 }
 
-function toggleSpeak() {
-  if (speaking.value) {
+function canSpeakMessage(index: number): boolean {
+  if (!ttsSupported || streaming.value || sessionLoading.value) return false;
+  const m = messages.value[index];
+  if (!m || m.role !== "assistant") return false;
+  if (!m.content.trim()) return false;
+  // Don't offer speak on the in-flight streaming bubble
+  if (streaming.value && index === messages.value.length - 1) return false;
+  return true;
+}
+
+function toggleSpeakAt(index: number) {
+  if (speaking.value && speakingIndex.value === index) {
+    speakingIndex.value = null;
     stopSpeak();
     return;
   }
-  if (!canSpeak.value) return;
-  speak(lastAssistantText.value);
+  if (!canSpeakMessage(index)) return;
+  const text = messages.value[index]?.content?.trim();
+  if (!text) return;
+  speakingIndex.value = index;
+  speak(text);
 }
 
 function onStopStream() {
+  speakingIndex.value = null;
   stopSpeak();
   stop();
 }
@@ -242,11 +249,19 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+  speakingIndex.value = null;
   stopSpeak();
 });
 
 watch(streaming, (busy) => {
-  if (busy) stopSpeak();
+  if (busy) {
+    speakingIndex.value = null;
+    stopSpeak();
+  }
+});
+
+watch(speaking, (on) => {
+  if (!on) speakingIndex.value = null;
 });
 
 // History list → /chat?session= while ChatView may already be mounted
@@ -352,15 +367,6 @@ watch(
           >
             重新生成上一句
           </button>
-          <button
-            type="button"
-            class="btn btn-secondary"
-            :disabled="!canSpeak && !speaking"
-            :aria-pressed="speaking"
-            @click="toggleSpeak"
-          >
-            {{ speaking ? "停止朗读" : "朗读回复" }}
-          </button>
           <button type="button" class="btn btn-secondary" disabled title="会话已自动保存到服务端">
             已自动保存
           </button>
@@ -389,13 +395,28 @@ watch(
           >
             {{ emptyHint }}
           </p>
-          <ChatBubble
+          <div
             v-for="(m, i) in messages"
             :key="i"
-            :role="m.role"
-            :text="m.content"
-            :streaming="streaming && m.role === 'assistant' && i === messages.length - 1"
-          />
+            class="chat-turn"
+            :class="m.role === 'user' ? 'chat-turn-user' : 'chat-turn-bot'"
+          >
+            <ChatBubble
+              :role="m.role"
+              :text="m.content"
+              :streaming="streaming && m.role === 'assistant' && i === messages.length - 1"
+            />
+            <button
+              v-if="m.role === 'assistant' && m.content.trim() && !(streaming && i === messages.length - 1)"
+              type="button"
+              class="bubble-speak"
+              :disabled="!ttsSupported || sessionLoading"
+              :aria-pressed="speaking && speakingIndex === i"
+              @click="toggleSpeakAt(i)"
+            >
+              {{ speaking && speakingIndex === i ? "停止朗读" : "朗读这条" }}
+            </button>
+          </div>
         </div>
 
         <p v-if="error" class="note" style="color: var(--color-primary)">{{ error }}</p>

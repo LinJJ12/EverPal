@@ -6,85 +6,60 @@ const props = defineProps<{ disabled?: boolean }>();
 const emit = defineEmits<{ transcript: [text: string]; error: [message: string] }>();
 
 const { supported, listening, error, clearError, start, stop, abort } = useSpeechRecognition();
-let holdActive = false;
 
 watch(
   () => props.disabled,
   (d) => {
-    if (d && holdActive) {
-      holdActive = false;
+    if (d && listening.value) {
       abort();
     }
   },
 );
 
-async function onPointerDown(ev: PointerEvent) {
+async function onClick() {
   if (props.disabled || !supported) return;
-  if (ev.button !== 0) return;
-  (ev.currentTarget as HTMLElement).setPointerCapture?.(ev.pointerId);
   clearError();
-  holdActive = true;
-  start();
-  if (error.value) {
-    holdActive = false;
-    emit("error", error.value);
-  }
-}
 
-async function onPointerUp() {
-  if (!holdActive) return;
-  holdActive = false;
-  const text = await stop();
-  if (error.value) {
-    emit("error", error.value);
+  if (listening.value) {
+    const text = await stop();
+    if (error.value) {
+      emit("error", error.value);
+      return;
+    }
+    if (text) {
+      emit("transcript", text);
+    } else {
+      emit("error", "没听清，再点一次说话，或直接打字吧");
+    }
     return;
   }
-  if (text) {
-    emit("transcript", text);
-  } else {
-    emit("error", "没听清，再试一次或打字吧");
+
+  start();
+  if (error.value) {
+    emit("error", error.value);
   }
 }
 
-function onPointerCancel() {
-  if (!holdActive) return;
-  holdActive = false;
-  abort();
-}
-
-function onLostCapture() {
-  if (!holdActive) return;
-  holdActive = false;
-  abort();
-}
-
-onBeforeUnmount(() => {
-  holdActive = false;
-  abort();
-});
+onBeforeUnmount(() => abort());
 </script>
 
 <template>
   <button
     v-if="supported"
     type="button"
-    class="btn btn-secondary hold-talk"
+    class="btn btn-secondary voice-talk"
     :class="{ listening }"
     :disabled="disabled"
     :aria-pressed="listening"
-    aria-label="按住说话"
-    @pointerdown.prevent="onPointerDown"
-    @pointerup.prevent="onPointerUp"
-    @pointercancel.prevent="onPointerCancel"
-    @lostpointercapture="onLostCapture"
-    @contextmenu.prevent
+    :aria-label="listening ? '说完了' : '点我说话'"
+    @click="onClick"
   >
-    {{ listening ? "松开结束" : "按住说话" }}
+    {{ listening ? "说完了" : "点我说话" }}
   </button>
   <button
     v-else
     type="button"
-    class="btn btn-secondary hold-talk"
+    class="btn btn-secondary voice-talk"
     disabled
     title="当前浏览器暂不支持语音，请打字聊"
     aria-label="语音不可用"
