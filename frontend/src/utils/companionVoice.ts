@@ -14,9 +14,19 @@ export const COMPANION_VOICE: Record<string, CompanionVoiceProfile> = {
   cha: { rate: 0.88, pitch: 0.85, prefer: "male" }, // 沉稳偏慢、略低
 };
 
+const COMPANION_VOICE_ORDER = ["nuan", "tiao", "cha"] as const;
+
 export function voiceProfileFor(companionId: string | null | undefined): CompanionVoiceProfile {
   const id = companionId || "nuan";
   return COMPANION_VOICE[id] || COMPANION_VOICE.nuan;
+}
+
+export function clampRate(rate: number): number {
+  return Math.min(2, Math.max(0.5, rate));
+}
+
+export function clampPitch(pitch: number): number {
+  return Math.min(2, Math.max(0, pitch));
 }
 
 function isZhVoice(v: SpeechSynthesisVoice): boolean {
@@ -28,14 +38,26 @@ function genderScore(v: SpeechSynthesisVoice, prefer: CompanionVoiceProfile["pre
   if (prefer === "any") return 0;
   const name = v.name.toLowerCase();
   const female =
-    /female|woman|girl|女|婷|晓|佳|美|慧|yan|hui|xiaoxiao|xiaoyi|zira|samantha|ting/i.test(name);
+    /female|woman|girl|女|婷|晓|佳|美|慧|yan|hui|xiaoxiao|xiaoyi|zira|samantha|tingting|xiaoxuan/i.test(
+      name,
+    );
   const male =
-    /male|man|boy|男|强|伟|军|kangkang|yunyang|david|mark|daniel/i.test(name);
+    /male|man|boy|男|强|伟|军|kangkang|yunyang|yunjian|david|mark|daniel|yaoyao/i.test(name);
   if (prefer === "female") return female ? 2 : male ? -1 : 0;
   return male ? 2 : female ? -1 : 0;
 }
 
-/** Pick a stable zh voice for this companion; may return undefined. */
+function companionIndex(companionId: string | null | undefined): number {
+  const raw = companionId || "nuan";
+  const idx = COMPANION_VOICE_ORDER.indexOf(raw as (typeof COMPANION_VOICE_ORDER)[number]);
+  return idx >= 0 ? idx : 0;
+}
+
+/**
+ * Pick a zh system voice for this companion.
+ * Prefer matching gender pool, then spread companions across that pool.
+ * If only one voice exists, all companions share it (pitch/rate still differ).
+ */
 export function pickCompanionVoice(
   companionId: string | null | undefined,
   voices: SpeechSynthesisVoice[],
@@ -45,19 +67,13 @@ export function pickCompanionVoice(
   const pool = zh.length ? zh : voices;
   if (!pool.length) return undefined;
 
-  const ranked = [...pool].sort((a, b) => {
-    const g = genderScore(b, profile.prefer) - genderScore(a, profile.prefer);
-    if (g !== 0) return g;
-    return a.name.localeCompare(b.name);
-  });
+  const scored = pool
+    .map((v) => ({ v, s: genderScore(v, profile.prefer) }))
+    .sort((a, b) => b.s - a.s || a.v.name.localeCompare(b.v.name, "zh"));
 
-  // Spread companions across the ranked list when multiple voices exist
-  const ids = ["nuan", "tiao", "cha"];
-  const raw = companionId || "nuan";
-  const idx = Math.max(0, ids.indexOf(raw));
-  if (ranked.length >= 3) return ranked[idx % ranked.length];
-  if (ranked.length === 2) return ranked[idx % 2];
-  return ranked[0];
+  const preferred = scored.filter((x) => x.s > 0).map((x) => x.v);
+  const list = preferred.length ? preferred : scored.map((x) => x.v);
+  return list[companionIndex(companionId) % list.length];
 }
 
 export function speechVoicesReady(): boolean {

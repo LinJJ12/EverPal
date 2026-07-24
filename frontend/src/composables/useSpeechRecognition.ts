@@ -68,7 +68,7 @@ export function useSpeechRecognition() {
     }
     rec = new Ctor();
     rec.lang = "zh-CN";
-    // Push-to-talk: keep session open until stop(); false auto-ends on pause.
+    // Click-to-talk: keep session open until user taps 「说完了」.
     rec.continuous = true;
     rec.interimResults = true;
     rec.onresult = (ev) => {

@@ -230,7 +230,7 @@ frontend/
 2. 词库拦截、提示词组装、温和拒答主逻辑在后端。  
 3. 产品 UI 无 Tour / PRD 版本 /「不接真实大模型」。  
 4. 益智游戏：大厅在 `views/games/`；具体对局静态页在 `public/games/`（自 demo 迁入）。`demo/games/` 仍作对照。  
-5. 语音（浏览器切片）：`components/voice` + `useSpeechRecognition` / `useSpeechSynthesis`；转写必须进 composer → 现有发送管线。无成人模式页（`/mode` 仅重定向）。
+5. 语音（浏览器切片）：`components/voice/VoiceTalkButton` + `useSpeechRecognition` / `useSpeechSynthesis`；转写进 composer → 现有发送管线；朗读在助手气泡下；`utils/companionVoice.ts` 区分伙伴。无成人模式页（`/mode` 仅重定向）。
 
 ---
 

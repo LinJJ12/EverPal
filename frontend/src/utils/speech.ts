@@ -1,6 +1,8 @@
 /** Minimal Web Speech typings (Chromium `webkitSpeechRecognition`). */
 
 export const SPEECH_TRANSCRIPT_MAX_CHARS = 500;
+/** Cap browser TTS payload so huge replies do not freeze the tab. */
+export const SPEECH_SPEAK_MAX_CHARS = 2000;
 
 export interface JiubanSpeechRecognitionResult {
   readonly isFinal: boolean;

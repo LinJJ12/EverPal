@@ -44,7 +44,7 @@
 
 | Priority | Item | Status |
 |----------|------|--------|
-| P0 | Voice companion: click-to-talk STT + per-bubble read-aloud TTS (chat page, Chinese-first, no login) | **Done (browser Web Speech)** — no `capabilities/speech` yet |
+| P0 | Voice companion: click-to-talk STT + per-bubble read-aloud TTS; per-companion pitch/rate/voice pick | **Done (browser Web Speech)** — no `capabilities/speech` yet |
 | P1 | Stronger long-term memory + daily mood check-in | Next |
 | P1 | Safe story library / official topic packs (after memory) | Planned |
 | P2 | Optional third-party moderation API; optional encyclopedia with **minors** safety gate | Deferred |

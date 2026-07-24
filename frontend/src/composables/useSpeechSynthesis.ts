@@ -1,13 +1,19 @@
 import { ref } from "vue";
-import { speechSynthesisSupported } from "@/utils/speech";
-import { pickCompanionVoice, voiceProfileFor } from "@/utils/companionVoice";
+import { speechSynthesisSupported, SPEECH_SPEAK_MAX_CHARS } from "@/utils/speech";
+import {
+  clampPitch,
+  clampRate,
+  pickCompanionVoice,
+  voiceProfileFor,
+} from "@/utils/companionVoice";
+
+let voicesListenerAttached = false;
 
 export function useSpeechSynthesis() {
   const supported = speechSynthesisSupported();
   const speaking = ref(false);
   const error = ref("");
   let speakTimer: number | null = null;
-  let voicesLoaded = false;
 
   function clearError() {
     error.value = "";
@@ -22,15 +28,17 @@ export function useSpeechSynthesis() {
 
   function ensureVoices(): SpeechSynthesisVoice[] {
     if (!supported) return [];
-    let list = window.speechSynthesis.getVoices();
-    if (!list.length && !voicesLoaded) {
-      // Chrome loads voices async
-      window.speechSynthesis.onvoiceschanged = () => {
-        voicesLoaded = true;
-      };
-      list = window.speechSynthesis.getVoices();
+    if (!voicesListenerAttached) {
+      voicesListenerAttached = true;
+      try {
+        window.speechSynthesis.addEventListener("voiceschanged", () => {
+          /* voices populate asynchronously in Chromium */
+        });
+      } catch {
+        /* older engines */
+      }
     }
-    return list;
+    return window.speechSynthesis.getVoices();
   }
 
   function stop() {
@@ -45,8 +53,11 @@ export function useSpeechSynthesis() {
 
   function speak(text: string, companionId?: string | null) {
     error.value = "";
-    const t = text.trim();
+    let t = text.trim();
     if (!t) return;
+    if (t.length > SPEECH_SPEAK_MAX_CHARS) {
+      t = `${t.slice(0, SPEECH_SPEAK_MAX_CHARS)}…`;
+    }
     if (!supported) {
       error.value = "当前浏览器暂不支持朗读";
       return;
@@ -56,8 +67,8 @@ export function useSpeechSynthesis() {
     const profile = voiceProfileFor(companionId);
     const u = new SpeechSynthesisUtterance(t);
     u.lang = "zh-CN";
-    u.rate = profile.rate;
-    u.pitch = profile.pitch;
+    u.rate = clampRate(profile.rate);
+    u.pitch = clampPitch(profile.pitch);
     const voice = pickCompanionVoice(companionId, ensureVoices());
     if (voice) {
       u.voice = voice;
@@ -78,7 +89,6 @@ export function useSpeechSynthesis() {
     speakTimer = window.setTimeout(() => {
       speakTimer = null;
       try {
-        // Re-pick if voices arrived after first call
         if (!u.voice) {
           const late = pickCompanionVoice(companionId, ensureVoices());
           if (late) {
