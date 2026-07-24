@@ -36,6 +36,8 @@ user message
 | `action` | `block` \| `rewrite` \| `watch` |
 | `terms` | Substrings or regexes (document which) |
 
+Walkthrough alignment (phase-1): `self_harm` must include at least the phrases used by `SafetyView` / demo samples (e.g. 「伤害自己」「自我伤害」) so product-shell safety demos hit the lexicon, not only the model.
+
 ## Mode differences
 
 | | Child | Adult |

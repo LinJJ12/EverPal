@@ -48,3 +48,7 @@
 | 「重置本机档案」只 `removeItem(client_id)` 再 `save`，文案写「刷新后才换标识」 | `save` 已触发新 id，提示与行为不一致；内存里旧 session 仍可能残留 | `resetClientId()` 立刻写入新 id → 清 `sessionId` → `location.reload()` |
 | `?session=` 加载失败仍保留旧 `sessionId` / 空白当成功 | 后续发送挂到错误会话；用户以为回看成功 | 失败：人话错误 + `sessionId = null` + 清空消息；加载中明示「正在加载…」 |
 | 档案/模式/伙伴 `save` 先改本地再请求，失败时静默 `catch` | UI 显示已切换，服务端未改 | `save` 失败回滚 Pinia；页面用人话提示（`friendlyError`） |
+| 「重新生成」只 pop 助手再 `submit` | `onUser` 再 push → 连续两条相同 user | pop 助手 + 末条 user 后再 `submit` |
+| 场景/安全 `?seed=` 不清理 `sessionId` | 新开场白挂到旧会话 | 进聊天前 `sessionId = null`；Chat 对 seed mount 再清消息 |
+| 历史回看只恢复消息、不恢复 companion/mode | 续聊人设漂移（PER-03） | `getSession` 后同步 companion/mode（`save` 或本地 + `applyModeChrome`） |
+| 场景进聊天：`save` 失败仍 `navigate` | 假成功；与写路径可见失败原则冲突 | 失败人话提示并 `return`；成功才跳转 |
