@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import HoldToTalkButton from "@/components/voice/HoldToTalkButton.vue";
+import VoiceTalkButton from "@/components/voice/VoiceTalkButton.vue";
 
 defineProps<{ disabled?: boolean }>();
 const model = defineModel<string>({ default: "" });
@@ -11,7 +11,6 @@ function onTranscript(text: string) {
   voiceHint.value = "";
   const t = text.trim();
   if (!t) return;
-  // Already sanitized in recognition stop(); keep defensive trim only.
   if (!model.value.trim()) {
     model.value = t;
   } else {
@@ -28,7 +27,7 @@ function onVoiceError(message: string) {
   <div class="composer-wrap">
     <p v-if="voiceHint" class="note composer-voice-hint">{{ voiceHint }}</p>
     <form class="composer" @submit.prevent="emit('send')">
-      <HoldToTalkButton :disabled="disabled" @transcript="onTranscript" @error="onVoiceError" />
+      <VoiceTalkButton :disabled="disabled" @transcript="onTranscript" @error="onVoiceError" />
       <input
         v-model="model"
         type="text"

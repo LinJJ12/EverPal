@@ -409,7 +409,7 @@ watch(
             <button
               v-if="m.role === 'assistant' && m.content.trim() && !(streaming && i === messages.length - 1)"
               type="button"
-              class="bubble-speak"
+              class="btn btn-secondary bubble-speak"
               :disabled="!ttsSupported || sessionLoading"
               :aria-pressed="speaking && speakingIndex === i"
               @click="toggleSpeakAt(i)"
