@@ -11,6 +11,9 @@ import CompanionAvatar from "@/components/companions/CompanionAvatar.vue";
 import { COMPANION_SAMPLES } from "@/utils/avatars";
 import { friendlyError } from "@/utils/errors";
 
+/** Shared across ChatView remounts so a stale getSession cannot reattach sessionId. */
+let chatSessionLoadSeq = 0;
+
 const store = useProfileStore();
 const { companion, nickname, likeLabels, mode, companions } = storeToRefs(store);
 const {
@@ -70,8 +73,12 @@ function onClear() {
 function regen() {
   const lastUser = [...messages.value].reverse().find((m) => m.role === "user");
   if (!lastUser || streaming.value) return;
-  // drop trailing assistant if present
+  // Drop trailing assistant, then the last user — submit will re-add user once
+  // so UI and history sent to the backend stay a single user turn.
   if (messages.value.length && messages.value[messages.value.length - 1].role === "assistant") {
+    messages.value.pop();
+  }
+  if (messages.value.length && messages.value[messages.value.length - 1].role === "user") {
     messages.value.pop();
   }
   onSubmit(lastUser.content);
@@ -80,6 +87,10 @@ function regen() {
 onMounted(() => {
   const seed = route.query.seed;
   if (typeof seed === "string" && seed.trim()) {
+    // New-session intent from scenes/safety: do not attach to a prior thread
+    chatSessionLoadSeq += 1;
+    store.sessionId = null;
+    messages.value = [];
     onSubmit(seed.trim());
   }
 });
@@ -92,22 +103,42 @@ watch(
       sessionLoadError.value = "";
       return;
     }
+    const gen = ++chatSessionLoadSeq;
     sessionLoading.value = true;
     sessionLoadError.value = "";
     try {
       const { getSession } = await import("@/api/sessions");
       const s = await getSession(sid);
+      // Stale: newer session load or seed new-session started while in flight
+      if (gen !== chatSessionLoadSeq) return;
       store.sessionId = s.id;
       messages.value = (s.messages || [])
         .filter((m) => m.role === "user" || m.role === "assistant")
         .map((m) => ({ role: m.role as "user" | "assistant", content: m.content }));
+
+      // Restore companion + mode for this session (chrome + continue-chat)
+      const companion_id = s.companion_id || store.companionId;
+      const restoredMode = s.mode === "adult" || s.mode === "child" ? s.mode : store.mode;
+      if (gen !== chatSessionLoadSeq) return;
+      try {
+        await store.save({ companion_id, mode: restoredMode });
+      } catch {
+        if (gen !== chatSessionLoadSeq) return;
+        // Profile sync failed — keep session values locally so this chat stays correct
+        store.companionId = companion_id;
+        store.mode = restoredMode;
+        store.applyModeChrome();
+      }
     } catch (e) {
+      if (gen !== chatSessionLoadSeq) return;
       sessionLoadError.value = friendlyError(e);
       messages.value = [];
       // Do not keep a prior session id — avoids sending into the wrong thread
       store.sessionId = null;
     } finally {
-      sessionLoading.value = false;
+      if (gen === chatSessionLoadSeq) {
+        sessionLoading.value = false;
+      }
     }
   },
   { immediate: true },

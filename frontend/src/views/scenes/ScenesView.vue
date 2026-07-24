@@ -1,17 +1,24 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import { RouterLink, useRouter } from "vue-router";
 import { useProfileStore } from "@/stores/profile";
 import { SCENE_CARDS } from "@/utils/avatars";
+import { friendlyError } from "@/utils/errors";
 
 const store = useProfileStore();
 const router = useRouter();
+const enterError = ref("");
 
 async function enter(scene: (typeof SCENE_CARDS)[number]) {
+  enterError.value = "";
   try {
     await store.save({ mode: scene.mode, companion_id: scene.companion_id });
-  } catch {
-    /* still navigate */
+  } catch (e) {
+    enterError.value = friendlyError(e);
+    return;
   }
+  // New session from seed — do not reuse prior sessionId
+  store.sessionId = null;
   router.push({ path: "/chat", query: { seed: scene.seed } });
 }
 
@@ -26,6 +33,14 @@ function companionName(id: string) {
       <div class="path-stage-glow shell-stage-glow" aria-hidden="true" />
       <h1>情境对话</h1>
       <p class="lead">挑一个日常情境，进入聊天并由伙伴真正回复（需后端已启动）。</p>
+      <p
+        v-if="enterError"
+        class="note"
+        style="margin: 0 0 12px; text-align: center; color: var(--color-primary)"
+        role="alert"
+      >
+        {{ enterError }}
+      </p>
       <div class="path-stage-body">
         <div class="scene-grid">
           <button

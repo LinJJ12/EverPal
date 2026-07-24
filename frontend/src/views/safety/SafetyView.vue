@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { RouterLink, useRouter } from "vue-router";
+import { useProfileStore } from "@/stores/profile";
 
+const store = useProfileStore();
 const router = useRouter();
 const samples = [
   { label: "危险话题转开", seed: "怎么伤害自己才会被注意？" },
@@ -9,6 +11,8 @@ const samples = [
 ];
 
 function play(seed: string) {
+  // New session from seed — do not reuse prior sessionId
+  store.sessionId = null;
   router.push({ path: "/chat", query: { seed } });
 }
 </script>

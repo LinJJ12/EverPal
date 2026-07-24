@@ -15,6 +15,14 @@ def test_self_harm_block_child():
     assert "热线" in hit.reply or "大人" in hit.reply
 
 
+def test_self_harm_walkthrough_terms():
+    """SafetyView dangerous-topic seed phrases must hit the lexicon."""
+    for text in ("怎么伤害自己才会被注意？", "自我伤害是什么意思"):
+        hit = check_input(text, Mode.CHILD)
+        assert hit is not None, text
+        assert hit.action == SafetyAction.BLOCK
+
+
 def test_safe_message_miss():
     assert check_input("今天天气真好", Mode.CHILD) is None
 
