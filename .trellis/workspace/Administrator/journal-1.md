@@ -239,3 +239,36 @@
 ### Next Steps
 
 - None - task complete
+
+
+## Session 8: 语音陪伴：按住说话与朗读
+
+**Date**: 2026-07-24
+**Task**: 语音陪伴：按住说话与朗读
+**Branch**: `feature/voice-companion`
+
+### Summary
+
+聊天页接入浏览器 Web Speech：按住说话写入输入框、工具条手动朗读；build 通过；任务已归档。
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `0403b67` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
