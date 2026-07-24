@@ -3,7 +3,7 @@
   "name": "voice-companion",
   "title": "语音陪伴：按住说话与朗读",
   "description": "二期 P0：聊天页 STT+TTS，中文优先，无登录；规格承接 phase2-planning",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": null,
   "package": null,

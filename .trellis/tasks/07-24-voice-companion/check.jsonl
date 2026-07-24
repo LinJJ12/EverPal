@@ -1,1 +1,5 @@
-{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/spec/frontend/index.md", "reason": "UI hard rules check after voice UI lands"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Lint/type and chat UX regression checklist"}
+{"file": ".trellis/spec/frontend/hook-guidelines.md", "reason": "Verify new speech composables follow hook rules"}
+{"file": ".trellis/spec/guides/product-constraints.md", "reason": "Confirm no backend speech keys or login creep"}
+{"file": ".trellis/tasks/archive/2026-07/07-24-phase2-planning/design.md", "reason": "Handoff: STT text same safety path as typed input"}

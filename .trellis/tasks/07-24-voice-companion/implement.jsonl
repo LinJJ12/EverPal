@@ -1,1 +1,5 @@
-{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/spec/frontend/index.md", "reason": "Product UI hard rules and guideline index for chat UI changes"}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Chat presentational vs logic split; large tap targets"}
+{"file": ".trellis/spec/frontend/hook-guidelines.md", "reason": "Composable patterns; friendly Chinese errors; no keys in browser for server LLM"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Quality bar and chat interaction pitfalls"}
+{"file": ".trellis/spec/guides/product-constraints.md", "reason": "Phase-2 voice near-term constraints; minors-only"}

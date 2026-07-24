@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, onMounted, onBeforeUnmount, ref, watch } from "vue";
 import { RouterLink, useRoute, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useProfileStore } from "@/stores/profile";
 import { useChatPage } from "@/composables/useChatPage";
+import { useSpeechSynthesis } from "@/composables/useSpeechSynthesis";
 import ChatBubble from "@/components/chat/ChatBubble.vue";
 import ChatComposer from "@/components/chat/ChatComposer.vue";
 import TopicCards from "@/components/chat/TopicCards.vue";
@@ -29,12 +30,31 @@ const {
   stop,
   clear,
 } = useChatPage();
+const {
+  supported: ttsSupported,
+  speaking,
+  error: ttsError,
+  speak,
+  stop: stopSpeak,
+} = useSpeechSynthesis();
 const route = useRoute();
 const router = useRouter();
 const sideOpen = ref(false);
 const sessionLoading = ref(false);
 const sessionLoadError = ref("");
 const sideError = ref("");
+
+const lastAssistantText = computed(() => {
+  for (let i = messages.value.length - 1; i >= 0; i--) {
+    const m = messages.value[i];
+    if (m.role === "assistant" && m.content.trim()) return m.content;
+  }
+  return "";
+});
+
+const canSpeak = computed(
+  () => ttsSupported && !streaming.value && !sessionLoading.value && !!lastAssistantText.value,
+);
 
 const headerSub = computed(() => {
   if (nickname.value && likeLabels.value.length) {
@@ -60,6 +80,7 @@ async function pickCompanion(id: string) {
     await store.save({ companion_id: id });
     chatSessionLoadSeq += 1;
     sessionLoadError.value = "";
+    stopSpeak();
     stop();
     // Switch to this companion's last thread (if any); do not wipe other companions' maps
     const sid = await resolveSessionForCompanion(id);
@@ -99,7 +120,22 @@ function onSubmit(text?: string) {
 
 function onClear() {
   sessionLoadError.value = "";
+  stopSpeak();
   clear();
+}
+
+function toggleSpeak() {
+  if (speaking.value) {
+    stopSpeak();
+    return;
+  }
+  if (!canSpeak.value) return;
+  speak(lastAssistantText.value);
+}
+
+function onStopStream() {
+  stopSpeak();
+  stop();
 }
 
 function regen() {
@@ -205,11 +241,20 @@ onMounted(() => {
   void bootstrapChat();
 });
 
+onBeforeUnmount(() => {
+  stopSpeak();
+});
+
+watch(streaming, (busy) => {
+  if (busy) stopSpeak();
+});
+
 // History list → /chat?session= while ChatView may already be mounted
 watch(
   () => route.query.session,
   (sid, prev) => {
     if (typeof sid === "string" && sid.trim() && sid !== prev) {
+      stopSpeak();
       void loadSessionById(sid.trim());
     }
   },
@@ -295,7 +340,7 @@ watch(
             type="button"
             class="btn btn-secondary"
             :disabled="!streaming"
-            @click="stop()"
+            @click="onStopStream()"
           >
             停止生成
           </button>
@@ -306,6 +351,15 @@ watch(
             @click="regen"
           >
             重新生成上一句
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary"
+            :disabled="!canSpeak && !speaking"
+            :aria-pressed="speaking"
+            @click="toggleSpeak"
+          >
+            {{ speaking ? "停止朗读" : "朗读回复" }}
           </button>
           <button type="button" class="btn btn-secondary" disabled title="会话已自动保存到服务端">
             已自动保存
@@ -345,13 +399,14 @@ watch(
         </div>
 
         <p v-if="error" class="note" style="color: var(--color-primary)">{{ error }}</p>
+        <p v-else-if="ttsError" class="note" style="color: var(--color-primary)">{{ ttsError }}</p>
 
         <TopicCards :topics="topics" :disabled="streaming || sessionLoading" @pick="onSubmit" />
         <ChatComposer
           v-model="input"
           :disabled="streaming || sessionLoading"
           @send="onSubmit()"
-          @stop="stop()"
+          @stop="onStopStream()"
         />
       </section>
     </div>

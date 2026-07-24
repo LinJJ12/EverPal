@@ -13,6 +13,8 @@
 | `useSessions` | list/create/rename/delete sessions in local or server anonymous store |
 | `useChatStream` | send message, consume SSE/NDJSON, stop generation, surface friendly errors |
 | `useTopicCards` | mode-aware starter topics |
+| `useSpeechRecognition` | browser Web Speech STT (hold-to-talk); Chinese errors; no server keys |
+| `useSpeechSynthesis` | browser `speechSynthesis` read-aloud; cancel on stop |
 
 ## Rules
 
@@ -20,6 +22,7 @@
 2. Chat hooks must support **stop** mid-stream.
 3. On network/API failure, map to Chinese soft copy (see quality guidelines) — never throw raw upstream text into UI.
 4. Memory clear must go through an explicit hook/API, not ad-hoc `localStorage.clear()` in components.
+5. Browser voice STT must write into the composer and use the existing send path (same backend safety as typing); do not add cloud STT/TTS keys to the frontend for this slice.
 
 ## Forbidden
 

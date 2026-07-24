@@ -1147,6 +1147,7 @@ input:focus-visible {
 .pace-bar,
 .topics,
 .composer,
+.composer-wrap,
 .branch-choices {
   flex-shrink: 0;
 }
@@ -1157,6 +1158,31 @@ input:focus-visible {
   padding: 14px 16px;
   background: rgba(255,255,255,0.95);
   border-top: 1px solid var(--color-border);
+}
+
+.composer-wrap {
+  flex-shrink: 0;
+}
+
+.composer-voice-hint {
+  margin: 0;
+  padding: 8px 16px 0;
+  color: var(--color-primary);
+  font-size: 0.9rem;
+}
+
+.composer .hold-talk {
+  flex-shrink: 0;
+  min-width: 6.5rem;
+  touch-action: none;
+  user-select: none;
+}
+
+.composer .hold-talk.listening {
+  background: linear-gradient(135deg, #ffe8a3, #ffd06a);
+  border-color: #e0b84a;
+  color: #5a3d00;
+  font-weight: 700;
 }
 
 .composer input {

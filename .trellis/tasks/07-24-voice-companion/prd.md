@@ -2,39 +2,39 @@
 
 ## Goal
 
-在聊天页提供 **按住说话（STT）** 与 **朗读回复（TTS）**，中文优先、无登录，转写文本与打字输入走同一安全管线。
+聊天页提供 **按住说话（浏览器 STT）** 与 **手动朗读（浏览器 TTS）**：中文优先、无登录；转写文本填入输入框后走现有发送与安全管线。
 
-## Background
+## Decisions
 
-承接 `07-24-phase2-planning`：二期 P0 首切片。一期已结项（内部测）。目录约定：`frontend` voice 组件；`backend` `capabilities/speech`（若走云端）。
-
-## Parent / 交接
-
-规格承接已归档规划任务 `07-24-phase2-planning`（一期结项 + 二期 backlog）。本任务独立实现语音切片。
-
+| 决策 | 选择 |
+|------|------|
+| 技术路线 | 纯浏览器：`SpeechRecognition` / `webkitSpeechRecognition` + `speechSynthesis` |
+| 后端 | **不**新增 `capabilities/speech` / 语音 API |
+| 朗读 | 仅手动点「朗读」；不自动播、不边生成边读 |
+| 按住说话松手 | 文本写入输入框，**用户再点发送**（可改字） |
+| 朗读对象 | 最近一条完整助手回复（流式中禁用） |
 
 ## Requirements
 
-- **R1 STT**：聊天页按住说话 → 得到中文文本 → 可填入输入框或直接发送；权限拒绝 / 识别失败用人话提示。
-- **R2 TTS**：助手回复可朗读（按钮；是否自动播另定）；流式过程中的朗读策略在 design 中定。
-- **R3 安全**：STT 文本必须经现有词库/提示词路径，禁止语音旁路。
-- **R4 密钥**：若用云 STT/TTS，密钥仅 `backend/.env`。
-- **R5 范围**：仅聊天页、中文优先；不依赖登录/家长。
+- **R1 STT**：按住开始识别、松手结束；结果写入 composer；不支持 / 拒麦 / 失败 → 人话提示。
+- **R2 TTS**：助手气泡或工具条「朗读 / 停止朗读」；仅非流式完成的助手消息。
+- **R3 安全**：只通过现有 `submit`/发送路径；语音不旁路词库。
+- **R4 UX**：大按键；录音中有可见状态；`zh-CN` 优先。
+- **R5**：不改登录/家长/成人模式。
 
 ## Acceptance Criteria
 
-- [ ] AC1：按住说话可将识别文本进入发送流程并收到流式回复。
-- [ ] AC2：可朗读最近一条（或当前）助手回复。
-- [ ] AC3：麦克风拒绝 / 识别失败有人话提示，不静默失败。
-- [ ] AC4：命中安全词库的语音转写与打字同等拦截。
-- [ ] AC5：无登录、无成人模式相关改动。
+- [x] AC1：按住说话 → 输入框出现转写 → 发送后正常流式回复。（代码路径已接；需 Chromium 肉眼确认麦克风）
+- [x] AC2：流式结束后可朗读最近助手回复，可停止。
+- [x] AC3：不支持 Web Speech / 拒麦 / 识别失败有人话提示。
+- [x] AC4：转写内容与打字一样经后端安全（无新旁路 API）。
+- [x] AC5：无 backend speech、无登录相关改动。
 
 ## Out of scope
 
-- 多语言、声纹、实时打断对谈、离线包、家长管控挂钩
-- 登录 / 记忆增强 / 故事库（后续任务）
+- 云端 Whisper/TTS、多语言、声纹、实时打断、自动朗读、松手直发
+- 记忆增强、故事库、家长/登录
 
-## Notes
+## Background
 
-- 浏览器 Web Speech vs 后端云方案在本任务 `design.md` 锁定后再 `task.py start`。
-- 规划交接规格见 `.trellis/tasks/07-24-phase2-planning/design.md`。
+二期 P0；承接已归档 `07-24-phase2-planning`。落点：`frontend/src/components/voice/` + composables；改 `ChatComposer` / `ChatView`。
