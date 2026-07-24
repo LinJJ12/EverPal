@@ -8,9 +8,10 @@
 
 承接 `07-24-phase2-planning`：二期 P0 首切片。一期已结项（内部测）。目录约定：`frontend` voice 组件；`backend` `capabilities/speech`（若走云端）。
 
-## Parent
+## Parent / 交接
 
-`07-24-phase2-planning`（规划已锁规格；本任务负责实现）
+规格承接已归档规划任务 `07-24-phase2-planning`（一期结项 + 二期 backlog）。本任务独立实现语音切片。
+
 
 ## Requirements
 
