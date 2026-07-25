@@ -404,3 +404,36 @@
 ### Next Steps
 
 - None - task complete
+
+
+## Session 13: 朗读进度与暂停继续
+
+**Date**: 2026-07-25
+**Task**: 朗读进度与暂停继续
+**Branch**: `main`
+
+### Summary
+
+交付气泡朗读进度变色（progressRatio）、暂停/继续/重新朗读；手测通过后提交推送。无独立 active task，仅 journal 归档。
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `bd494df` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
