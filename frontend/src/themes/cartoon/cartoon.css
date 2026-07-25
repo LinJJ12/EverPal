@@ -1,6 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap");
+@import "./mood.css";
 
-/* Companion Demo — web desktop layout (ui-ux-pro-max: AI chat + claymorphism kids mood) */
+/* Companion Demo � web desktop layout (ui-ux-pro-max: AI chat + claymorphism kids mood) */
 :root {
   --color-primary: #e85d4c;
   --color-primary-hover: #d44a3a;
@@ -89,7 +90,7 @@ button, a.btn, .choice-item, .companion, .hub-item, .topic, .nav-links a {
 
 img { max-width: 100%; display: block; }
 
-/* ——— Top site nav (web) ——— */
+/* ——�?Top site nav (web) ——�?*/
 .site-header {
   position: sticky;
   top: 0;
@@ -214,7 +215,7 @@ input:focus-visible {
   text-align: left;
 }
 
-/* ——— Branch choices (scene) ——— */
+/* ——�?Branch choices (scene) ——�?*/
 .branch-choices {
   display: flex;
   flex-wrap: wrap;
@@ -227,7 +228,7 @@ input:focus-visible {
   font-size: 0.9rem;
 }
 
-/* ——— Page shell ——— */
+/* ——�?Page shell ——�?*/
 .page {
   width: min(var(--max), calc(100% - 48px));
   margin: 0 auto;
@@ -242,7 +243,7 @@ input:focus-visible {
   width: min(720px, calc(100% - 48px));
 }
 
-/* ——— Home shell hero (full-bleed brand plane) ——— */
+/* ——�?Home shell hero (full-bleed brand plane) ——�?*/
 .shell-hero {
   position: relative;
   isolation: isolate;
@@ -645,7 +646,7 @@ input:focus-visible {
 
 .stack { display: flex; flex-direction: column; gap: 14px; }
 
-/* ——— Buttons ——— */
+/* ——�?Buttons ——�?*/
 .btn {
   display: inline-flex;
   align-items: center;
@@ -690,7 +691,7 @@ input:focus-visible {
 
 .btn-block { width: 100%; }
 
-/* ——— Path / hub grid ——— */
+/* ——�?Path / hub grid ——�?*/
 .hub-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -758,7 +759,7 @@ input:focus-visible {
 
 .hub-item span { color: var(--color-muted); font-size: 0.9rem; }
 
-/* ——— Choices / companions ——— */
+/* ——�?Choices / companions ——�?*/
 .choice {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -911,7 +912,7 @@ input:focus-visible {
 
 .mode-badge.child { background: #ffe0ea; color: #a02858; border-color: transparent; }
 
-/* ——— Desktop chat layout ——— */
+/* ——�?Desktop chat layout ——�?*/
 .chat-layout {
   display: grid;
   grid-template-columns: 260px minmax(0, 1fr);
@@ -1270,7 +1271,7 @@ body:has(.page-chat) .page-chat {
   max-height: none;
 }
 
-/* ——— Responsive ——— */
+/* ——�?Responsive ——�?*/
 @media (max-width: 960px) {
   .lead { margin-left: auto; margin-right: auto; }
   .hub-grid { grid-template-columns: 1fr 1fr; }
@@ -1349,7 +1350,7 @@ body:has(.page-chat) .page-chat {
   .page { padding-top: 20px; }
 }
 
-/* ——— Enriched demo: scenes / memory / safety / pace ——— */
+/* ——�?Enriched demo: scenes / memory / safety / pace ——�?*/
 .scene-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -1435,6 +1436,21 @@ body:has(.page-chat) .page-chat {
   background: #fffaf5;
   border: 1px solid var(--color-border);
 }
+
+.memory-item-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.memory-del {
+  min-height: 32px;
+  padding-inline: 12px;
+  font-size: 0.82rem;
+}
+
 
 .safety-grid {
   display: grid;
@@ -1592,4 +1608,5 @@ html[data-mode="child"] { --demo-font-scale: 1.12; }
 body { font-size: calc(16px * var(--demo-font-scale, 1)); }
 
 #app { min-height: 100dvh; display: flex; flex-direction: column; }
+
 

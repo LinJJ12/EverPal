@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from src.capabilities import safety as safety_cap
 from src.domain.enums import Mode
-from src.storage import memory_repo, profile_repo
+from src.storage import memory_repo, mood_repo, profile_repo
 
 # Snippet order among memory rows (lower = earlier in prompt)
 _SNIPPET_CATEGORY_ORDER = {
@@ -43,19 +43,26 @@ def snippet(
 ) -> str:
     """Light memory snippet for system prompt.
 
-    Order: nickname → profile likes → memories preference→like→dislike→event
+    Order: nickname → profile likes → today mood → memories preference→like→dislike→event
     (within category: newer first). Total memory lines capped at 5.
     """
     bits: list[str] = []
     nick = nickname
     like_list = list(likes or [])
     mem_bits: list[str] = []
+    mood_bit = ""
     if client_id.strip():
         profile = profile_repo.get_profile(client_id) or profile_repo.ensure_profile(client_id)
         if not nick:
             nick = profile.get("nickname") or ""
         if not like_list:
             like_list = list(profile.get("likes") or [])
+        today = mood_repo.get_mood(client_id)
+        if today and today.get("label"):
+            mood_bit = (
+                f"今日心情：{today['label']}。"
+                "可轻轻关心，不要每句提起，不要追问为什么。"
+            )
         mems = memory_repo.list_memories(client_id, limit=8)
         mems_sorted = sorted(
             mems,
@@ -73,6 +80,8 @@ def snippet(
         bits.append(f"称呼 {nick.strip()}")
     if like_list:
         bits.append("喜欢 " + "、".join(like_list[:5]))
+    if mood_bit:
+        bits.append(mood_bit)
     bits.extend(mem_bits)
     if extra.strip():
         bits.append(extra.strip())

@@ -20,10 +20,10 @@ lib: logging + exceptions whitelist — no business dump
 | `services/chat.py` | Fixed chat pipeline order | Prompt prose; lexicon implementation |
 | `capabilities/*` | Single reusable units | Second chat orchestrator; agent loop |
 | `capabilities/speech/` | Package (tts/asr/client) — only multi-file capability | Empty shells; keys outside Settings |
-| `storage/` | Persistence only | LLM / speech upstream calls |
-| `domain/` | Enums / pure rules | I/O; read env |
+| `storage/` | Persistence only | LLM / speech upstream calls; pure enum tables |
+| `domain/` | Enums / pure rules (`moods.py`) | I/O; read env |
 | `config/` | Settings + LLM factory | Business orchestration |
-| `schemas/` | Request/response DTOs | Upstream SDK types |
+| `schemas/` | Request/response DTOs (`mood.py` included) | Upstream SDK types |
 | `lib/` | Cross-cutting utils | Companion domain concepts |
 
 ## Target tree (summary)
@@ -35,15 +35,15 @@ backend/
 ├── data/
 ├── resource/
 ├── src/
-│   ├── api/{health,chat,companions,sessions,profile,speech}.py
+│   ├── api/{health,chat,companions,sessions,profile,mood,speech}.py
 │   ├── services/chat.py
 │   ├── capabilities/{persona,memory,safety,llm,safe_stream}.py
 │   ├── capabilities/speech/{client,tts,asr}.py
-│   ├── schemas/{chat,companion,speech}.py
+│   ├── schemas/{chat,companion,speech,mood}.py
 │   ├── prompts/{modes,companions,safety}/
 │   ├── data/lexicon/
-│   ├── storage/
-│   ├── domain/
+│   ├── storage/{db,profile_repo,session_repo,memory_repo,mood_repo}.py
+│   ├── domain/{enums,moods}.py
 │   ├── config/
 │   └── lib/
 └── tests/{unit,api,fixtures}/

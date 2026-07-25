@@ -45,7 +45,7 @@
 | Priority | Item | Status |
 |----------|------|--------|
 | P0 | Voice companion: click-to-talk STT + per-bubble read-aloud TTS | **Done** — browser + cloud hybrid (`capabilities/speech`, DashScope TTS/ASR, browser fallback) |
-| P1 | Stronger long-term memory + daily mood check-in | Next |
+| P1 | Stronger long-term memory + daily mood check-in | **In progress** — chat gate + prompt inject + per-item memory delete |
 | P1 | Safe story library / official topic packs (after memory) | Planned |
 | P2 | Optional third-party moderation API; optional encyclopedia with **minors** safety gate | Deferred |
 | Later stage | Login / family account; parental consent & panel | Deferred |

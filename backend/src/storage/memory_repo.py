@@ -74,3 +74,19 @@ def clear_memories(client_id: str) -> int:
     with db_session() as conn:
         cur = conn.execute("DELETE FROM memories WHERE client_id=?", (cid,))
         return cur.rowcount
+
+
+def delete_memory(client_id: str, memory_id: int) -> bool:
+    cid = (client_id or "").strip()
+    if not cid or memory_id is None:
+        return False
+    try:
+        mid = int(memory_id)
+    except (TypeError, ValueError):
+        return False
+    with db_session() as conn:
+        cur = conn.execute(
+            "DELETE FROM memories WHERE client_id=? AND id=?",
+            (cid, mid),
+        )
+        return cur.rowcount > 0

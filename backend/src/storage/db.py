@@ -46,9 +46,19 @@ CREATE TABLE IF NOT EXISTS messages (
   FOREIGN KEY (session_id) REFERENCES sessions(id)
 );
 
+CREATE TABLE IF NOT EXISTS daily_moods (
+  client_id TEXT NOT NULL,
+  day TEXT NOT NULL,
+  mood TEXT NOT NULL,
+  updated_at REAL NOT NULL,
+  PRIMARY KEY (client_id, day),
+  FOREIGN KEY (client_id) REFERENCES profiles(client_id)
+);
+
 CREATE INDEX IF NOT EXISTS idx_memories_client ON memories(client_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_sessions_client ON sessions(client_id, updated_at DESC);
 CREATE INDEX IF NOT EXISTS idx_messages_session ON messages(session_id, id);
+CREATE INDEX IF NOT EXISTS idx_daily_moods_client ON daily_moods(client_id, day DESC);
 """
 
 

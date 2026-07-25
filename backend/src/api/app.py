@@ -7,7 +7,7 @@ from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from src.api import chat, companions, health, profile, sessions, speech
+from src.api import chat, companions, health, mood, profile, sessions, speech
 from src.config.settings import get_settings
 from src.lib.exceptions import AppError, client_error_body
 from src.lib.logging import get_logger, new_request_id, set_request_id
@@ -44,6 +44,7 @@ app.include_router(companions.router)
 app.include_router(chat.router)
 app.include_router(sessions.router)
 app.include_router(profile.router)
+app.include_router(mood.router)
 app.include_router(speech.router)
 
 

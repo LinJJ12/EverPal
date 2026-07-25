@@ -49,7 +49,8 @@ npm run dev
 
 **二期进展**：
 - **语音**：点我说话 + 气泡朗读（进度变色；暂停/继续/重新朗读）；配置 `DASHSCOPE_*` 后优先云端（`qwen-audio-3.0-tts-flash` / `qwen3-asr-flash`），失败回退浏览器 Web Speech；转写仍走现有发送/安全管线
-- **下一步**：更强记忆 + 今日心情打卡
+- **进行中**：今日心情打卡（进聊天门闸）+ 记忆单条删除
+- **下一步**：心情/记忆验收后 → 安全故事库 / 官方话题包
 
 登录 / 家长管控仍为另阶段。详见 [`docs/PRD.md`](docs/PRD.md) §4.2 与 `.trellis/spec/guides/product-constraints.md`。
 

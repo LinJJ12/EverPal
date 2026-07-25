@@ -78,6 +78,22 @@ def patch_profile(
     )
 
 
+@router.delete("/profile/memories/{memory_id}")
+def delete_memory(
+    memory_id: int,
+    client_id: str | None = Query(default=None),
+    x_client_id: str | None = Header(default=None, alias="X-Client-Id"),
+) -> dict:
+    cid = _cid(client_id, x_client_id)
+    ok = memory_repo.delete_memory(cid, memory_id)
+    if not ok:
+        raise HTTPException(
+            status_code=404,
+            detail={"error": {"code": "not_found", "message": "这条记忆不在了"}},
+        )
+    return {"ok": True, "id": memory_id}
+
+
 @router.delete("/profile/memories")
 def clear_memories(
     client_id: str | None = Query(default=None),

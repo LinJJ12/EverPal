@@ -152,6 +152,7 @@ LLM 客户端：只出自 config/（capabilities/llm 经 config 取客户端）
 | 流式陪伴对话 | `chat.ts` | `chat` | **`services/chat`** |
 | 会话列表/保存/回看 | `sessions.ts` | `sessions` | `storage` |
 | 档案 / 记忆查看清除 | `profile.ts` | `profile` | `capabilities/memory` + `storage` |
+| 今日心情 | `mood.ts` | `mood` | `storage/mood_repo`（按日；注入 memory snippet） |
 | 语音朗读 / 听写 | `speech.ts` | `speech` | **`capabilities/speech`**（云端；前端浏览器回退） |
 
 ```text
@@ -159,7 +160,7 @@ frontend views → composables → frontend/src/api/*  →  HTTP /v1/...
 backend api → services/chat | capabilities → storage / domain / config
 ```
 
-建议路径：`GET /health`，`GET /v1/companions`，`POST /v1/chat/stream`，`/v1/sessions`，`/v1/profile`，`POST /v1/speech/tts`，`POST /v1/speech/asr`。  
+建议路径：`GET /health`，`GET /v1/companions`，`POST /v1/chat/stream`，`/v1/sessions`，`/v1/profile`，`GET|PUT /v1/mood/today`，`POST /v1/speech/tts`，`POST /v1/speech/asr`。  
 **禁止对公网**：模型管理台、温度调试、原始 Provider 错误体、百炼 Key。
 
 ---
@@ -189,6 +190,7 @@ frontend/
 │   │   ├── companions.ts
 │   │   ├── sessions.ts
 │   │   ├── profile.ts
+│   │   ├── mood.ts               # 今日心情 GET/PUT（仅 HTTP）
 │   │   └── speech.ts             # TTS / ASR HTTP（无 Key）
 │   ├── views/                    # 一界面一目录
 │   │   ├── home/                 # 品牌首页（shell-hero）           UI-01
@@ -198,22 +200,24 @@ frontend/
 │   │   ├── scenes/               # 场景入口 → chat seed             P1
 │   │   ├── chat/                 # 流式聊 / 停止 / 话题卡 / 语音     CMP-02~05, UI-06
 │   │   ├── history/              # 本机会话                         UI-02
-│   │   ├── memory/               # 记忆查看 / 清除                  MEM-03
+│   │   ├── memory/               # 记忆查看 / 清除 / 今日心情        MEM-03
 │   │   ├── settings/             # 本地设置；无 API Key UI           UI-04
 │   │   ├── games/                # 益智游戏大厅
 │   │   └── safety/               # 安全边界示例入口
 │   ├── composables/
 │   │   ├── useChatPage.ts
 │   │   ├── useChatStream.ts
+│   │   ├── useMoodGate.ts            # /chat 今日心情门闸 + 延后 bootstrap
 │   │   ├── useSpeechRecognition.ts   # 浏览器 STT 回退
 │   │   └── useSpeechSynthesis.ts     # 云端 TTS 优先 + 浏览器回退
 │   ├── components/
 │   │   ├── layout/               # AppHeader（NAV_PRIMARY + 更多）
 │   │   ├── chat/                 # Bubble、Composer、TopicCards
 │   │   ├── voice/                # VoiceTalkButton（点我说话）
+│   │   ├── mood/                 # MoodGate / MoodSticker / moodOptions
 │   │   └── companions/           # CompanionAvatar
 │   ├── stores/
-│   ├── themes/cartoon/           # cartoon.css + games.css（自 demo 迁入）
+│   ├── themes/cartoon/           # cartoon.css + mood.css + games.css
 │   ├── types/
 │   └── utils/
 │       ├── avatars / clientId / errors / activeSession
@@ -241,6 +245,7 @@ frontend/
 3. 产品 UI 无 Tour / PRD 版本 /「不接真实大模型」。  
 4. 益智游戏：大厅在 `views/games/`；具体对局静态页在 `public/games/`（自 demo 迁入）。`demo/games/` 仍作对照。  
 5. 语音分层：`api/speech.ts`（HTTP）→ composables → `components/voice/`；浏览器辅助在 `utils/voice/`。云端优先、浏览器回退；转写进 composer → 现有发送管线。无成人模式页（`/mode` 仅重定向）。
+6. 今日心情：`api/mood.ts`（HTTP）+ `components/mood/moodOptions.ts`（UI 常量）+ `useMoodGate`（门闸）；`MoodGate` 每日首次进 `/chat`；写入后端后由 `memory.snippet` 注入系统提示；记忆页可改签与单条删除。
 
 ---
 
@@ -267,8 +272,9 @@ backend/
     │   ├── chat.py               # 流式；调用 services.chat
     │   ├── companions.py
     │   ├── sessions.py
-    │   ├── profile.py
-    │   └── speech.py             # TTS / ASR 代理                     UI-06
+│   ├── profile.py
+│   ├── mood.py               # 今日心情 GET/PUT                    P1
+│   └── speech.py             # TTS / ASR 代理                     UI-06
     ├── services/
     │   └── chat.py               # 【一期唯一编排】管线顺序见下
     ├── capabilities/             # 被编排的单能力（可调 LLM，经 config）
@@ -290,17 +296,17 @@ backend/
     │   ├── db.py
     │   ├── profile_repo.py
     │   ├── session_repo.py
-    │   └── memory_repo.py
+    │   ├── memory_repo.py
+    │   └── mood_repo.py          # 按日心情 CRUD（UTC+8）；纯规则见 domain
     ├── domain/                   # 纯模型/枚举/规则数据；无 I/O
     │   ├── enums.py              # Mode、SafetyAction…
-    │   └── companion.py          # 角色 id 等值对象（可选）
+    │   └── moods.py              # MOOD_IDS / normalize / labels
     ├── config/
     │   ├── settings.py           # 读 .env
     │   └── llm.py                # 【唯一】创建 LLM 客户端
-    ├── schemas/                  # 请求/响应 DTO（chat / companion / speech…）
+    ├── schemas/                  # 请求/响应 DTO（chat / companion / speech / mood）
     └── lib/                      # 横切白名单：logging、exceptions
 ```
-
 ### 5.1 聊天管线（`services/chat.py` 专属）
 
 与 `.trellis/spec/backend/safety-pipeline.md` 一致：

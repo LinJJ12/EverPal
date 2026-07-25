@@ -17,3 +17,9 @@ export function clearMemories() {
     method: "DELETE",
   });
 }
+
+export function deleteMemory(memoryId: number) {
+  return apiFetch<{ ok: boolean; id: number }>(`/v1/profile/memories/${memoryId}`, {
+    method: "DELETE",
+  });
+}

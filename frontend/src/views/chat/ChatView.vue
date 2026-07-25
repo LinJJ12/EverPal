@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import { computed, onMounted, onBeforeUnmount, ref, watch } from "vue";
+import { computed, onBeforeUnmount, ref, watch } from "vue";
 import { RouterLink, useRoute, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useProfileStore } from "@/stores/profile";
 import { useChatPage } from "@/composables/useChatPage";
+import { useMoodGate } from "@/composables/useMoodGate";
 import { useSpeechSynthesis } from "@/composables/useSpeechSynthesis";
 import ChatBubble from "@/components/chat/ChatBubble.vue";
 import ChatComposer from "@/components/chat/ChatComposer.vue";
 import TopicCards from "@/components/chat/TopicCards.vue";
 import CompanionAvatar from "@/components/companions/CompanionAvatar.vue";
+import MoodGate from "@/components/mood/MoodGate.vue";
 import { COMPANION_SAMPLES } from "@/utils/avatars";
 import { friendlyError } from "@/utils/errors";
 import { ApiError } from "@/api/http";
@@ -105,11 +107,6 @@ async function resolveSessionForCompanion(companionId: string): Promise<string |
     /* offline — fall through to empty */
   }
   return null;
-}
-
-function onSubmit(text?: string) {
-  sessionLoadError.value = "";
-  return submit(text);
 }
 
 function onClear() {
@@ -262,13 +259,35 @@ async function bootstrapChat() {
     messages.value = [];
     // Remove seed from the URL first so a refresh cannot re-fire a new opener
     await stripSeedQuery();
-    await onSubmit(text);
+    sessionLoadError.value = "";
+    // Gate already cleared by useMoodGate — call submit directly so onSubmit's
+    // moodBlocksChat guard cannot swallow the opener after the query was stripped.
+    await submit(text);
   }
 }
 
-onMounted(() => {
-  void bootstrapChat();
-});
+const {
+  moodGateNeeded,
+  moodBusy,
+  moodError,
+  todayMoodLabel,
+  todayMoodId,
+  moodDayKey,
+  moodEditorOpen,
+  moodFetchFailed,
+  moodBlocksChat,
+  moodChipEmoji,
+  onMoodPick,
+  openMoodEditor,
+  closeMoodEditor,
+  onMoodChipClick,
+} = useMoodGate({ onReadyToChat: () => bootstrapChat() });
+
+function onSubmit(text?: string) {
+  if (moodBlocksChat.value) return;
+  sessionLoadError.value = "";
+  return submit(text);
+}
 
 onBeforeUnmount(() => {
   speakingIndex.value = null;
@@ -305,13 +324,62 @@ watch(
 
 <template>
   <main class="page page-chat">
+    <MoodGate
+      v-if="moodGateNeeded === true || moodEditorOpen"
+      :busy="moodBusy"
+      :day-key="moodDayKey"
+      :selected="todayMoodId"
+      :error="moodError"
+      :show-cancel="moodEditorOpen && moodGateNeeded !== true"
+      :title="moodEditorOpen ? '改一改今天的心情' : '今天心情怎么样？'"
+      @pick="onMoodPick"
+      @cancel="closeMoodEditor"
+    />
+    <div
+      v-else-if="moodGateNeeded === null"
+      class="mood-gate mood-gate-loading"
+      role="status"
+      aria-live="polite"
+    >
+      <div class="mood-bookmark">
+        <div class="mood-bookmark-ribbon" aria-hidden="true">
+          <span class="mood-bookmark-ribbon-text">今日心情</span>
+        </div>
+        <div class="mood-bookmark-body">
+          <p class="mood-bookmark-lead" style="margin: 12px 0 0">稍等，正在翻开今天的书签…</p>
+        </div>
+      </div>
+    </div>
     <div class="page-head" style="margin-bottom: 16px">
       <div>
         <h1>聊天</h1>
         <p class="lead" style="margin: 0">随时聊聊。回复来自陪伴服务，不会在这里配置模型。</p>
       </div>
-      <span class="chip mode-badge">未成年人陪伴</span>
+      <div class="chat-mood-chip-wrap">
+        <button
+          v-if="todayMoodLabel"
+          type="button"
+          class="chip mode-badge mood-chip"
+          @click="openMoodEditor"
+        >
+          <span aria-hidden="true">{{ moodChipEmoji }}</span>
+          今日：{{ todayMoodLabel }}
+        </button>
+        <button
+          v-else-if="moodGateNeeded === false && !todayMoodLabel"
+          type="button"
+          class="chip mode-badge mood-chip"
+          @click="onMoodChipClick"
+        >
+          <span aria-hidden="true">📖</span>
+          {{ moodFetchFailed ? "心情服务暂不可用，点此重试" : "补选今日心情" }}
+        </button>
+        <span class="chip mode-badge">未成年人陪伴</span>
+      </div>
     </div>
+    <p v-if="moodError && moodGateNeeded !== true && !moodEditorOpen" class="note" style="color: var(--color-primary)">
+      {{ moodError }}
+    </p>
 
     <div class="chat-layout" :class="{ 'side-open': sideOpen }" id="chatLayout">
       <aside class="chat-side" aria-label="伙伴与记忆">
@@ -495,10 +563,14 @@ watch(
         <p v-if="error" class="note" style="color: var(--color-primary)">{{ error }}</p>
         <p v-else-if="ttsError" class="note" style="color: var(--color-primary)">{{ ttsError }}</p>
 
-        <TopicCards :topics="topics" :disabled="streaming || sessionLoading" @pick="onSubmit" />
+        <TopicCards
+          :topics="topics"
+          :disabled="streaming || sessionLoading || moodBlocksChat"
+          @pick="onSubmit"
+        />
         <ChatComposer
           v-model="input"
-          :disabled="streaming || sessionLoading"
+          :disabled="streaming || sessionLoading || moodBlocksChat"
           @send="onSubmit()"
           @stop="onStopStream()"
         />
