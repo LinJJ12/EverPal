@@ -8,6 +8,11 @@
     { id: "tetris", title: "俄罗斯方块", blurb: "慢慢下落，消行得分", unit: "分" },
     { id: "puzzle", title: "数字拼图", blurb: "三乘三，步数越少越好", unit: "步", lowerBetter: true },
     { id: "match3", title: "消消乐", blurb: "交换相邻格子，连成三个", unit: "分" },
+    { id: "breakout", title: "打砖块", blurb: "左右移动挡板，打掉彩色砖块", unit: "分" },
+    { id: "flip", title: "记忆翻牌", blurb: "翻开配对，步数越少越好", unit: "步", lowerBetter: true },
+    { id: "guess", title: "猜数字", blurb: "根据提示猜出神秘数字", unit: "最少次数", lowerBetter: true },
+    { id: "tictactoe", title: "井字棋", blurb: "你先手，和电脑下一盘", unit: "胜场" },
+    { id: "maze", title: "走迷宫", blurb: "找到路，走到星星出口", unit: "步", lowerBetter: true },
   ];
 
   function getHigh(id) {

@@ -84,7 +84,7 @@ npm run dev
 
 打开 http://localhost:5173 。开发时 Vite 可将 `/v1`、`/health` 代理到后端；也可直接用 `VITE_API_BASE_URL=http://127.0.0.1:8000`。
 
-界面已按 `demo/` 产品壳迁入（首页英雄区、路径页、聊天侧栏、游戏大厅）。游戏对局页：`/games/*.html`（静态资源在 `frontend/public/games/`）。
+界面已按 `demo/` 产品壳迁入（首页英雄区、路径页、聊天侧栏、游戏大厅）。游戏对局页：`/games/*.html`（静态资源在 `frontend/public/games/`，当前 **12 款**；列表见 `frontend/src/utils/gamesMeta.ts`）。新增游戏步骤见 `frontend/public/games/README.md`；冒烟：`cd frontend && npm run test:games`。
 
 场景 / 安全入口会带 `seed` 进入真实流式聊天（不再使用 demo 本地脚本慢放）。
 

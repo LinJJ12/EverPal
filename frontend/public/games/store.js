@@ -17,10 +17,15 @@
       tetris: 0,
       puzzle: null,
       match3: 0,
+      breakout: 0,
+      flip: null,
+      guess: null,
+      tictactoe: 0,
+      maze: null,
     },
   };
 
-  const GAME_LOWER_BETTER = { puzzle: true };
+  const GAME_LOWER_BETTER = { puzzle: true, flip: true, guess: true, maze: true };
 
   function cloneDefaults() {
     return JSON.parse(JSON.stringify(defaults));

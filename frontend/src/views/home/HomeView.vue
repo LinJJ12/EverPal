@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { RouterLink } from "vue-router";
+import { GAME_META } from "@/utils/gamesMeta";
 </script>
 
 <template>
@@ -72,7 +73,7 @@ import { RouterLink } from "vue-router";
           <RouterLink class="hub-item" to="/games">
             <span class="step">游戏</span>
             <strong>益智小游戏</strong>
-            <span>七款本地可玩</span>
+            <span>{{ GAME_META.length }} 款本地可玩</span>
           </RouterLink>
           <RouterLink class="hub-item" to="/memory">
             <span class="step">记忆</span>

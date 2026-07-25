@@ -20,6 +20,8 @@ views → composables → api → backend
 - `utils/voice/`：浏览器 STT/TTS、MediaRecorder、朗读进度估算
 - `stores/`：跨页档案状态
 - `themes/cartoon/`：`cartoon.css` + `mood.css` + `chat.css` + `history.css` + `games.css`
-- `public/games/`：七款本地小游戏静态页
+- `utils/gamesMeta.ts`：Vue 游戏大厅列表（与 `public/games/games-common.js` META 对齐）
+- `public/games/`：本地小游戏静态页（新增流程见该目录 README）
+- `scripts/games/`：游戏 smoke / playtest（勿放进 public）
 
 禁止：页面裸 `fetch`；前端放置 LLM Key / 云端语音 Key；把 UI 常量塞进 `api/`。

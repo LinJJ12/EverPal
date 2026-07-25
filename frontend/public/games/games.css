@@ -334,6 +334,82 @@
 .match3-grid .c3 { background: #4f9fd8; color: #fff; }
 .match3-grid .c4 { background: #e85d4c; color: #fff; }
 
+/* Guess number */
+.guess-panel {
+  max-width: 360px;
+  margin: 0 auto 16px;
+  display: grid;
+  gap: 12px;
+}
+.guess-label {
+  font-weight: 700;
+  color: var(--color-muted);
+}
+.guess-row {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+.guess-input {
+  flex: 1;
+  min-height: 48px;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 0 14px;
+  font: inherit;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+.guess-log {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+  max-height: 180px;
+  overflow: auto;
+}
+.guess-log li {
+  padding: 8px 12px;
+  background: var(--color-muted-bg);
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+/* Memory flip */
+.flip-grid .flip-card {
+  font-size: clamp(1.2rem, 5vw, 1.7rem);
+  background: var(--color-secondary);
+  color: #fff;
+}
+.flip-grid .flip-card.is-open {
+  background: var(--color-surface);
+  color: var(--color-foreground);
+}
+.flip-grid .flip-card.is-matched {
+  background: #e6f8f4;
+  border: 2px solid var(--color-secondary);
+  opacity: 0.85;
+}
+
+/* Tic-tac-toe */
+.ttt-grid .ttt-cell {
+  font-size: clamp(1.6rem, 7vw, 2.2rem);
+  background: #fff;
+}
+.ttt-grid .ttt-cell.is-you {
+  color: var(--color-secondary);
+}
+.ttt-grid .ttt-cell.is-ai {
+  color: var(--color-primary);
+}
+
+/* Breakout LR pad */
+.game-controls .pad.pad-lr {
+  grid-template-columns: repeat(2, 96px);
+  grid-template-rows: 56px;
+}
+
 @media (max-width: 480px) {
   .game-toolbar {
     flex-direction: column;

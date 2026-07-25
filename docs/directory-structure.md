@@ -178,7 +178,12 @@ frontend/
 ├── index.html
 ├── public/
 │   ├── brand/logo.png
-│   └── games/                    # 七款本地小游戏静态页（由 /games 大厅进入）
+│   └── games/                    # 本地小游戏静态页（由 /games 大厅进入；见其 README）
+│       ├── {id}.html + js/{id}.js
+│       ├── games-common.js / store.js / games.css / cartoon.css
+│       └── README.md             # 新增游戏检查清单
+├── scripts/
+│   └── games/                    # smoke-check / playtest（非站点资源）
 ├── README.md                     # 工程怎么起
 ├── src/
 │   ├── README.md                 # 前端分层入口
@@ -204,7 +209,7 @@ frontend/
 │   │   ├── history/              # 月历：对话日 + 心情               UI-02
 │   │   ├── memory/               # 记忆查看 / 清除 / 今日心情        MEM-03
 │   │   ├── settings/             # 本地设置；无 API Key UI           UI-04
-│   │   ├── games/                # 益智游戏大厅
+│   │   ├── games/                # 益智游戏大厅（读 utils/gamesMeta）
 │   │   └── safety/               # 安全边界示例入口
 │   ├── composables/
 │   │   ├── useChatPage.ts
@@ -225,7 +230,7 @@ frontend/
 │   ├── themes/cartoon/           # cartoon.css + mood.css + chat.css + history.css + games.css
 │   ├── types/
 │   └── utils/
-│       ├── avatars / clientId / errors / activeSession / timeCn
+│       ├── avatars / clientId / errors / activeSession / timeCn / gamesMeta
 │       └── voice/                # browser · companionVoice · mediaRecorder · speakProgress
 └── tests/
 ```
@@ -248,7 +253,7 @@ frontend/
 1. 无 `LLM_*` / `OPENAI_API_KEY` 进入前端环境变量。  
 2. 词库拦截、提示词组装、温和拒答主逻辑在后端。  
 3. 产品 UI 无 Tour / PRD 版本 /「不接真实大模型」。  
-4. 益智游戏：大厅在 `views/games/`；具体对局静态页在 `public/games/`（自 demo 迁入）。`demo/games/` 仍作对照。  
+4. 益智游戏：大厅在 `views/games/`（列表来自 `utils/gamesMeta.ts`）；对局页在 `public/games/`。新增游戏须同步 `gamesMeta` + `games-common.js` META + `store.js`。`demo/games/` 仅作历史对照，可能落后，**以 public/games 为准**。  
 5. 语音分层：`api/speech.ts`（HTTP）→ composables → `components/voice/`；浏览器辅助在 `utils/voice/`。云端优先、浏览器回退；转写进 composer → 现有发送管线。无成人模式页（`/mode` 仅重定向）。
 6. 今日心情：`api/mood.ts`（HTTP）+ `components/mood/moodOptions.ts`（UI 常量）+ `useMoodGate`（门闸）；`MoodGate` 每日首次进 `/chat`；写入后端后由 `memory.snippet` 注入系统提示；记忆页可改签与单条删除。
 7. 历史月历：`api/history.ts` + `useHistoryCalendar`；周一起始公历；对话日按消息东八区日；无农历。

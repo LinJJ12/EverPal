@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RouterLink } from "vue-router";
-import { GAME_META } from "@/utils/avatars";
+import { GAME_META } from "@/utils/gamesMeta";
 </script>
 
 <template>
@@ -9,7 +9,7 @@ import { GAME_META } from "@/utils/avatars";
       <div>
         <h1>益智小游戏</h1>
         <p class="games-hub-lead">
-          七款本地小游戏，专为小朋友准备：触控优先、难度固定、成绩记在本机。不联网、不接外链游戏。
+          {{ GAME_META.length }} 款本地小游戏，专为小朋友准备：触控优先、难度固定、成绩记在本机。不联网、不接外链游戏。
         </p>
       </div>
       <span class="chip">离线可玩</span>

@@ -38,8 +38,9 @@ npm run dev
 | [`docs/dev-setup.md`](docs/dev-setup.md) | **本地开发 / Conda `chatbot` / Git 提交边界** |
 | [`demo/`](demo/) | HTML 产品壳对照（本地启发式，不接真模型） |
 | [`demo/assets/brand/`](demo/assets/brand/) | 品牌图标（玖伴） |
-| [`frontend/`](frontend/) | 正式 Web（Vue；UI 对齐 demo；接 BFF 流式 + 游戏大厅） |
-| [`backend/`](backend/) | 陪伴 BFF（FastAPI：健康检查 / 档案 / 会话 / 流式聊天 / 语音代理） |
+| [`frontend/`](frontend/) | 正式 Web（Vue；UI 对齐 demo；接 BFF 流式 + **12 款**本地游戏大厅） |
+| [`frontend/public/games/`](frontend/public/games/) | 游戏对局静态页（新增流程见该目录 README） |
+| [`backend/`](backend/) | 陪伴 BFF（FastAPI：健康检查 / 档案 / 会话 / 流式聊天 / 语音代理 / 心情 / 历史月历） |
 | [`.trellis/`](.trellis/) | Trellis 规格与工作流 |
 | [`vendor/`](vendor/) | 第三方参考（本地，勿当产品运行时） |
 
@@ -49,10 +50,14 @@ npm run dev
 
 **二期进展**：
 - **语音**：点我说话 + 气泡朗读（进度变色；暂停/继续/重新朗读）；配置 `DASHSCOPE_*` 后优先云端（`qwen-audio-3.0-tts-flash` / `qwen3-asr-flash`），失败回退浏览器 Web Speech；转写仍走现有发送/安全管线
-- **进行中**：今日心情打卡（进聊天门闸）+ 记忆单条删除
-- **下一步**：心情/记忆验收后 → 安全故事库 / 官方话题包
+- **心情 / 记忆**：今日心情打卡（进聊天门闸）+ 记忆页改签与单条删除
+- **历史**：会话历史改为月历（对话日 + 心情；可删会话、看伙伴）
+- **游戏**：大厅 **12 款**本地离线小游戏（含打砖块 / 记忆翻牌 / 猜数字 / 井字棋 / 走迷宫等）；`npm run test:games` 可冒烟
+- **下一步**：安全故事库 / 官方话题包
 
 登录 / 家长管控仍为另阶段。详见 [`docs/PRD.md`](docs/PRD.md) §4.2 与 `.trellis/spec/guides/product-constraints.md`。
+
+> **Demo 说明**：`demo/` 仍作无后端产品壳对照；其中游戏大厅可能仍为早期 7 款。**以 `frontend/public/games/` 为准**。
 
 ## 许可与贡献
 

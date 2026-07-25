@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>记忆翻牌 · 玖伴</title>
+  <link rel="stylesheet" href="cartoon.css" />
+  <link rel="stylesheet" href="games.css" />
+</head>
+<body>
+  <main class="page game-page">
+    <div class="game-toolbar">
+      <a class="btn btn-secondary" href="/games">回大厅</a>
+      <h1>记忆翻牌</h1>
+      <button type="button" class="btn btn-primary" id="restartBtn">再来一局</button>
+    </div>
+    <div class="game-scores">
+      <span>本局步数：<strong id="scoreNow">0</strong></span>
+      <span>最佳步数：<strong id="scoreBest">暂无</strong></span>
+      <span>已配对：<strong id="pairsNow">0</strong> / 6</span>
+    </div>
+    <p class="game-hint">点开两张牌，图案一样就算配对成功；步数越少越好</p>
+    <div id="gameMsg" class="game-msg" hidden></div>
+    <div class="game-board-wrap">
+      <div id="board" class="board-grid flip-grid" style="grid-template-columns:repeat(4,1fr);max-width:360px" aria-label="记忆翻牌"></div>
+    </div>
+  </main>
+  <script src="store.js"></script>
+  <script src="games-common.js"></script>
+  <script src="js/flip.js"></script>
+</body>
+</html>

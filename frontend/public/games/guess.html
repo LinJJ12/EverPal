@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>猜数字 · 玖伴</title>
+  <link rel="stylesheet" href="cartoon.css" />
+  <link rel="stylesheet" href="games.css" />
+</head>
+<body>
+  <main class="page game-page">
+    <div class="game-toolbar">
+      <a class="btn btn-secondary" href="/games">回大厅</a>
+      <h1>猜数字</h1>
+      <button type="button" class="btn btn-primary" id="restartBtn">再来一局</button>
+    </div>
+    <div class="game-scores">
+      <span>本局次数：<strong id="scoreNow">0</strong></span>
+      <span>最佳纪录：<strong id="scoreBest">暂无</strong></span>
+      <span>还剩：<strong id="triesLeft">7</strong> 次</span>
+    </div>
+    <p class="game-hint">我想了一个 1 到 50 的数字，根据提示猜一猜吧</p>
+    <div id="gameMsg" class="game-msg" hidden></div>
+    <div class="guess-panel">
+      <label class="guess-label" for="guessInput">你的猜测</label>
+      <div class="guess-row">
+        <input
+          id="guessInput"
+          class="guess-input"
+          type="number"
+          inputmode="numeric"
+          min="1"
+          max="50"
+          placeholder="1–50"
+          autocomplete="off"
+        />
+        <button type="button" class="btn btn-primary" id="guessBtn">猜一下</button>
+      </div>
+      <ul id="guessLog" class="guess-log" aria-label="猜测记录"></ul>
+    </div>
+  </main>
+  <script src="store.js"></script>
+  <script src="games-common.js"></script>
+  <script src="js/guess.js"></script>
+</body>
+</html>

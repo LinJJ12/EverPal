@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>打砖块 · 玖伴</title>
+  <link rel="stylesheet" href="cartoon.css" />
+  <link rel="stylesheet" href="games.css" />
+</head>
+<body>
+  <main class="page game-page">
+    <div class="game-toolbar">
+      <a class="btn btn-secondary" href="/games">回大厅</a>
+      <h1>打砖块</h1>
+      <button type="button" class="btn btn-primary" id="restartBtn">再来一局</button>
+    </div>
+    <div class="game-scores">
+      <span>本局：<strong id="scoreNow">0</strong></span>
+      <span>纪录：<strong id="scoreBest">0</strong></span>
+    </div>
+    <p class="game-hint">左右拖动或按方向键移动挡板，打掉所有砖块</p>
+    <div id="gameMsg" class="game-msg" hidden></div>
+    <div class="game-board-wrap">
+      <canvas id="board" class="game-canvas" width="360" height="420" aria-label="打砖块"></canvas>
+    </div>
+    <div class="game-controls">
+      <div class="pad pad-lr" id="pad">
+        <button type="button" class="btn btn-secondary" data-dir="left" aria-label="左">←</button>
+        <button type="button" class="btn btn-secondary" data-dir="right" aria-label="右">→</button>
+      </div>
+    </div>
+  </main>
+  <script src="store.js"></script>
+  <script src="games-common.js"></script>
+  <script src="js/breakout.js"></script>
+</body>
+</html>
