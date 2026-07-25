@@ -114,7 +114,8 @@ views / composables → components（跨页可复用 UI）
 | `stores/` | 跨页状态 | 发 HTTP（应经 `api`） |
 | `components/` | 跨页 UI 块 | 藏页面路由级逻辑 |
 | `themes/` | 卡通皮肤 tokens | 业务判断 |
-| `lib/` / `utils/` | 无业务语义小工具 | 聊天/安全/人设逻辑 |
+| `content/` | 官方话题 / 场景 / 短故事等静态内容包 | HTTP；散落在多处 view 各写一份 |
+| `lib/` / `utils/` | 无业务语义小工具 | 聊天/安全/人设逻辑；产品文案内容包 |
 
 ### 2.2 后端（两轴）
 
@@ -204,19 +205,22 @@ frontend/
 │   │   ├── welcome/              # 欢迎 / 回访                      CMP-01
 │   │   ├── profile/              # 昵称 + 喜好                      MEM-01/02
 │   │   ├── companions/           # ≥3 官方角色；无恋爱               PER-01, CMP-07
-│   │   ├── scenes/               # 场景入口 → chat seed             P1
+│   │   ├── scenes/               # 场景 + 短故事入口 → chat seed（读 content/packs）
 │   │   ├── chat/                 # 流式聊 / 停止 / 话题卡 / 语音     CMP-02~05, UI-06
 │   │   ├── history/              # 月历：对话日 + 心情               UI-02
 │   │   ├── memory/               # 记忆查看 / 清除 / 今日心情        MEM-03
 │   │   ├── settings/             # 本地设置；无 API Key UI           UI-04
 │   │   ├── games/                # 益智游戏大厅（读 utils/gamesMeta）
 │   │   └── safety/               # 安全边界示例入口
+│   ├── content/
+│   │   └── packs.ts                  # 话题 / 场景 / 短故事唯一内容源
 │   ├── composables/
 │   │   ├── useChatPage.ts
 │   │   ├── useChatStream.ts
 │   │   ├── useChatSession.ts         # 会话加载 / 伙伴切换 / bootstrap
 │   │   ├── useChatSpeak.ts           # 气泡朗读控制
 │   │   ├── useMoodGate.ts            # /chat 今日心情门闸 + 延后 bootstrap
+│   │   ├── useTopicCards.ts          # 空态话题卡（读 content/packs）
 │   │   ├── useHistoryCalendar.ts     # /history 月历数据与翻月
 │   │   ├── useSpeechRecognition.ts   # 浏览器 STT 回退
 │   │   └── useSpeechSynthesis.ts     # 云端 TTS 优先 + 浏览器回退
@@ -246,6 +250,7 @@ frontend/
 | 跨页状态 | `stores/*` | 到处 `localStorage` 无封装 |
 | 本机持久化辅助 | `stores` 或薄 `utils/storage.ts` | 与 API 混在同一文件且职责不清 |
 | 皮肤 | `themes/cartoon/` | 组件内散落 hex |
+| 官方话题 / 场景 / 故事文案 | `content/packs.ts` | `api/`、`avatars.ts`、多 view 各写一份 |
 | 用户可见错误文案 | `api/http` 映射或 `utils/errors.ts` | 直接上屏 `error.message` |
 
 ### 4.2 前端硬约束
@@ -439,3 +444,4 @@ api/chat
 | v0.2 | 2026-07-23 | §1.1 `.env` 约定 |
 | v0.3 | 2026-07-23 | 借鉴 OmniStream：分层心智、API 垂直表、capabilities/services、职责禁止表、检查清单与 README 所有权 |
 | v0.4 | 2026-07-23 | 修正 OmniStream 引用说明；统一 composables 与 views 命名（去掉 composables/pages） |
+| v0.5 | 2026-07-25 | 新增 `frontend/src/content/`（话题/场景/短故事 packs）；scenes 页含短故事分组 |

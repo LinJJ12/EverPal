@@ -1,6 +1,6 @@
 <script setup lang="ts">
 defineProps<{
-  topics: { label: string; text: string }[];
+  topics: { id?: string; label: string; text: string }[];
   disabled?: boolean;
 }>();
 const emit = defineEmits<{ pick: [text: string] }>();
@@ -10,7 +10,7 @@ const emit = defineEmits<{ pick: [text: string] }>();
   <div class="topics">
     <button
       v-for="t in topics"
-      :key="t.label"
+      :key="t.id || t.label"
       type="button"
       class="topic"
       :disabled="disabled"

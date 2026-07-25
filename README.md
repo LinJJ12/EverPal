@@ -53,7 +53,7 @@ npm run dev
 - **心情 / 记忆**：今日心情打卡（进聊天门闸）+ 记忆页改签与单条删除
 - **历史**：会话历史改为月历（对话日 + 心情；可删会话、看伙伴）
 - **游戏**：大厅 **12 款**本地离线小游戏（含打砖块 / 记忆翻牌 / 猜数字 / 井字棋 / 走迷宫等）；`npm run test:games` 可冒烟
-- **下一步**：安全故事库 / 官方话题包
+- **故事 / 话题**：官方话题卡（聊天空态）+ `/scenes` 短故事分组；静态内容源 `frontend/src/content/packs.ts`（审定开场 + LLM 续写）
 
 登录 / 家长管控仍为另阶段。详见 [`docs/PRD.md`](docs/PRD.md) §4.2 与 `.trellis/spec/guides/product-constraints.md`。
 

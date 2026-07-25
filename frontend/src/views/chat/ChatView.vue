@@ -378,8 +378,9 @@ function regen() {
         <p v-else-if="ttsError" class="note" style="color: var(--color-primary)">{{ ttsError }}</p>
 
         <TopicCards
+          v-if="messages.length === 0 && !streaming"
           :topics="topics"
-          :disabled="streaming || sessionLoading || moodBlocksChat"
+          :disabled="sessionLoading || moodBlocksChat"
           @pick="onSubmit"
         />
         <ChatComposer

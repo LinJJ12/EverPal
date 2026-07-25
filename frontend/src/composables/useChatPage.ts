@@ -2,23 +2,18 @@ import { nextTick, ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useProfileStore } from "@/stores/profile";
 import { useChatStream } from "@/composables/useChatStream";
+import { useTopicCards } from "@/composables/useTopicCards";
 import {
   setActiveSessionId,
   setSessionForCompanion,
 } from "@/utils/activeSession";
 import type { ChatMessage } from "@/types";
 
-const TOPICS = [
-  { label: "听个短故事", text: "我想听个短故事" },
-  { label: "为什么天是蓝的", text: "为什么天是蓝的？" },
-  { label: "假装去太空", text: "我们假装去太空吧！" },
-  { label: "今天有点累", text: "今天有点累，想聊聊" },
-];
-
 export function useChatPage() {
   const store = useProfileStore();
   const { nickname, mode, companionId, likeLabels, sessionId, companion } = storeToRefs(store);
   const { streaming, error, send, stop } = useChatStream();
+  const { topics } = useTopicCards();
   const messages = ref<{ role: "user" | "assistant"; content: string }[]>([]);
   const input = ref("");
   const listEl = ref<HTMLElement | null>(null);
@@ -98,7 +93,7 @@ export function useChatPage() {
     streaming,
     error,
     companion,
-    topics: TOPICS,
+    topics,
     submit,
     stop,
     clear,

@@ -21,44 +21,8 @@ export const COMPANION_SAMPLES: Record<string, string> = {
   cha: "我听着呢，你慢慢说。不用说得很整齐也没关系。",
 };
 
-export const SCENE_CARDS = [
-  {
-    id: "bored",
-    title: "今天好无聊",
-    theme: "闲暇陪伴",
-    desc: "无聊时一起听故事，或来个脑筋急转弯",
-    companion_id: "tiao",
-    mode: "child" as const,
-    seed: "今天好无聊啊……",
-  },
-  {
-    id: "why",
-    title: "为什么天是蓝的",
-    theme: "好奇探索",
-    desc: "用短句讲清楚「为什么」，再留一个小问题",
-    companion_id: "nuan",
-    mode: "child" as const,
-    seed: "为什么天是蓝的？",
-  },
-  {
-    id: "space",
-    title: "假装去太空",
-    theme: "想象游戏",
-    desc: "一起假装当宇航员，蹦蹦跳跳地玩",
-    companion_id: "tiao",
-    mode: "child" as const,
-    seed: "我们假装去太空吧！",
-  },
-  {
-    id: "tired",
-    title: "今天有点累",
-    theme: "说说心事",
-    desc: "少说教、先听你说；想找人倾诉时来找阿茶",
-    companion_id: "cha",
-    mode: "child" as const,
-    seed: "今天有点累，想聊聊",
-  },
-];
+/** @deprecated Import from `@/content/packs` — kept for short-term compatibility. */
+export { sceneCards as SCENE_CARDS } from "@/content/packs";
 
 /** @deprecated Import from `@/utils/gamesMeta` — kept for short-term compatibility. */
 export { GAME_META } from "./gamesMeta";
