@@ -23,7 +23,7 @@ Formal app lives in `frontend/` (Vue + Pinia). Device identity is `jiuban_client
 7. **History restore**: on successful `getSession`, apply that session's `companion_id` + `mode` to the store (sync via `save` when possible; on fail keep values locally + `applyModeChrome`) so continue-chat matches the thread.
 8. **Seed entry** (scenes / safety `?seed=`): clear `sessionId` (and empty in-memory messages on chat mount) before/when entering — do not append a seeded opener onto a prior thread.
 9. **Regenerate**: drop trailing assistant **and** the last user bubble, then `submit` so `onUser` re-adds the user **once** (UI and outbound `history` must not contain consecutive duplicate user turns).
-11. **Per-companion threads**: switching companions loads that companion's last session (`jiuban_sessions_by_companion`, with `listSessions` fallback). Do not wipe other companions' mappings. 「清空屏幕」only clears the *current* companion's mapping + active id.
+11. **Session isolation**: switching companions starts a **blank** chat (clear messages + active `sessionId`; clear the target companion's local mapping). Do not auto-load that companion's last thread. Resume old threads only via history (`?session=`). 「新建对话」clears the *current* companion's mapping + active id (server history kept). `jiuban_sessions_by_companion` may still record the active thread while chatting for refresh recovery of the *same* companion.
 
 ## Forbidden
 

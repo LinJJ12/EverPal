@@ -126,6 +126,49 @@ def test_session_append(isolated_db: Path):
     assert got["title"] == "你好"
 
 
+def test_ensure_session_companion_mismatch_creates_new(isolated_db: Path):
+    """Reuse session only when client_id AND companion_id both match."""
+    from src.domain.enums import Mode
+    from src.schemas.chat import ChatStreamRequest
+    from src.services.chat import _ensure_session
+    from src.storage import session_repo
+
+    nuan = session_repo.create_session("iso-1", companion_id="nuan", mode="child", title="暖")
+    nuan_sid = nuan["id"]
+
+    same = _ensure_session(
+        ChatStreamRequest(
+            message="继续",
+            companion_id="nuan",
+            client_id="iso-1",
+            session_id=nuan_sid,
+            persist=True,
+        ),
+        Mode.CHILD,
+        "nuan",
+    )
+    assert same == nuan_sid
+
+    switched = _ensure_session(
+        ChatStreamRequest(
+            message="找跳跳",
+            companion_id="tiao",
+            client_id="iso-1",
+            session_id=nuan_sid,
+            persist=True,
+        ),
+        Mode.CHILD,
+        "tiao",
+    )
+    assert switched is not None
+    assert switched != nuan_sid
+    got = session_repo.get_session(switched)
+    assert got is not None
+    assert got["companion_id"] == "tiao"
+    # Original nuan thread unchanged
+    assert len(session_repo.get_session(nuan_sid)["messages"]) == 0
+
+
 @pytest.mark.asyncio
 async def test_api_profile_and_chat_persist(isolated_db: Path, monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setenv("ALLOW_MOCK_LLM", "true")

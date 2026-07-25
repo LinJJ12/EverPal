@@ -1,7 +1,7 @@
 # 玖伴 · 仓库目录与文件约定
 
 > **目的**：每个文件夹/文件用一句话说清「只负责什么、禁止什么」，方便后期加功能而不搅成泥球。  
-> **依据**：[`docs/PRD.md`](./PRD.md) v0.4。  
+> **依据**：[`docs/PRD.md`](./PRD.md) v0.5.4。  
 > **结构借鉴**：本机旁路仓 **OmniStream**（与本仓库并列，例如桌面上的 `OmniStream/`；**不在本 Git 仓库内**）的前后端分离、`api` 垂直对齐、编排 vs 单能力分层、目录 README 所有权；**业务内容按陪伴 PRD，不照搬直播带货模块**。克隆本仓的协作者无需、也无法依赖该路径。  
 > **命名**：正式根目录为 `frontend/`、`backend/`（不用 `web/`、`server/`）。
 
@@ -114,7 +114,7 @@ views / composables → components（跨页可复用 UI）
 | `stores/` | 跨页状态 | 发 HTTP（应经 `api`） |
 | `components/` | 跨页 UI 块 | 藏页面路由级逻辑 |
 | `themes/` | 卡通皮肤 tokens | 业务判断 |
-| `content/` | 官方话题 / 场景 / 短故事等静态内容包 | HTTP；散落在多处 view 各写一份 |
+| `content/` | 官方话题 / 场景 / 短故事 / 开场白等静态内容包 | HTTP；散落在多处 view 各写一份 |
 | `lib/` / `utils/` | 无业务语义小工具 | 聊天/安全/人设逻辑；产品文案内容包 |
 
 ### 2.2 后端（两轴）
@@ -213,7 +213,8 @@ frontend/
 │   │   ├── games/                # 益智游戏大厅（读 utils/gamesMeta）
 │   │   └── safety/               # 安全边界示例入口
 │   ├── content/
-│   │   └── packs.ts                  # 话题 / 场景 / 短故事唯一内容源
+│   │   ├── packs.ts                  # 话题 / 场景 / 短故事唯一内容源
+│   │   └── openers.ts                # 伙伴空态开场白
 │   ├── composables/
 │   │   ├── useChatPage.ts
 │   │   ├── useChatStream.ts
@@ -234,7 +235,7 @@ frontend/
 │   ├── themes/cartoon/           # cartoon.css + mood.css + chat.css + history.css + games.css
 │   ├── types/
 │   └── utils/
-│       ├── avatars / clientId / errors / activeSession / timeCn / gamesMeta
+│       ├── avatars / clientId / errors / activeSession / chatSidebar / timeCn / gamesMeta
 │       └── voice/                # browser · companionVoice · mediaRecorder · speakProgress
 └── tests/
 ```
@@ -250,7 +251,8 @@ frontend/
 | 跨页状态 | `stores/*` | 到处 `localStorage` 无封装 |
 | 本机持久化辅助 | `stores` 或薄 `utils/storage.ts` | 与 API 混在同一文件且职责不清 |
 | 皮肤 | `themes/cartoon/` | 组件内散落 hex |
-| 官方话题 / 场景 / 故事文案 | `content/packs.ts` | `api/`、`avatars.ts`、多 view 各写一份 |
+| 官方话题 / 场景 / 故事 / 开场白 | `content/packs.ts`、`content/openers.ts` | `api/`、`avatars.ts`、多 view 各写一份 |
+| 本机会话指针 / 侧栏偏好 | `utils/activeSession.ts`、`utils/chatSidebar.ts` | view 内散落 `localStorage` |
 | 用户可见错误文案 | `api/http` 映射或 `utils/errors.ts` | 直接上屏 `error.message` |
 
 ### 4.2 前端硬约束
@@ -262,6 +264,8 @@ frontend/
 5. 语音分层：`api/speech.ts`（HTTP）→ composables → `components/voice/`；浏览器辅助在 `utils/voice/`。云端优先、浏览器回退；转写进 composer → 现有发送管线。无成人模式页（`/mode` 仅重定向）。
 6. 今日心情：`api/mood.ts`（HTTP）+ `components/mood/moodOptions.ts`（UI 常量）+ `useMoodGate`（门闸）；`MoodGate` 每日首次进 `/chat`；写入后端后由 `memory.snippet` 注入系统提示；记忆页可改签与单条删除。
 7. 历史月历：`api/history.ts` + `useHistoryCalendar`；周一起始公历；对话日按消息东八区日；无农历。
+8. 会话隔离：切换伙伴 / 「新建对话」清空当前屏与 active session；旧线程仅从历史 `?session=` 进入。场景 / 安全 `?seed=` 须同时清 `store.sessionId` 与 `utils/activeSession`。
+9. 聊天侧栏展开偏好：`utils/chatSidebar.ts`（勿在 `ChatView` 内直接读写 localStorage）。
 
 ---
 
@@ -445,3 +449,4 @@ api/chat
 | v0.3 | 2026-07-23 | 借鉴 OmniStream：分层心智、API 垂直表、capabilities/services、职责禁止表、检查清单与 README 所有权 |
 | v0.4 | 2026-07-23 | 修正 OmniStream 引用说明；统一 composables 与 views 命名（去掉 composables/pages） |
 | v0.5 | 2026-07-25 | 新增 `frontend/src/content/`（话题/场景/短故事 packs）；scenes 页含短故事分组 |
+| v0.6 | 2026-07-25 | 会话隔离约定；`content/openers`；`utils/chatSidebar`；去掉 avatars 过渡 re-export |

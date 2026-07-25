@@ -4,6 +4,7 @@ import { RouterLink } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useProfileStore } from "@/stores/profile";
 import { resetClientId } from "@/utils/clientId";
+import { setActiveSessionId } from "@/utils/activeSession";
 
 const store = useProfileStore();
 const { nickname, companion, likeLabels, memories } = storeToRefs(store);
@@ -26,6 +27,7 @@ function resetLocal() {
   }
   resetClientId();
   store.sessionId = null;
+  setActiveSessionId(null);
   location.reload();
 }
 </script>

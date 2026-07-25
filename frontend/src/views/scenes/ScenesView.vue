@@ -4,6 +4,7 @@ import { RouterLink, useRouter } from "vue-router";
 import { useProfileStore } from "@/stores/profile";
 import { sceneCards, storyCards } from "@/content/packs";
 import { friendlyError } from "@/utils/errors";
+import { setActiveSessionId } from "@/utils/activeSession";
 
 type EntryCard = ReturnType<typeof sceneCards>[number];
 
@@ -23,6 +24,7 @@ async function enter(card: EntryCard) {
   }
   // New session from seed — do not reuse prior sessionId
   store.sessionId = null;
+  setActiveSessionId(null);
   router.push({ path: "/chat", query: { seed: card.seed } });
 }
 

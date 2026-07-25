@@ -5,6 +5,15 @@ build/
 .venv/
 __pycache__/
 *.pyc
+*.pyo
+*.egg-info/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+coverage/
 .env
 .env.*
 !.env.example
@@ -13,10 +22,25 @@ __pycache__/
 .DS_Store
 Thumbs.db
 *.log
+.idea/
+*.swp
+*.swo
+*~
+
+# Editor local settings (team may keep shared snippets elsewhere)
+.vscode/settings.json
+.vscode/*.log
 
 # Local secrets / runtime
 *.local
 .cache/
+
+# Backend runtime (also listed under backend/.gitignore)
+backend/data/*.db
+backend/data/**/*.db
+backend/resource/logs/
+backend/resource/cache/
+backend/resource/tmp/
 
 # Optional: keep Trellis journals local if desired — currently versioned
 # .trellis/workspace/

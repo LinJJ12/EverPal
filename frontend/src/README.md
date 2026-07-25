@@ -7,6 +7,9 @@ views → composables → api → backend
 
 - `api/`：唯一 HTTP / SSE（`mood.ts` 今日心情；`history.ts` 月历）
 - `content/packs.ts`：官方话题 / 场景 / 短故事唯一静态内容源（非 HTTP）
+- `content/openers.ts`：伙伴空态开场白
+- `utils/activeSession.ts`：active session + 按伙伴映射
+- `utils/chatSidebar.ts`：聊天侧栏展开偏好（本机）
 - `components/mood/moodOptions.ts`：心情 UI 常量、短句、表情风格本机偏好（`cnTodayKey` 转自 `utils/timeCn`）
 - `utils/timeCn.ts`：东八区日历日（mood / history 共用）
 - `composables/useChatSession.ts`：会话加载 / 伙伴切换 / bootstrap

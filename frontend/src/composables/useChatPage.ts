@@ -76,7 +76,7 @@ export function useChatPage() {
     }
   }
 
-  /** Empty the screen and detach the *current* companion's active thread (others kept). */
+  /** Start a blank chat: detach the *current* companion's active thread (server history kept). */
   function clear() {
     stop();
     messages.value = [];

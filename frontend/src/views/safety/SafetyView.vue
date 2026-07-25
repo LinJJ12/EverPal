@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterLink, useRouter } from "vue-router";
 import { useProfileStore } from "@/stores/profile";
+import { setActiveSessionId } from "@/utils/activeSession";
 
 const store = useProfileStore();
 const router = useRouter();
@@ -13,6 +14,7 @@ const samples = [
 function play(seed: string) {
   // New session from seed — do not reuse prior sessionId
   store.sessionId = null;
+  setActiveSessionId(null);
   router.push({ path: "/chat", query: { seed } });
 }
 </script>

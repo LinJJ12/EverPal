@@ -14,15 +14,3 @@ export function avatarSvg(kind: string): string {
 export function iconChild(): string {
   return '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="8" r="3.5" stroke="#b03060" stroke-width="2"/><path d="M5 19c1.5-3.5 4-5 7-5s5.5 1.5 7 5" stroke="#b03060" stroke-width="2" stroke-linecap="round"/></svg>';
 }
-
-export const COMPANION_SAMPLES: Record<string, string> = {
-  nuan: "我在呀，今天想聊点什么？要不要听个短故事？",
-  tiao: "要不要来个脑筋急转弯？还是假装去太空探险？",
-  cha: "我听着呢，你慢慢说。不用说得很整齐也没关系。",
-};
-
-/** @deprecated Import from `@/content/packs` — kept for short-term compatibility. */
-export { sceneCards as SCENE_CARDS } from "@/content/packs";
-
-/** @deprecated Import from `@/utils/gamesMeta` — kept for short-term compatibility. */
-export { GAME_META } from "./gamesMeta";

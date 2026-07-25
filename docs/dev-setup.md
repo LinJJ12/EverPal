@@ -163,9 +163,10 @@ python main.py
 | 路径 | 原因 |
 |------|------|
 | `backend/.env`、`frontend/.env` | 含本地配置或 LLM Key |
-| `node_modules/`、`frontend/dist/` | 依赖与构建产物，可再生成 |
+| `node_modules/`、`frontend/dist/`、`dist/`、`build/` | 依赖与构建产物，可再生成 |
 | `backend/.venv/`、`__pycache__/`、`.pytest_cache/`、`*.egg-info/` | 本地 Python 环境与缓存 |
 | `backend/data/*.db`、`backend/resource/logs/` | 运行时数据库与审计日志 |
+| `.vscode/settings.json` | 本机编辑器偏好（根 `.gitignore` 已忽略） |
 | `vendor/*`（除 README） | 第三方参考，本仓不推送 |
 
 克隆后按本文 §1–§3 重建环境即可；勿把本机 `.env` 或 `dist` 推上远程。

@@ -51,7 +51,11 @@ def _ensure_session(req: ChatStreamRequest, mode: Mode, companion_id: str) -> st
     sid = (req.session_id or "").strip()
     if sid:
         existing = session_repo.get_session(sid)
-        if existing and existing.get("client_id") == cid:
+        if (
+            existing
+            and existing.get("client_id") == cid
+            and (existing.get("companion_id") or "") == companion_id
+        ):
             return sid
     created = session_repo.create_session(
         cid,

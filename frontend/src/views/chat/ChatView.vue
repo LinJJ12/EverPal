@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { RouterLink } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useProfileStore } from "@/stores/profile";
@@ -12,7 +12,8 @@ import ChatComposer from "@/components/chat/ChatComposer.vue";
 import TopicCards from "@/components/chat/TopicCards.vue";
 import CompanionAvatar from "@/components/companions/CompanionAvatar.vue";
 import MoodGate from "@/components/mood/MoodGate.vue";
-import { COMPANION_SAMPLES } from "@/utils/avatars";
+import { COMPANION_SAMPLES } from "@/content/openers";
+import { getChatSidebarOpen, setChatSidebarOpen } from "@/utils/chatSidebar";
 
 const store = useProfileStore();
 const { companion, nickname, likeLabels, companions } = storeToRefs(store);
@@ -87,7 +88,21 @@ const {
   onMoodChipClick,
 } = useMoodGate({ onReadyToChat: () => bootstrapChat() });
 
-const sideOpen = ref(false);
+const sidebarOpen = ref(getChatSidebarOpen(true));
+
+function toggleSidebar() {
+  sidebarOpen.value = !sidebarOpen.value;
+  // Only persist desktop preference; mobile drawer is ephemeral
+  if (typeof window !== "undefined" && window.matchMedia("(min-width: 961px)").matches) {
+    setChatSidebarOpen(sidebarOpen.value);
+  }
+}
+
+onMounted(() => {
+  if (window.matchMedia("(max-width: 960px)").matches) {
+    sidebarOpen.value = false;
+  }
+});
 
 const headerSub = computed(() => {
   if (nickname.value && likeLabels.value.length) {
@@ -164,40 +179,35 @@ function regen() {
         </div>
       </div>
     </div>
-    <div class="page-head" style="margin-bottom: 16px">
-      <div>
-        <h1>聊天</h1>
-        <p class="lead" style="margin: 0">随时聊聊。回复来自陪伴服务，不会在这里配置模型。</p>
-      </div>
-      <div class="chat-mood-chip-wrap">
-        <button
-          v-if="todayMoodLabel"
-          type="button"
-          class="chip mode-badge mood-chip"
-          @click="openMoodEditor"
-        >
-          <span aria-hidden="true">{{ moodChipEmoji }}</span>
-          今日：{{ todayMoodLabel }}
-        </button>
-        <button
-          v-else-if="moodGateNeeded === false && !todayMoodLabel"
-          type="button"
-          class="chip mode-badge mood-chip"
-          @click="onMoodChipClick"
-        >
-          <span aria-hidden="true">📖</span>
-          {{ moodFetchFailed ? "心情服务暂不可用，点此重试" : "补选今日心情" }}
-        </button>
-        <span class="chip mode-badge">未成年人陪伴</span>
-      </div>
-    </div>
-    <p v-if="moodError && moodGateNeeded !== true && !moodEditorOpen" class="note" style="color: var(--color-primary)">
+    <p v-if="moodError && moodGateNeeded !== true && !moodEditorOpen" class="note chat-mood-error">
       {{ moodError }}
     </p>
 
-    <div class="chat-layout" :class="{ 'side-open': sideOpen }" id="chatLayout">
-      <aside class="chat-side" aria-label="伙伴与记忆">
-        <h2>我的伙伴</h2>
+    <div
+      class="chat-layout"
+      :class="{ 'sidebar-open': sidebarOpen, 'side-open': sidebarOpen }"
+      id="chatLayout"
+    >
+      <button
+        v-show="sidebarOpen"
+        type="button"
+        class="chat-sidebar-backdrop"
+        aria-label="关闭侧栏"
+        @click="toggleSidebar"
+      />
+      <aside class="chat-side" aria-label="伙伴与记忆" :aria-hidden="!sidebarOpen">
+        <div class="chat-side-top">
+          <h2>我的伙伴</h2>
+          <button
+            type="button"
+            class="chat-rail-btn"
+            aria-label="收起侧栏"
+            title="收起侧栏"
+            @click="toggleSidebar"
+          >
+            ⟨
+          </button>
+        </div>
         <div class="side-list">
           <button
             v-for="c in companions"
@@ -205,190 +215,202 @@ function regen() {
             type="button"
             class="companion"
             :class="{ selected: c.id === companion?.id }"
-            style="width: 100%; text-align: left"
             @click="pickCompanion(c.id)"
           >
             <CompanionAvatar :companion-id="c.id" />
-            <div>
+            <div class="companion-text">
               <div class="choice-title">{{ c.name }}</div>
               <div class="choice-desc">{{ c.role }}</div>
             </div>
           </button>
         </div>
-        <p v-if="sideError" class="note" style="margin: 0; text-align: left; color: var(--color-primary)">
+        <p v-if="sideError" class="note chat-side-error">
           {{ sideError }}
         </p>
-        <h2>本机记忆快照</h2>
-        <p class="note" style="margin: 0; text-align: left">
-          昵称：{{ nickname || "（未设）" }}
-        </p>
-        <div class="tag-cloud">
-          <span v-for="l in likeLabels" :key="l" class="tag on">{{ l }}</span>
+        <div class="chat-side-memory">
+          <h2>本机记忆</h2>
+          <p class="note chat-side-nick">
+            昵称：{{ nickname || "（未设）" }}
+          </p>
+          <div class="tag-cloud">
+            <span v-for="l in likeLabels" :key="l" class="tag on">{{ l }}</span>
+          </div>
         </div>
-        <RouterLink class="btn btn-secondary btn-block" to="/scenes">情境对话</RouterLink>
-        <RouterLink class="btn btn-secondary btn-block" to="/memory">记忆面板</RouterLink>
-        <RouterLink class="btn btn-secondary btn-block" to="/settings">本地设置</RouterLink>
+        <div class="chat-side-links">
+          <RouterLink class="chat-side-link chat-side-link-primary" to="/history">
+            历史对话
+          </RouterLink>
+          <RouterLink class="chat-side-link" to="/scenes">情境对话</RouterLink>
+          <RouterLink class="chat-side-link" to="/memory">记忆面板</RouterLink>
+          <RouterLink class="chat-side-link" to="/settings">本地设置</RouterLink>
+        </div>
+        <div class="chat-side-status">
+          <button
+            v-if="todayMoodLabel"
+            type="button"
+            class="chip mode-badge mood-chip"
+            @click="openMoodEditor"
+          >
+            <span aria-hidden="true">{{ moodChipEmoji }}</span>
+            今日：{{ todayMoodLabel }}
+          </button>
+          <button
+            v-else-if="moodGateNeeded === false && !todayMoodLabel"
+            type="button"
+            class="chip mode-badge mood-chip"
+            @click="onMoodChipClick"
+          >
+            <span aria-hidden="true">📖</span>
+            {{ moodFetchFailed ? "心情暂不可用" : "补选今日心情" }}
+          </button>
+          <span class="chip mode-badge">未成年人陪伴</span>
+        </div>
       </aside>
 
       <section class="chat-shell">
-        <button
-          type="button"
-          class="btn btn-secondary chat-side-toggle"
-          :aria-expanded="sideOpen"
-          @click="sideOpen = !sideOpen"
-        >
-          伙伴 / 记忆
-        </button>
-
         <header class="chat-header">
+          <button
+            type="button"
+            class="chat-rail-btn chat-rail-btn-open"
+            :aria-expanded="sidebarOpen"
+            :aria-label="sidebarOpen ? '收起侧栏' : '展开侧栏'"
+            :title="sidebarOpen ? '收起侧栏' : '展开侧栏'"
+            @click="toggleSidebar"
+          >
+            {{ sidebarOpen ? "⟨" : "☰" }}
+          </button>
           <CompanionAvatar
             class="mini-avatar"
             :companion-id="companion?.id || 'nuan'"
           />
-          <div>
-            <div
-              style="
-                font-weight: 800;
-                font-family: var(--font-display);
-                font-size: 1.15rem;
-              "
+          <div class="chat-header-meta">
+            <div class="chat-header-name">{{ companion?.name || "伙伴" }}</div>
+            <div class="chat-header-sub">{{ headerSub }}</div>
+          </div>
+          <div class="chat-header-actions">
+            <button
+              type="button"
+              class="chat-action"
+              :disabled="!streaming"
+              @click="onStopStream()"
             >
-              {{ companion?.name || "伙伴" }}
-            </div>
-            <div style="font-size: 0.85rem; color: var(--color-muted)">{{ headerSub }}</div>
+              停止
+            </button>
+            <button
+              type="button"
+              class="chat-action"
+              :disabled="streaming || !messages.some((m) => m.role === 'user')"
+              @click="regen"
+            >
+              重新生成
+            </button>
+            <span class="chat-action-muted" title="会话已自动保存到服务端">已保存</span>
+            <RouterLink class="chat-action" to="/history">历史</RouterLink>
+            <button type="button" class="chat-action chat-action-accent" @click="onClear()">
+              新建对话
+            </button>
           </div>
         </header>
 
-        <div class="chat-toolbar">
-          <button
-            type="button"
-            class="btn btn-secondary"
-            :disabled="!streaming"
-            @click="onStopStream()"
-          >
-            停止生成
-          </button>
-          <button
-            type="button"
-            class="btn btn-secondary"
-            :disabled="streaming || !messages.some((m) => m.role === 'user')"
-            @click="regen"
-          >
-            重新生成上一句
-          </button>
-          <button type="button" class="btn btn-secondary" disabled title="会话已自动保存到服务端">
-            已自动保存
-          </button>
-          <button type="button" class="btn btn-secondary" @click="onClear()">清空屏幕</button>
-        </div>
-
-        <div ref="listEl" class="chat-messages">
-          <p
-            v-if="sessionLoading"
-            class="note"
-            style="margin: auto; text-align: center"
-          >
-            正在加载会话…
-          </p>
-          <p
-            v-else-if="sessionLoadError"
-            class="note"
-            style="margin: auto; text-align: center; color: var(--color-primary)"
-          >
-            {{ sessionLoadError }}
-          </p>
-          <p
-            v-else-if="!messages.length"
-            class="note"
-            style="margin: auto; text-align: center"
-          >
-            {{ emptyHint }}
-          </p>
-          <div
-            v-for="(m, i) in messages"
-            :key="i"
-            class="chat-turn"
-            :class="m.role === 'user' ? 'chat-turn-user' : 'chat-turn-bot'"
-          >
-            <ChatBubble
-              :role="m.role"
-              :text="m.content"
-              :streaming="streaming && m.role === 'assistant' && i === messages.length - 1"
-              :speak-ratio="speaking && speakingIndex === i ? speakRatio : -1"
-              :speak-paused="speaking && speakPaused && speakingIndex === i"
-            />
-            <div
-              v-if="m.role === 'assistant' && m.content.trim() && !(streaming && i === messages.length - 1)"
-              class="bubble-speak-row"
-            >
-              <template v-if="speaking && speakingIndex === i">
-                <template v-if="speakPaused">
-                  <button
-                    type="button"
-                    class="btn btn-secondary bubble-speak"
-                    :disabled="sessionLoading"
-                    @click="resumeSpeakAt(i)"
-                  >
-                    继续朗读
-                  </button>
-                  <button
-                    type="button"
-                    class="btn btn-secondary bubble-speak"
-                    :disabled="sessionLoading"
-                    @click="restartSpeakAt(i)"
-                  >
-                    重新朗读
-                  </button>
-                </template>
-                <button
-                  v-else-if="speakRatio < 0"
-                  type="button"
-                  class="btn btn-secondary bubble-speak"
-                  :disabled="sessionLoading"
-                  aria-pressed="true"
-                  @click="cancelSpeakAt(i)"
-                >
-                  取消
-                </button>
-                <button
-                  v-else
-                  type="button"
-                  class="btn btn-secondary bubble-speak"
-                  :disabled="sessionLoading"
-                  aria-pressed="true"
-                  @click="pauseSpeakAt(i)"
-                >
-                  暂停
-                </button>
-              </template>
-              <button
-                v-else
-                type="button"
-                class="btn btn-secondary bubble-speak"
-                :disabled="!ttsSupported || sessionLoading"
-                @click="startSpeakAt(i)"
+        <div class="chat-thread">
+          <div ref="listEl" class="chat-messages">
+            <div class="chat-col">
+              <p v-if="sessionLoading" class="chat-empty-hint">正在加载会话…</p>
+              <p v-else-if="sessionLoadError" class="chat-empty-hint chat-empty-error">
+                {{ sessionLoadError }}
+              </p>
+              <p v-else-if="!messages.length" class="chat-empty-hint">{{ emptyHint }}</p>
+              <div
+                v-for="(m, i) in messages"
+                :key="i"
+                class="chat-turn"
+                :class="m.role === 'user' ? 'chat-turn-user' : 'chat-turn-bot'"
               >
-                朗读这条
-              </button>
+                <ChatBubble
+                  :role="m.role"
+                  :text="m.content"
+                  :streaming="streaming && m.role === 'assistant' && i === messages.length - 1"
+                  :speak-ratio="speaking && speakingIndex === i ? speakRatio : -1"
+                  :speak-paused="speaking && speakPaused && speakingIndex === i"
+                />
+                <div
+                  v-if="m.role === 'assistant' && m.content.trim() && !(streaming && i === messages.length - 1)"
+                  class="bubble-speak-row"
+                >
+                  <template v-if="speaking && speakingIndex === i">
+                    <template v-if="speakPaused">
+                      <button
+                        type="button"
+                        class="bubble-speak"
+                        :disabled="sessionLoading"
+                        @click="resumeSpeakAt(i)"
+                      >
+                        继续朗读
+                      </button>
+                      <button
+                        type="button"
+                        class="bubble-speak"
+                        :disabled="sessionLoading"
+                        @click="restartSpeakAt(i)"
+                      >
+                        重新朗读
+                      </button>
+                    </template>
+                    <button
+                      v-else-if="speakRatio < 0"
+                      type="button"
+                      class="bubble-speak"
+                      :disabled="sessionLoading"
+                      aria-pressed="true"
+                      @click="cancelSpeakAt(i)"
+                    >
+                      取消
+                    </button>
+                    <button
+                      v-else
+                      type="button"
+                      class="bubble-speak"
+                      :disabled="sessionLoading"
+                      aria-pressed="true"
+                      @click="pauseSpeakAt(i)"
+                    >
+                      暂停
+                    </button>
+                  </template>
+                  <button
+                    v-else
+                    type="button"
+                    class="bubble-speak"
+                    :disabled="!ttsSupported || sessionLoading"
+                    @click="startSpeakAt(i)"
+                  >
+                    朗读
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <p v-if="error" class="note chat-stream-error">{{ error }}</p>
+          <p v-else-if="ttsError" class="note chat-stream-error">{{ ttsError }}</p>
+
+          <div class="chat-dock">
+            <div class="chat-col chat-dock-inner">
+              <TopicCards
+                v-if="messages.length === 0 && !streaming"
+                :topics="topics"
+                :disabled="sessionLoading || moodBlocksChat"
+                @pick="onSubmit"
+              />
+              <ChatComposer
+                v-model="input"
+                :disabled="streaming || sessionLoading || moodBlocksChat"
+                @send="onSubmit()"
+                @stop="onStopStream()"
+              />
             </div>
           </div>
         </div>
-
-        <p v-if="error" class="note" style="color: var(--color-primary)">{{ error }}</p>
-        <p v-else-if="ttsError" class="note" style="color: var(--color-primary)">{{ ttsError }}</p>
-
-        <TopicCards
-          v-if="messages.length === 0 && !streaming"
-          :topics="topics"
-          :disabled="sessionLoading || moodBlocksChat"
-          @pick="onSubmit"
-        />
-        <ChatComposer
-          v-model="input"
-          :disabled="streaming || sessionLoading || moodBlocksChat"
-          @send="onSubmit()"
-          @stop="onStopStream()"
-        />
       </section>
     </div>
   </main>

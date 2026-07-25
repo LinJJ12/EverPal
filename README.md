@@ -32,13 +32,14 @@ npm run dev
 
 | 路径 | 说明 |
 |------|------|
-| [`docs/PRD.md`](docs/PRD.md) | 产品需求（v0.5.3） |
+| [`docs/PRD.md`](docs/PRD.md) | 产品需求（v0.5.4） |
 | [`docs/diagrams.md`](docs/diagrams.md) | 流程 / 架构图 |
 | [`docs/directory-structure.md`](docs/directory-structure.md) | **`frontend/` · `backend/` 目录与文件约定**（按 PRD） |
 | [`docs/dev-setup.md`](docs/dev-setup.md) | **本地开发 / Conda `chatbot` / Git 提交边界** |
 | [`demo/`](demo/) | HTML 产品壳对照（本地启发式，不接真模型） |
 | [`demo/assets/brand/`](demo/assets/brand/) | 品牌图标（玖伴） |
 | [`frontend/`](frontend/) | 正式 Web（Vue；UI 对齐 demo；接 BFF 流式 + **12 款**本地游戏大厅） |
+| [`frontend/src/content/`](frontend/src/content/) | 官方话题 / 短故事 / 开场白静态内容包 |
 | [`frontend/public/games/`](frontend/public/games/) | 游戏对局静态页（新增流程见该目录 README） |
 | [`backend/`](backend/) | 陪伴 BFF（FastAPI：健康检查 / 档案 / 会话 / 流式聊天 / 语音代理 / 心情 / 历史月历） |
 | [`.trellis/`](.trellis/) | Trellis 规格与工作流 |
@@ -54,6 +55,8 @@ npm run dev
 - **历史**：会话历史改为月历（对话日 + 心情；可删会话、看伙伴）
 - **游戏**：大厅 **12 款**本地离线小游戏（含打砖块 / 记忆翻牌 / 猜数字 / 井字棋 / 走迷宫等）；`npm run test:games` 可冒烟
 - **故事 / 话题**：官方话题卡（聊天空态）+ `/scenes` 短故事分组；静态内容源 `frontend/src/content/packs.ts`（审定开场 + LLM 续写）
+- **会话隔离**：切换伙伴默认空白新对话；「新建对话」脱离当前线程；旧会话仅从历史进入；后端拒绝跨伙伴串写同一 `session_id`
+- **聊天 UI**：可折叠侧栏、暖色铺满对话区、历史快捷入口；顶栏与其它页同一居中宽度
 
 登录 / 家长管控仍为另阶段。详见 [`docs/PRD.md`](docs/PRD.md) §4.2 与 `.trellis/spec/guides/product-constraints.md`。
 

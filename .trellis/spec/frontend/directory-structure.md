@@ -19,7 +19,7 @@ mood UI constants → components/mood/moodOptions.ts
 | `views/` | One screen per folder | Raw `fetch` |
 | `composables/` | Page/interaction logic (`useMoodGate` for chat mood) | Bypass `api` for HTTP |
 | `api/` | Sole HTTP client; files align with backend resources | DOM; UI constants; writing global stores; speech keys |
-| `content/` | Static topic / scene / story packs | HTTP; duplicating copy across views |
+| `content/` | Static topic / scene / story packs + companion openers | HTTP; duplicating copy across views |
 | `stores/` | Cross-page state | Direct HTTP |
 | `components/` | Reusable UI (`voice/`, `mood/` gate+sticker+options) | Route-level business |
 | `utils/voice/` | Browser STT/TTS helpers + MediaRecorder + speakProgress | HTTP calls |
@@ -33,15 +33,16 @@ frontend/
 ├── .env                       # gitignored; never LLM/DashScope keys
 ├── src/
 │   ├── api/                   # http, chat, companions, sessions, profile, mood, speech
-│   ├── content/               # packs.ts — topics / scenes / stories
+│   ├── content/               # packs.ts + openers.ts
 │   ├── views/                 # home … chat … scenes … memory … games, safety
 │   ├── composables/           # useChatPage, useChatStream, useChatSession, useChatSpeak,
 │   │                          # useMoodGate, useTopicCards, useSpeechRecognition, …
 │   ├── components/{layout,chat,voice,mood,companions}/
 │   ├── stores/
-│   ├── themes/cartoon/        # cartoon.css + mood.css + chat.css + games.css
+│   ├── themes/cartoon/        # cartoon.css + mood.css + chat.css + history.css + games.css
 │   ├── types/
 │   └── utils/
+│       ├── activeSession / chatSidebar / avatars / clientId / errors / timeCn / gamesMeta
 │       └── voice/{browser,companionVoice,mediaRecorder,speakProgress}.ts
 └── package.json
 ```

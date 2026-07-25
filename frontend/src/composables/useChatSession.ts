@@ -7,7 +7,6 @@ import { friendlyError } from "@/utils/errors";
 import {
   getActiveSessionId,
   setActiveSessionId,
-  getSessionForCompanion,
   setSessionForCompanion,
 } from "@/utils/activeSession";
 
@@ -40,23 +39,6 @@ export function useChatSession(opts: {
     const nextQuery = { ...route.query };
     delete nextQuery.seed;
     await router.replace({ path: "/chat", query: nextQuery });
-  }
-
-  async function resolveSessionForCompanion(companionId: string): Promise<string | null> {
-    const cached = getSessionForCompanion(companionId);
-    if (cached) return cached;
-    try {
-      const { listSessions } = await import("@/api/sessions");
-      const res = await listSessions();
-      const hit = (res.sessions || []).find((s) => s.companion_id === companionId);
-      if (hit?.id) {
-        setSessionForCompanion(companionId, hit.id);
-        return hit.id;
-      }
-    } catch {
-      /* offline — fall through to empty */
-    }
-    return null;
   }
 
   async function loadSessionById(sid: string): Promise<boolean> {
@@ -105,20 +87,19 @@ export function useChatSession(opts: {
   async function pickCompanion(id: string) {
     if (id === companion.value?.id) return;
     sideError.value = "";
+    const previousId = companion.value?.id || store.companionId;
     try {
       await store.save({ companion_id: id });
+      // New blank chat for this companion; resume old threads only via history.
       chatSessionLoadSeq += 1;
       sessionLoadError.value = "";
       opts.stopSpeak();
       opts.stopStream();
-      const sid = await resolveSessionForCompanion(id);
-      if (sid) {
-        await loadSessionById(sid);
-      } else {
-        opts.messages.value = [];
-        store.sessionId = null;
-        setActiveSessionId(null);
-      }
+      opts.messages.value = [];
+      store.sessionId = null;
+      setActiveSessionId(null);
+      if (previousId) setSessionForCompanion(previousId, null);
+      setSessionForCompanion(id, null);
     } catch (e) {
       sideError.value = friendlyError(e);
     }
@@ -127,8 +108,8 @@ export function useChatSession(opts: {
   /**
    * Refresh-safe bootstrap:
    * 1) ?session= from history
-   * 2) persisted active session (leftover ?seed= must NOT start a new chat)
-   * 3) fresh ?seed= only when there is no active session
+   * 2) persisted active session (matching companion; leftover ?seed= must NOT start a new chat)
+   * 3) fresh ?seed= only when there is no usable active session
    */
   async function bootstrapChat() {
     const qSession = route.query.session;
@@ -139,11 +120,26 @@ export function useChatSession(opts: {
 
     const active = (store.sessionId || getActiveSessionId() || "").trim();
     if (active) {
-      if (typeof route.query.seed === "string" && route.query.seed.trim()) {
-        await stripSeedQuery();
+      try {
+        const { getSession } = await import("@/api/sessions");
+        const s = await getSession(active);
+        const want = store.companionId;
+        if (s.companion_id && want && s.companion_id !== want) {
+          // Stale pointer for another companion — drop so ?seed= can still run
+          store.sessionId = null;
+          setActiveSessionId(null);
+        } else {
+          if (typeof route.query.seed === "string" && route.query.seed.trim()) {
+            await stripSeedQuery();
+          }
+          await loadSessionById(active);
+          return;
+        }
+      } catch {
+        // Missing/corrupt active — clear and fall through to seed or empty
+        store.sessionId = null;
+        setActiveSessionId(null);
       }
-      await loadSessionById(active);
-      return;
     }
 
     const seed = route.query.seed;

@@ -16,6 +16,7 @@
 3. Memory writes go through safety memory-gate rules (discard health/self-harm/PII patterns).
 4. Do not store full raw prompts with secrets in message logs.
 5. Keep archive `profiles.likes_json` separate from `memories(category=like)` (UI tags vs dialogue extract).
+6. **Session reuse** (`_ensure_session`): require matching `client_id` **and** `companion_id`; mismatch → create a new session (do not append across companions).
 
 ## Naming
 
