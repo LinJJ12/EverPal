@@ -151,6 +151,7 @@ LLM 客户端：只出自 config/（capabilities/llm 经 config 取客户端）
 | 角色列表 | `companions.ts` | `companions` | `capabilities/persona` 或静态 prompts 元数据 |
 | 流式陪伴对话 | `chat.ts` | `chat` | **`services/chat`** |
 | 会话列表/保存/回看 | `sessions.ts` | `sessions` | `storage` |
+| 历史月历（对话日+心情） | `history.ts` | `history` | `storage/history_repo`（消息日 UTC+8；稀疏 days） |
 | 档案 / 记忆查看清除 | `profile.ts` | `profile` | `capabilities/memory` + `storage` |
 | 今日心情 | `mood.ts` | `mood` | `storage/mood_repo`（按日；注入 memory snippet） |
 | 语音朗读 / 听写 | `speech.ts` | `speech` | **`capabilities/speech`**（云端；前端浏览器回退） |
@@ -160,7 +161,7 @@ frontend views → composables → frontend/src/api/*  →  HTTP /v1/...
 backend api → services/chat | capabilities → storage / domain / config
 ```
 
-建议路径：`GET /health`，`GET /v1/companions`，`POST /v1/chat/stream`，`/v1/sessions`，`/v1/profile`，`GET|PUT /v1/mood/today`，`POST /v1/speech/tts`，`POST /v1/speech/asr`。  
+建议路径：`GET /health`，`GET /v1/companions`，`POST /v1/chat/stream`，`/v1/sessions`，`GET /v1/history/calendar`，`GET /v1/history/days/{day}/sessions`，`/v1/profile`，`GET|PUT /v1/mood/today`，`POST /v1/speech/tts`，`POST /v1/speech/asr`。  
 **禁止对公网**：模型管理台、温度调试、原始 Provider 错误体、百炼 Key。
 
 ---
@@ -191,6 +192,7 @@ frontend/
 │   │   ├── sessions.ts
 │   │   ├── profile.ts
 │   │   ├── mood.ts               # 今日心情 GET/PUT（仅 HTTP）
+│   │   ├── history.ts            # 月历 / 当日会话（仅 HTTP）
 │   │   └── speech.ts             # TTS / ASR HTTP（无 Key）
 │   ├── views/                    # 一界面一目录
 │   │   ├── home/                 # 品牌首页（shell-hero）           UI-01
@@ -199,7 +201,7 @@ frontend/
 │   │   ├── companions/           # ≥3 官方角色；无恋爱               PER-01, CMP-07
 │   │   ├── scenes/               # 场景入口 → chat seed             P1
 │   │   ├── chat/                 # 流式聊 / 停止 / 话题卡 / 语音     CMP-02~05, UI-06
-│   │   ├── history/              # 本机会话                         UI-02
+│   │   ├── history/              # 月历：对话日 + 心情               UI-02
 │   │   ├── memory/               # 记忆查看 / 清除 / 今日心情        MEM-03
 │   │   ├── settings/             # 本地设置；无 API Key UI           UI-04
 │   │   ├── games/                # 益智游戏大厅
@@ -210,6 +212,7 @@ frontend/
 │   │   ├── useChatSession.ts         # 会话加载 / 伙伴切换 / bootstrap
 │   │   ├── useChatSpeak.ts           # 气泡朗读控制
 │   │   ├── useMoodGate.ts            # /chat 今日心情门闸 + 延后 bootstrap
+│   │   ├── useHistoryCalendar.ts     # /history 月历数据与翻月
 │   │   ├── useSpeechRecognition.ts   # 浏览器 STT 回退
 │   │   └── useSpeechSynthesis.ts     # 云端 TTS 优先 + 浏览器回退
 │   ├── components/
@@ -219,10 +222,10 @@ frontend/
 │   │   ├── mood/                 # MoodGate / MoodSticker / moodOptions
 │   │   └── companions/           # CompanionAvatar
 │   ├── stores/
-│   ├── themes/cartoon/           # cartoon.css + mood.css + chat.css + games.css
+│   ├── themes/cartoon/           # cartoon.css + mood.css + chat.css + history.css + games.css
 │   ├── types/
 │   └── utils/
-│       ├── avatars / clientId / errors / activeSession
+│       ├── avatars / clientId / errors / activeSession / timeCn
 │       └── voice/                # browser · companionVoice · mediaRecorder · speakProgress
 └── tests/
 ```
@@ -248,6 +251,7 @@ frontend/
 4. 益智游戏：大厅在 `views/games/`；具体对局静态页在 `public/games/`（自 demo 迁入）。`demo/games/` 仍作对照。  
 5. 语音分层：`api/speech.ts`（HTTP）→ composables → `components/voice/`；浏览器辅助在 `utils/voice/`。云端优先、浏览器回退；转写进 composer → 现有发送管线。无成人模式页（`/mode` 仅重定向）。
 6. 今日心情：`api/mood.ts`（HTTP）+ `components/mood/moodOptions.ts`（UI 常量）+ `useMoodGate`（门闸）；`MoodGate` 每日首次进 `/chat`；写入后端后由 `memory.snippet` 注入系统提示；记忆页可改签与单条删除。
+7. 历史月历：`api/history.ts` + `useHistoryCalendar`；周一起始公历；对话日按消息东八区日；无农历。
 
 ---
 
@@ -274,9 +278,10 @@ backend/
     │   ├── chat.py               # 流式；调用 services.chat
     │   ├── companions.py
     │   ├── sessions.py
-│   ├── profile.py
-│   ├── mood.py               # 今日心情 GET/PUT                    P1
-│   └── speech.py             # TTS / ASR 代理                     UI-06
+    │   ├── history.py            # 月历 / 当日会话聚合              UI-02
+    │   ├── profile.py
+    │   ├── mood.py               # 今日心情 GET/PUT                    P1
+    │   └── speech.py             # TTS / ASR 代理                     UI-06
     ├── services/
     │   └── chat.py               # 【一期唯一编排】管线顺序见下
     ├── capabilities/             # 被编排的单能力（可调 LLM，经 config）
@@ -299,14 +304,16 @@ backend/
     │   ├── profile_repo.py
     │   ├── session_repo.py
     │   ├── memory_repo.py
-    │   └── mood_repo.py          # 按日心情 CRUD（UTC+8）；纯规则见 domain
+    │   ├── mood_repo.py          # 按日心情 CRUD（UTC+8）；纯规则见 domain
+    │   └── history_repo.py       # 月历聚合（消息日 + daily_moods）
     ├── domain/                   # 纯模型/枚举/规则数据；无 I/O
     │   ├── enums.py              # Mode、SafetyAction…
-    │   └── moods.py              # MOOD_IDS / normalize / labels
+    │   ├── moods.py              # MOOD_IDS / normalize / labels
+    │   └── time_cn.py            # 东八区日历日解析（mood / history 共用）
     ├── config/
     │   ├── settings.py           # 读 .env
     │   └── llm.py                # 【唯一】创建 LLM 客户端
-    ├── schemas/                  # 请求/响应 DTO（chat / companion / speech / mood）
+    ├── schemas/                  # 请求/响应 DTO（chat / companion / speech / mood / history）
     └── lib/                      # 横切白名单：logging、exceptions
 ```
 ### 5.1 聊天管线（`services/chat.py` 专属）

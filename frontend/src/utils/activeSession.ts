@@ -57,3 +57,19 @@ export function setSessionForCompanion(companionId: string, sessionId: string | 
   else map[id] = sessionId.trim();
   writeCompanionMap(map);
 }
+
+/** After server-side delete: drop active pointer and any companion→session map entry. */
+export function forgetSessionId(sessionId: string): void {
+  const sid = (sessionId || "").trim();
+  if (!sid) return;
+  if (getActiveSessionId() === sid) setActiveSessionId(null);
+  const map = readCompanionMap();
+  let changed = false;
+  for (const [k, v] of Object.entries(map)) {
+    if (v === sid) {
+      delete map[k];
+      changed = true;
+    }
+  }
+  if (changed) writeCompanionMap(map);
+}

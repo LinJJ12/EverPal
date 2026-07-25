@@ -7,7 +7,7 @@ from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from src.api import chat, companions, health, mood, profile, sessions, speech
+from src.api import chat, companions, health, history, mood, profile, sessions, speech
 from src.config.settings import get_settings
 from src.lib.exceptions import AppError, client_error_body
 from src.lib.logging import get_logger, new_request_id, set_request_id
@@ -45,6 +45,7 @@ app.include_router(chat.router)
 app.include_router(sessions.router)
 app.include_router(profile.router)
 app.include_router(mood.router)
+app.include_router(history.router)
 app.include_router(speech.router)
 
 
@@ -97,7 +98,15 @@ async def http_error_handler(
             status_code=exc.status_code,
             content=client_error_body(str(detail["code"]), str(detail["message"])),
         )
-    message = detail if isinstance(detail, str) else "请求无法完成"
+    # Starlette/FastAPI defaults are English ("Not Found"); never surface them.
+    raw = detail if isinstance(detail, str) else ""
+    has_cjk = any("\u4e00" <= ch <= "\u9fff" for ch in raw)
+    if has_cjk:
+        message = raw
+    elif exc.status_code == 404:
+        message = "找不到这项内容"
+    else:
+        message = "请求无法完成"
     code = "not_found" if exc.status_code == 404 else "request_error"
     return JSONResponse(
         status_code=exc.status_code,

@@ -3,6 +3,7 @@ from __future__ import annotations
 from fastapi import APIRouter, Header, HTTPException, Query
 
 from src.domain.moods import MOOD_IDS, normalize_mood
+from src.domain.time_cn import today_day
 from src.schemas.mood import MoodOut, MoodPut
 from src.storage import mood_repo
 
@@ -25,7 +26,7 @@ def get_today(
     x_client_id: str | None = Header(default=None, alias="X-Client-Id"),
 ) -> MoodOut:
     cid = _cid(client_id, x_client_id)
-    day = mood_repo.today_day()
+    day = today_day()
     row = mood_repo.get_mood(cid, day)
     if not row:
         return MoodOut(day=day, mood=None, label=None)

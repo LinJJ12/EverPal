@@ -29,10 +29,23 @@ export async function apiFetch<T>(
   if (!res.ok) {
     let code = "request_error";
     let message = "现在有点忙，稍后再试一下吧";
+    if (res.status === 404) {
+      code = "not_found";
+      message = "找不到这项内容，请确认服务已更新后重试";
+    }
     try {
       const body = await res.json();
       if (body?.error?.code) code = body.error.code;
-      if (body?.error?.message) message = body.error.message;
+      const apiMsg = body?.error?.message;
+      // Only accept Chinese product copy from API; never FastAPI "Not Found" etc.
+      if (typeof apiMsg === "string" && /[\u4e00-\u9fff]/.test(apiMsg)) {
+        message = apiMsg;
+      } else if (
+        typeof body?.detail === "string" &&
+        /[\u4e00-\u9fff]/.test(body.detail)
+      ) {
+        message = body.detail;
+      }
     } catch {
       /* ignore */
     }

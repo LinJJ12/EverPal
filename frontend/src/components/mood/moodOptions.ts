@@ -1,4 +1,4 @@
-/** UI constants and local prefs for mood check-in (not HTTP). */
+import { cnTodayKey } from "@/utils/timeCn";
 
 export type MoodId = "happy" | "calm" | "tired" | "sad" | "angry" | "hope";
 
@@ -48,14 +48,8 @@ const DAILY_QUOTES = [
   "期待明天，也好好过今天。",
 ];
 
-/** Calendar day key in product TZ (UTC+8), matching backend mood_repo.today_day(). */
-export function cnTodayKey(nowMs = Date.now()): string {
-  const shifted = new Date(nowMs + 8 * 3_600_000);
-  const y = shifted.getUTCFullYear();
-  const m = String(shifted.getUTCMonth() + 1).padStart(2, "0");
-  const d = String(shifted.getUTCDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
+/** Re-export: calendar day lives in utils/timeCn (not UI constants). */
+export { cnTodayKey };
 
 export function dailyMoodQuote(dayKey?: string): string {
   const key = dayKey && /^\d{4}-\d{2}-\d{2}$/.test(dayKey) ? dayKey : cnTodayKey();

@@ -1,0 +1,260 @@
+/* History calendar page */
+
+.page-history {
+  width: min(1120px, calc(100% - 32px));
+}
+
+.history-stage {
+  padding-left: clamp(20px, 3vw, 36px);
+  padding-right: clamp(20px, 3vw, 36px);
+}
+
+.history-cal {
+  display: grid;
+  gap: 1rem;
+  width: 100%;
+  max-width: none;
+}
+
+.history-cal-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.history-cal-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.history-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.history-cal-weekday {
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--color-ink, #2a1f18) 55%, transparent);
+  padding: 0.35rem 0;
+}
+
+.history-cal-cell {
+  position: relative;
+  aspect-ratio: 1;
+  min-height: 3.1rem;
+  border: 1px solid color-mix(in srgb, var(--color-ink, #2a1f18) 12%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, #fff 70%, var(--color-surface, #fff8ef));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 4px;
+  font: inherit;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+
+.history-cal-cell.is-pad {
+  border: none;
+  background: transparent;
+  pointer-events: none;
+}
+
+.history-cal-cell.is-muted {
+  opacity: 0.42;
+  cursor: default;
+  background: color-mix(in srgb, var(--color-ink, #2a1f18) 4%, transparent);
+}
+
+.history-cal-cell.is-muted:disabled {
+  cursor: default;
+}
+
+.history-cal-cell:not(.is-muted):not(.is-pad):hover {
+  border-color: color-mix(in srgb, var(--color-primary) 45%, transparent);
+  transform: translateY(-1px);
+}
+
+.history-cal-cell.is-selected {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 28%, transparent);
+}
+
+.history-cal-cell.is-today .history-cal-num {
+  color: var(--color-primary);
+  font-weight: 800;
+}
+
+.history-cal-num {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.history-cal-mood {
+  display: grid;
+  place-items: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 999px;
+  background: var(--mood-tint, transparent);
+}
+
+.history-cal-emoji {
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.history-cal-sticker.mood-sticker-svg,
+.history-cal-mood .mood-sticker-svg {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.history-cal-dot {
+  position: absolute;
+  bottom: 5px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-primary);
+}
+
+.history-cal-cell.has-chat .history-cal-dot {
+  opacity: 1;
+}
+
+.history-day-panel {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem 1.1rem;
+}
+
+.history-day-head h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1.05rem;
+}
+
+.history-day-mood {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0;
+}
+
+.history-day-mood-face {
+  display: inline-grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 999px;
+  background: var(--mood-tint, transparent);
+}
+
+.history-day-mood-face .mood-sticker-svg {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+
+.history-day-sessions {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.history-session-row {
+  display: flex;
+  gap: 0.65rem;
+  align-items: stretch;
+}
+
+.history-session-open {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  border: 1px solid color-mix(in srgb, var(--color-ink, #2a1f18) 12%, transparent);
+  border-radius: 12px;
+  background: color-mix(in srgb, #fff 80%, transparent);
+  padding: 0.65rem 0.85rem;
+  font: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.history-session-open:hover {
+  border-color: color-mix(in srgb, var(--color-primary) 40%, transparent);
+}
+
+.history-session-avatar.avatar {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+}
+
+.history-session-avatar.avatar svg {
+  width: 26px;
+  height: 26px;
+}
+
+.history-session-copy {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.history-session-copy strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.history-session-delete {
+  flex-shrink: 0;
+  align-self: center;
+  padding: 0.45rem 0.85rem;
+}
+
+@media (max-width: 720px) {
+  .page-history {
+    width: min(100%, calc(100% - 20px));
+  }
+
+  .history-cal-cell {
+    min-height: 2.5rem;
+    border-radius: 10px;
+  }
+
+  .history-cal-num {
+    font-size: 0.85rem;
+  }
+
+  .history-cal-weekday {
+    font-size: 0.75rem;
+  }
+
+  .history-session-row {
+    flex-wrap: wrap;
+  }
+
+  .history-session-delete {
+    width: 100%;
+  }
+}

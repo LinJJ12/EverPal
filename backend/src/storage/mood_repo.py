@@ -1,19 +1,15 @@
 from __future__ import annotations
 
 import time
-from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from src.domain.moods import label_for, normalize_mood
+from src.domain.time_cn import CN_TZ, today_day
 from src.storage.db import db_session
 from src.storage.profile_repo import ensure_profile
 
-# Kids product timezone for "today" calendar day.
-CN_TZ = timezone(timedelta(hours=8))
-
-
-def today_day() -> str:
-    return datetime.now(CN_TZ).strftime("%Y-%m-%d")
+# Re-export for callers that imported CN_TZ / today_day from mood_repo.
+__all__ = ["CN_TZ", "today_day", "get_mood", "upsert_mood"]
 
 
 def get_mood(client_id: str, day: str | None = None) -> dict[str, Any] | None:

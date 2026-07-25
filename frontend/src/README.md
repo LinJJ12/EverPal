@@ -5,11 +5,13 @@ views → composables → api → backend
          ↘ stores
 ```
 
-- `api/`：唯一 HTTP / SSE（`mood.ts` 仅今日心情 HTTP）
-- `components/mood/moodOptions.ts`：心情 UI 常量、短句、表情风格本机偏好
+- `api/`：唯一 HTTP / SSE（`mood.ts` 今日心情；`history.ts` 月历）
+- `components/mood/moodOptions.ts`：心情 UI 常量、短句、表情风格本机偏好（`cnTodayKey` 转自 `utils/timeCn`）
+- `utils/timeCn.ts`：东八区日历日（mood / history 共用）
 - `composables/useChatSession.ts`：会话加载 / 伙伴切换 / bootstrap
 - `composables/useChatSpeak.ts`：气泡朗读控制
 - `composables/useMoodGate.ts`：进聊天门闸；门闸通过后才 bootstrap
+- `composables/useHistoryCalendar.ts`：历史页月历翻月与当日会话
 - `views/`：一页一目录（含 games / safety；无成人 mode 页）
 - `composables/useSpeech*`：混合语音（云端优先）；朗读进度用 `progressRatio` 驱动气泡变色
 - `api/speech.ts`：TTS / ASR HTTP（无 Key）
@@ -17,7 +19,7 @@ views → composables → api → backend
 - `components/mood/`：`MoodGate` / `MoodSticker`
 - `utils/voice/`：浏览器 STT/TTS、MediaRecorder、朗读进度估算
 - `stores/`：跨页档案状态
-- `themes/cartoon/`：`cartoon.css` + `mood.css` + `chat.css` + `games.css`
+- `themes/cartoon/`：`cartoon.css` + `mood.css` + `chat.css` + `history.css` + `games.css`
 - `public/games/`：七款本地小游戏静态页
 
 禁止：页面裸 `fetch`；前端放置 LLM Key / 云端语音 Key；把 UI 常量塞进 `api/`。
