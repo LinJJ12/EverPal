@@ -1208,10 +1208,36 @@ input:focus-visible {
   font-size: 0.88rem;
 }
 
+.bubble-speak-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-top: 2px;
+}
+
 .bubble-speak[aria-pressed="true"] {
   font-weight: 700;
   border-color: var(--color-primary);
   color: var(--color-primary);
+}
+
+/* Karaoke-style TTS progress: already-read text turns coral so kids can follow by eye. */
+.bubble.speak-tracking .speak-read {
+  color: var(--color-primary);
+}
+.bubble.speak-tracking .speak-current {
+  color: var(--color-primary);
+  font-weight: 700;
+  background: color-mix(in srgb, var(--color-primary) 16%, transparent);
+  border-radius: 2px;
+}
+.bubble.speak-tracking .speak-unread {
+  color: inherit;
+}
+.bubble.speak-tracking.speak-paused .speak-current {
+  font-weight: 600;
+  background: color-mix(in srgb, var(--color-primary) 10%, transparent);
 }
 
 .composer input {

@@ -19,7 +19,7 @@ voice helpers → utils/voice/*
 | `api/` | Sole HTTP client; files align with backend resources | DOM; writing global stores; speech keys |
 | `stores/` | Cross-page state | Direct HTTP |
 | `components/` | Reusable UI (`voice/` for talk button) | Route-level business |
-| `utils/voice/` | Browser STT/TTS helpers + MediaRecorder | HTTP calls |
+| `utils/voice/` | Browser STT/TTS helpers + MediaRecorder + speakProgress | HTTP calls |
 | `themes/cartoon/` | Skin tokens | Business rules |
 
 ## Target tree (summary)

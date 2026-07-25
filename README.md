@@ -48,7 +48,7 @@ npm run dev
 **一期已结项**：feature-complete（**内部测试**，非对外发布）。`frontend/` + `backend/` 可本地联调（Conda：`chatbot`）；Key 仅 `backend/.env`；`demo/` 仍作无后端对照。
 
 **二期进展**：
-- **语音**：点我说话 + 气泡朗读；配置 `DASHSCOPE_*` 后优先云端（`qwen-audio-3.0-tts-flash` / `qwen3-asr-flash`），失败回退浏览器 Web Speech；转写仍走现有发送/安全管线
+- **语音**：点我说话 + 气泡朗读（进度变色；暂停/继续/重新朗读）；配置 `DASHSCOPE_*` 后优先云端（`qwen-audio-3.0-tts-flash` / `qwen3-asr-flash`），失败回退浏览器 Web Speech；转写仍走现有发送/安全管线
 - **下一步**：更强记忆 + 今日心情打卡
 
 登录 / 家长管控仍为另阶段。详见 [`docs/PRD.md`](docs/PRD.md) §4.2 与 `.trellis/spec/guides/product-constraints.md`。

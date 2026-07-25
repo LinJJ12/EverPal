@@ -14,7 +14,7 @@
 | `useChatStream` | send message, consume SSE/NDJSON, stop generation, surface friendly errors |
 | `useTopicCards` | mode-aware starter topics |
 | `useSpeechRecognition` | browser Web Speech STT fallback; Chinese errors; no server keys |
-| `useSpeechSynthesis` | cloud TTS via `/v1/speech/tts` first, then browser `speechSynthesis`; cancel on stop |
+| `useSpeechSynthesis` | cloud TTS first, then browser; `progressRatio` karaoke; `pause`/`resume` keep place; `speak` restarts |
 
 ## Rules
 

@@ -30,13 +30,16 @@ const {
   stop,
   clear,
 } = useChatPage();
-const {
-  supported: ttsSupported,
-  speaking,
-  error: ttsError,
-  speak,
-  stop: stopSpeak,
-} = useSpeechSynthesis();
+const tts = useSpeechSynthesis();
+const ttsSupported = tts.supported;
+const speaking = tts.speaking;
+const speakPaused = tts.paused;
+const speakRatio = tts.progressRatio;
+const ttsError = tts.error;
+const speak = tts.speak;
+const pauseSpeak = tts.pause;
+const resumeSpeak = tts.resume;
+const stopSpeak = tts.stop;
 const route = useRoute();
 const router = useRouter();
 const sideOpen = ref(false);
@@ -126,21 +129,36 @@ function canSpeakMessage(index: number): boolean {
   return true;
 }
 
-function toggleSpeakAt(index: number) {
-  if (speaking.value && speakingIndex.value === index) {
-    speakingIndex.value = null;
-    stopSpeak();
-    return;
-  }
+function startSpeakAt(index: number) {
   if (!canSpeakMessage(index)) return;
   const text = messages.value[index]?.content?.trim();
   if (!text) return;
-  // Stop previous without clearing index via speaking-watch race: set index after speak starts.
-  if (speaking.value) {
-    stopSpeak();
-  }
+  if (speaking.value) stopSpeak();
   speakingIndex.value = index;
   speak(text, companion.value?.id || store.companionId || "nuan");
+}
+
+function pauseSpeakAt(index: number) {
+  if (speakingIndex.value !== index) return;
+  pauseSpeak();
+}
+
+function resumeSpeakAt(index: number) {
+  if (speakingIndex.value !== index) return;
+  if (!resumeSpeak()) {
+    // Browser lost the paused utterance — restart this bubble.
+    startSpeakAt(index);
+  }
+}
+
+function restartSpeakAt(index: number) {
+  startSpeakAt(index);
+}
+
+function cancelSpeakAt(index: number) {
+  if (speakingIndex.value !== index) return;
+  speakingIndex.value = null;
+  stopSpeak();
 }
 
 function onStopStream() {
@@ -414,17 +432,63 @@ watch(
               :role="m.role"
               :text="m.content"
               :streaming="streaming && m.role === 'assistant' && i === messages.length - 1"
+              :speak-ratio="speaking && speakingIndex === i ? speakRatio : -1"
+              :speak-paused="speaking && speakPaused && speakingIndex === i"
             />
-            <button
+            <div
               v-if="m.role === 'assistant' && m.content.trim() && !(streaming && i === messages.length - 1)"
-              type="button"
-              class="btn btn-secondary bubble-speak"
-              :disabled="!ttsSupported || sessionLoading"
-              :aria-pressed="speaking && speakingIndex === i"
-              @click="toggleSpeakAt(i)"
+              class="bubble-speak-row"
             >
-              {{ speaking && speakingIndex === i ? "停止朗读" : "朗读这条" }}
-            </button>
+              <template v-if="speaking && speakingIndex === i">
+                <template v-if="speakPaused">
+                  <button
+                    type="button"
+                    class="btn btn-secondary bubble-speak"
+                    :disabled="sessionLoading"
+                    @click="resumeSpeakAt(i)"
+                  >
+                    继续朗读
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-secondary bubble-speak"
+                    :disabled="sessionLoading"
+                    @click="restartSpeakAt(i)"
+                  >
+                    重新朗读
+                  </button>
+                </template>
+                <button
+                  v-else-if="speakRatio < 0"
+                  type="button"
+                  class="btn btn-secondary bubble-speak"
+                  :disabled="sessionLoading"
+                  aria-pressed="true"
+                  @click="cancelSpeakAt(i)"
+                >
+                  取消
+                </button>
+                <button
+                  v-else
+                  type="button"
+                  class="btn btn-secondary bubble-speak"
+                  :disabled="sessionLoading"
+                  aria-pressed="true"
+                  @click="pauseSpeakAt(i)"
+                >
+                  暂停
+                </button>
+              </template>
+              <button
+                v-else
+                type="button"
+                class="btn btn-secondary bubble-speak"
+                :disabled="!ttsSupported || sessionLoading"
+                @click="startSpeakAt(i)"
+              >
+                朗读这条
+              </button>
+            </div>
           </div>
         </div>
 

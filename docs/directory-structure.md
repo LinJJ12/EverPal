@@ -217,7 +217,7 @@ frontend/
 │   ├── types/
 │   └── utils/
 │       ├── avatars / clientId / errors / activeSession
-│       └── voice/                # browser · companionVoice · mediaRecorder
+│       └── voice/                # browser · companionVoice · mediaRecorder · speakProgress
 └── tests/
 ```
 
