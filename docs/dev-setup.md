@@ -107,6 +107,8 @@ npm run dev
 
 浏览器进入「聊天」页即可验证 SSE 流式回复（需 `backend/.env` 中 LLM 可用，或后端允许的 mock 配置）。
 
+**语音（可选）**：在 `backend/.env` 配置 `DASHSCOPE_API_KEY`（及按需的 `DASHSCOPE_BASE_URL` / `DASHSCOPE_COMPAT_BASE_URL`、音色变量）。有 Key 时聊天页「点我说话 / 朗读」走云端；无 Key 或上游失败时自动回退浏览器 Web Speech。变量名见 `backend/.env.example`。
+
 冒烟脚本（后端已启动时）：
 
 ```powershell

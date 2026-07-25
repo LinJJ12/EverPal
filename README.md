@@ -32,14 +32,14 @@ npm run dev
 
 | 路径 | 说明 |
 |------|------|
-| [`docs/PRD.md`](docs/PRD.md) | 产品需求（v0.5） |
+| [`docs/PRD.md`](docs/PRD.md) | 产品需求（v0.5.3） |
 | [`docs/diagrams.md`](docs/diagrams.md) | 流程 / 架构图 |
 | [`docs/directory-structure.md`](docs/directory-structure.md) | **`frontend/` · `backend/` 目录与文件约定**（按 PRD） |
 | [`docs/dev-setup.md`](docs/dev-setup.md) | **本地开发 / Conda `chatbot` / Git 提交边界** |
 | [`demo/`](demo/) | HTML 产品壳对照（本地启发式，不接真模型） |
 | [`demo/assets/brand/`](demo/assets/brand/) | 品牌图标（玖伴） |
 | [`frontend/`](frontend/) | 正式 Web（Vue；UI 对齐 demo；接 BFF 流式 + 游戏大厅） |
-| [`backend/`](backend/) | 陪伴 BFF（FastAPI：健康检查 / 档案 / 会话 / 流式聊天） |
+| [`backend/`](backend/) | 陪伴 BFF（FastAPI：健康检查 / 档案 / 会话 / 流式聊天 / 语音代理） |
 | [`.trellis/`](.trellis/) | Trellis 规格与工作流 |
 | [`vendor/`](vendor/) | 第三方参考（本地，勿当产品运行时） |
 

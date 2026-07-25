@@ -57,11 +57,30 @@ async def app_error_handler(_request: Request, exc: AppError) -> JSONResponse:
 
 @app.exception_handler(RequestValidationError)
 async def validation_error_handler(
-    _request: Request, _exc: RequestValidationError
+    _request: Request, exc: RequestValidationError
 ) -> JSONResponse:
+    # Keep a Chinese default; only surface our own ValueError copy, never raw Pydantic English.
+    message = "请先说点什么再发送"
+    try:
+        errs = exc.errors()
+        if errs:
+            ctx = errs[0].get("ctx") or {}
+            err_obj = ctx.get("error")
+            if isinstance(err_obj, Exception):
+                text = str(err_obj).strip()
+                if text:
+                    message = text
+            else:
+                msg = str(errs[0].get("msg") or "")
+                if "Value error," in msg:
+                    tail = msg.split("Value error,", 1)[-1].strip()
+                    if tail:
+                        message = tail
+    except Exception:
+        pass
     return JSONResponse(
         status_code=400,
-        content=client_error_body("validation_error", "请先说点什么再发送"),
+        content=client_error_body("validation_error", message),
     )
 
 

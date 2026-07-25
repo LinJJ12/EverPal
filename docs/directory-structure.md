@@ -72,6 +72,12 @@ LLM_API_KEY=
 LLM_MODEL=gpt-4o-mini
 LLM_TIMEOUT_SECONDS=60
 DATABASE_URL=sqlite:///./data/companion.db
+# 百炼语音（空则前端回退浏览器 Web Speech）
+DASHSCOPE_API_KEY=
+DASHSCOPE_BASE_URL=https://dashscope.aliyuncs.com/api/v1
+DASHSCOPE_COMPAT_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
+TTS_MODEL=qwen-audio-3.0-tts-flash
+ASR_MODEL=qwen3-asr-flash
 ```
 
 **`frontend/.env.example`**

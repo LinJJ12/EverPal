@@ -4,7 +4,7 @@
 
 1. [x] Settings + `.env.example`：`DASHSCOPE_*`、`TTS_*`、`ASR_*`、`SPEECH_TIMEOUT_SECONDS`
 2. [x] `capabilities/speech`：TTS / ASR 客户端（httpx），companion → voice 映射
-3. [x] `api/speech.py`：挂载 `/api/speech/tts`、`/api/speech/asr`；人话错误
+3. [x] `api/speech.py`：挂载 `/v1/speech/tts`、`/v1/speech/asr`；人话错误
 4. [x] 单测：无 Key / mock 成功 / 上游失败
 5. [x] 前端 `api/speech.ts` + `useSpeechSynthesis` 云端优先 + Audio 播放 + 浏览器回退
 6. [x] 前端点我说话：MediaRecorder → ASR → composer；失败 → 现有 recognition

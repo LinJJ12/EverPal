@@ -107,8 +107,16 @@ async def synthesize_speech(
     try:
         async with dashscope_http_client(s) as client:
             resp = await client.post(url, headers=auth_headers(key), json=payload)
+            if resp.status_code in (401, 403):
+                log.warning("tts upstream auth status=%s", resp.status_code)
+                raise AppError(
+                    "speech_unavailable",
+                    "云端朗读暂不可用，试试浏览器朗读或稍后再试",
+                    503,
+                )
             if resp.status_code >= 400:
-                log.warning("tts upstream status=%s", resp.status_code)
+                snippet = (resp.text or "")[:240].replace("\n", " ")
+                log.warning("tts upstream status=%s body=%s", resp.status_code, snippet)
                 raise AppError("speech_upstream", "现在读不了，稍后再试", 502)
             try:
                 data = resp.json()

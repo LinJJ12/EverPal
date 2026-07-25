@@ -6,13 +6,13 @@
 Frontend                          Backend                         百炼
 ────────                          ───────                         ────
 speak(text, companionId)
-  → POST /api/speech/tts  ──►  capabilities/speech/tts.py  ──►  qwen-audio-3.0-tts-flash
+  → POST /v1/speech/tts  ──►  capabilities/speech/tts.py  ──►  qwen-audio-3.0-tts-flash
   ← audio/mpeg|wav bytes  ◄──  proxy bytes                 ◄──
   on fail → speechSynthesis (browser)
 
 VoiceTalkButton stop
   → record Blob
-  → POST /api/speech/asr  ──►  capabilities/speech/asr.py  ──►  qwen3-asr-flash
+  → POST /v1/speech/asr  ──►  capabilities/speech/asr.py  ──►  qwen3-asr-flash
   ← { text }              ◄──
   on fail → useSpeechRecognition (browser)
   → sanitize → composer → existing send
@@ -26,6 +26,7 @@ VoiceTalkButton stop
 |------|------|------|
 | `DASHSCOPE_API_KEY` | 空 | 百炼 Key；空则云端语音不可用 |
 | `DASHSCOPE_BASE_URL` | `https://dashscope.aliyuncs.com/api/v1` | 可改成业务空间 MaaS 域名 |
+| `DASHSCOPE_COMPAT_BASE_URL` | `https://dashscope.aliyuncs.com/compatible-mode/v1` | ASR OpenAI 兼容 |
 | `TTS_MODEL` | `qwen-audio-3.0-tts-flash` | |
 | `ASR_MODEL` | `qwen3-asr-flash` | |
 | `TTS_VOICE_NUAN` | `longanhuan_v3.6` | |
@@ -37,22 +38,22 @@ VoiceTalkButton stop
 
 ### Routes
 
-- `POST /api/speech/tts`  
+- `POST /v1/speech/tts`  
   Body: `{ "text": string, "companion_id": "nuan"|"tiao"|"cha" }`  
   Success: `200` + raw audio (`Content-Type` 按上游，优先 mp3/wav)  
-  Errors: `503 speech_unavailable`（无 Key）、`502 speech_upstream`、`400` 校验；`message` 人话。
+  Errors: `503 speech_unavailable`（无 Key / 鉴权失败）、`502 speech_upstream`、`400` 校验（含空白文本「请先说点什么再朗读」）；`message` 人话中文，不透出 Pydantic 英文。
 
-- `POST /api/speech/asr`  
+- `POST /v1/speech/asr`  
   `multipart/form-data`：`file`（webm/wav/mp3…）  
   Success: `{ "text": string }`  
   同样错误码策略。
 
 ### Capability layer
 
-- `backend/src/capabilities/speech/`：`tts.py`、`asr.py`、（可选）`client.py`  
-- 使用 `httpx` 调 DashScope HTTP（优先非流式；TTS 若返回 URL 则后端再下载再转发，前端永不持外链）。  
-- 依赖：`dashscope` SDK **或** 纯 HTTP；倾向 **httpx 直调官方 REST**，减少 SDK 与事件循环耦合；若 SDK 更稳可再换。  
-- 单测：mock httpx，覆盖无 Key / 上游失败 / 成功路径。
+- `backend/src/capabilities/speech/`：`client.py`、`tts.py`、`asr.py`  
+- 使用 `httpx` 调 DashScope HTTP（优先非流式；TTS 若返回 URL 则后端再下载再转发，前端永不持外链；URL 仅允许 `*.aliyuncs.com`）。  
+- 依赖：纯 HTTP（httpx），减少 SDK 与事件循环耦合。  
+- 单测：mock httpx，覆盖无 Key / 上游失败 / 成功路径 / SSRF 拒绝。
 
 ## Frontend
 

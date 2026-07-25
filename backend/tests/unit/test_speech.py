@@ -219,6 +219,30 @@ async def test_api_tts_unavailable(monkeypatch: pytest.MonkeyPatch):
 
 
 @pytest.mark.asyncio
+async def test_api_tts_blank_text():
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        r = await client.post("/v1/speech/tts", json={"text": "   ", "companion_id": "nuan"})
+    assert r.status_code == 400
+    body = r.json()["error"]
+    assert body["code"] == "validation_error"
+    assert body["message"] == "请先说点什么再朗读"
+
+
+@pytest.mark.asyncio
+async def test_api_tts_empty_text_keeps_chinese_default():
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        r = await client.post("/v1/speech/tts", json={"text": "", "companion_id": "nuan"})
+    assert r.status_code == 400
+    body = r.json()["error"]
+    assert body["code"] == "validation_error"
+    # Empty string hits Field(min_length=1); do not leak English Pydantic copy.
+    assert "String should" not in body["message"]
+    assert body["message"]
+
+
+@pytest.mark.asyncio
 async def test_api_asr_unavailable(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setenv("DASHSCOPE_API_KEY", "")
     get_settings.cache_clear()
