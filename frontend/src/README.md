@@ -7,6 +7,8 @@ views → composables → api → backend
 
 - `api/`：唯一 HTTP / SSE（`mood.ts` 仅今日心情 HTTP）
 - `components/mood/moodOptions.ts`：心情 UI 常量、短句、表情风格本机偏好
+- `composables/useChatSession.ts`：会话加载 / 伙伴切换 / bootstrap
+- `composables/useChatSpeak.ts`：气泡朗读控制
 - `composables/useMoodGate.ts`：进聊天门闸；门闸通过后才 bootstrap
 - `views/`：一页一目录（含 games / safety；无成人 mode 页）
 - `composables/useSpeech*`：混合语音（云端优先）；朗读进度用 `progressRatio` 驱动气泡变色
@@ -15,7 +17,7 @@ views → composables → api → backend
 - `components/mood/`：`MoodGate` / `MoodSticker`
 - `utils/voice/`：浏览器 STT/TTS、MediaRecorder、朗读进度估算
 - `stores/`：跨页档案状态
-- `themes/cartoon/`：`cartoon.css` + `mood.css` + `games.css`
+- `themes/cartoon/`：`cartoon.css` + `mood.css` + `chat.css` + `games.css`
 - `public/games/`：七款本地小游戏静态页
 
 禁止：页面裸 `fetch`；前端放置 LLM Key / 云端语音 Key；把 UI 常量塞进 `api/`。

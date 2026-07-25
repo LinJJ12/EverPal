@@ -32,11 +32,11 @@ frontend/
 ├── src/
 │   ├── api/                   # http, chat, companions, sessions, profile, mood, speech
 │   ├── views/                 # home … chat … memory … games, safety
-│   ├── composables/           # useChatPage, useChatStream, useMoodGate,
-│   │                          # useSpeechRecognition, useSpeechSynthesis
+│   ├── composables/           # useChatPage, useChatStream, useChatSession, useChatSpeak,
+│   │                          # useMoodGate, useSpeechRecognition, useSpeechSynthesis
 │   ├── components/{layout,chat,voice,mood,companions}/
 │   ├── stores/
-│   ├── themes/cartoon/        # cartoon.css + mood.css + games.css
+│   ├── themes/cartoon/        # cartoon.css + mood.css + chat.css + games.css
 │   ├── types/
 │   └── utils/
 │       └── voice/{browser,companionVoice,mediaRecorder,speakProgress}.ts

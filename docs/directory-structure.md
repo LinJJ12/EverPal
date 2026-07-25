@@ -207,6 +207,8 @@ frontend/
 │   ├── composables/
 │   │   ├── useChatPage.ts
 │   │   ├── useChatStream.ts
+│   │   ├── useChatSession.ts         # 会话加载 / 伙伴切换 / bootstrap
+│   │   ├── useChatSpeak.ts           # 气泡朗读控制
 │   │   ├── useMoodGate.ts            # /chat 今日心情门闸 + 延后 bootstrap
 │   │   ├── useSpeechRecognition.ts   # 浏览器 STT 回退
 │   │   └── useSpeechSynthesis.ts     # 云端 TTS 优先 + 浏览器回退
@@ -217,7 +219,7 @@ frontend/
 │   │   ├── mood/                 # MoodGate / MoodSticker / moodOptions
 │   │   └── companions/           # CompanionAvatar
 │   ├── stores/
-│   ├── themes/cartoon/           # cartoon.css + mood.css + games.css
+│   ├── themes/cartoon/           # cartoon.css + mood.css + chat.css + games.css
 │   ├── types/
 │   └── utils/
 │       ├── avatars / clientId / errors / activeSession

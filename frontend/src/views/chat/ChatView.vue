@@ -1,26 +1,21 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, watch } from "vue";
-import { RouterLink, useRoute, useRouter } from "vue-router";
+import { computed, ref } from "vue";
+import { RouterLink } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useProfileStore } from "@/stores/profile";
 import { useChatPage } from "@/composables/useChatPage";
+import { useChatSession } from "@/composables/useChatSession";
+import { useChatSpeak } from "@/composables/useChatSpeak";
 import { useMoodGate } from "@/composables/useMoodGate";
-import { useSpeechSynthesis } from "@/composables/useSpeechSynthesis";
 import ChatBubble from "@/components/chat/ChatBubble.vue";
 import ChatComposer from "@/components/chat/ChatComposer.vue";
 import TopicCards from "@/components/chat/TopicCards.vue";
 import CompanionAvatar from "@/components/companions/CompanionAvatar.vue";
 import MoodGate from "@/components/mood/MoodGate.vue";
 import { COMPANION_SAMPLES } from "@/utils/avatars";
-import { friendlyError } from "@/utils/errors";
-import { ApiError } from "@/api/http";
-import { getActiveSessionId, setActiveSessionId, getSessionForCompanion, setSessionForCompanion } from "@/utils/activeSession";
-
-/** Shared across ChatView remounts so a stale getSession cannot reattach sessionId. */
-let chatSessionLoadSeq = 0;
 
 const store = useProfileStore();
-const { companion, nickname, likeLabels, mode, companions } = storeToRefs(store);
+const { companion, nickname, likeLabels, companions } = storeToRefs(store);
 const {
   messages,
   input,
@@ -32,239 +27,48 @@ const {
   stop,
   clear,
 } = useChatPage();
-const tts = useSpeechSynthesis();
-const ttsSupported = tts.supported;
-const speaking = tts.speaking;
-const speakPaused = tts.paused;
-const speakRatio = tts.progressRatio;
-const ttsError = tts.error;
-const speak = tts.speak;
-const pauseSpeak = tts.pause;
-const resumeSpeak = tts.resume;
-const stopSpeak = tts.stop;
-const route = useRoute();
-const router = useRouter();
-const sideOpen = ref(false);
-const sessionLoading = ref(false);
-const sessionLoadError = ref("");
-const sideError = ref("");
-/** Which assistant message index is being read aloud (null = none). */
-const speakingIndex = ref<number | null>(null);
 
-const headerSub = computed(() => {
-  if (nickname.value && likeLabels.value.length) {
-    return `${nickname.value} · 喜欢${likeLabels.value[0]}`;
-  }
-  if (nickname.value) return `${nickname.value}，我在呀`;
-  return "我在呀";
+/** Filled after useChatSpeak so session switch can stop TTS without circular init. */
+const speakHold: { stop: () => void } = {
+  stop() {
+    /* no-op until useChatSpeak wires stopAllSpeak */
+  },
+};
+
+const {
+  sessionLoading,
+  sessionLoadError,
+  sideError,
+  pickCompanion,
+  bootstrapChat,
+  clearSessionError,
+} = useChatSession({
+  messages,
+  submit,
+  stopStream: stop,
+  stopSpeak: () => speakHold.stop(),
 });
 
-const emptyHint = computed(() => {
-  const id = companion.value?.id || "nuan";
-  const name = companion.value?.name || "伙伴";
-  if (nickname.value && likeLabels.value.length) {
-    return `${name}在这儿。${nickname.value}好呀，还喜欢${likeLabels.value[0]}吗？今天想聊点什么？`;
-  }
-  return COMPANION_SAMPLES[id] || COMPANION_SAMPLES.nuan;
+const {
+  ttsSupported,
+  speaking,
+  speakPaused,
+  speakRatio,
+  ttsError,
+  speakingIndex,
+  startSpeakAt,
+  pauseSpeakAt,
+  resumeSpeakAt,
+  restartSpeakAt,
+  cancelSpeakAt,
+  stopAllSpeak,
+} = useChatSpeak({
+  messages,
+  streaming,
+  sessionLoading,
+  companionId: () => companion.value?.id || store.companionId || "nuan",
 });
-
-async function pickCompanion(id: string) {
-  if (id === companion.value?.id) return;
-  sideError.value = "";
-  try {
-    await store.save({ companion_id: id });
-    chatSessionLoadSeq += 1;
-    sessionLoadError.value = "";
-    stopSpeak();
-    speakingIndex.value = null;
-    stop();
-    // Switch to this companion's last thread (if any); do not wipe other companions' maps
-    const sid = await resolveSessionForCompanion(id);
-    if (sid) {
-      await loadSessionById(sid);
-    } else {
-      messages.value = [];
-      store.sessionId = null;
-      setActiveSessionId(null);
-    }
-  } catch (e) {
-    sideError.value = friendlyError(e);
-  }
-}
-
-async function resolveSessionForCompanion(companionId: string): Promise<string | null> {
-  const cached = getSessionForCompanion(companionId);
-  if (cached) return cached;
-  try {
-    const { listSessions } = await import("@/api/sessions");
-    const res = await listSessions();
-    const hit = (res.sessions || []).find((s) => s.companion_id === companionId);
-    if (hit?.id) {
-      setSessionForCompanion(companionId, hit.id);
-      return hit.id;
-    }
-  } catch {
-    /* offline — fall through to empty */
-  }
-  return null;
-}
-
-function onClear() {
-  sessionLoadError.value = "";
-  speakingIndex.value = null;
-  stopSpeak();
-  clear();
-}
-
-function canSpeakMessage(index: number): boolean {
-  if (!ttsSupported || streaming.value || sessionLoading.value) return false;
-  const m = messages.value[index];
-  if (!m || m.role !== "assistant") return false;
-  if (!m.content.trim()) return false;
-  // Don't offer speak on the in-flight streaming bubble
-  if (streaming.value && index === messages.value.length - 1) return false;
-  return true;
-}
-
-function startSpeakAt(index: number) {
-  if (!canSpeakMessage(index)) return;
-  const text = messages.value[index]?.content?.trim();
-  if (!text) return;
-  if (speaking.value) stopSpeak();
-  speakingIndex.value = index;
-  speak(text, companion.value?.id || store.companionId || "nuan");
-}
-
-function pauseSpeakAt(index: number) {
-  if (speakingIndex.value !== index) return;
-  pauseSpeak();
-}
-
-function resumeSpeakAt(index: number) {
-  if (speakingIndex.value !== index) return;
-  if (!resumeSpeak()) {
-    // Browser lost the paused utterance — restart this bubble.
-    startSpeakAt(index);
-  }
-}
-
-function restartSpeakAt(index: number) {
-  startSpeakAt(index);
-}
-
-function cancelSpeakAt(index: number) {
-  if (speakingIndex.value !== index) return;
-  speakingIndex.value = null;
-  stopSpeak();
-}
-
-function onStopStream() {
-  speakingIndex.value = null;
-  stopSpeak();
-  stop();
-}
-
-function regen() {
-  const lastUser = [...messages.value].reverse().find((m) => m.role === "user");
-  if (!lastUser || streaming.value) return;
-  if (messages.value.length && messages.value[messages.value.length - 1].role === "assistant") {
-    messages.value.pop();
-  }
-  if (messages.value.length && messages.value[messages.value.length - 1].role === "user") {
-    messages.value.pop();
-  }
-  onSubmit(lastUser.content);
-}
-
-async function stripSeedQuery() {
-  if (route.path !== "/chat") return;
-  if (typeof route.query.seed !== "string" || !route.query.seed) return;
-  const nextQuery = { ...route.query };
-  delete nextQuery.seed;
-  await router.replace({ path: "/chat", query: nextQuery });
-}
-
-async function loadSessionById(sid: string): Promise<boolean> {
-  const gen = ++chatSessionLoadSeq;
-  sessionLoading.value = true;
-  sessionLoadError.value = "";
-  try {
-    const { getSession } = await import("@/api/sessions");
-    const s = await getSession(sid);
-    if (gen !== chatSessionLoadSeq) return false;
-    store.sessionId = s.id;
-    setActiveSessionId(s.id);
-    setSessionForCompanion(s.companion_id || store.companionId, s.id);
-    messages.value = (s.messages || [])
-      .filter((m) => m.role === "user" || m.role === "assistant")
-      .map((m) => ({ role: m.role as "user" | "assistant", content: m.content }));
-
-    const companion_id = s.companion_id || store.companionId;
-    const restoredMode = "child";
-    if (gen !== chatSessionLoadSeq) return false;
-    try {
-      await store.save({ companion_id, mode: restoredMode });
-    } catch {
-      if (gen !== chatSessionLoadSeq) return false;
-      store.companionId = companion_id;
-      store.mode = restoredMode;
-      store.applyModeChrome();
-    }
-    return true;
-  } catch (e) {
-    if (gen !== chatSessionLoadSeq) return false;
-    sessionLoadError.value = friendlyError(e);
-    messages.value = [];
-    // Keep id on network errors so refresh can retry; only drop on definitive miss
-    if (e instanceof ApiError && e.code === "not_found") {
-      store.sessionId = null;
-      setActiveSessionId(null);
-    }
-    return false;
-  } finally {
-    if (gen === chatSessionLoadSeq) {
-      sessionLoading.value = false;
-    }
-  }
-}
-
-/**
- * Refresh-safe bootstrap:
- * 1) ?session= from history
- * 2) persisted active session (leftover ?seed= must NOT start a new chat)
- * 3) fresh ?seed= only when there is no active session
- */
-async function bootstrapChat() {
-  const qSession = route.query.session;
-  if (typeof qSession === "string" && qSession.trim()) {
-    await loadSessionById(qSession.trim());
-    return;
-  }
-
-  const active = (store.sessionId || getActiveSessionId() || "").trim();
-  if (active) {
-    if (typeof route.query.seed === "string" && route.query.seed.trim()) {
-      await stripSeedQuery();
-    }
-    await loadSessionById(active);
-    return;
-  }
-
-  const seed = route.query.seed;
-  if (typeof seed === "string" && seed.trim()) {
-    const text = seed.trim();
-    chatSessionLoadSeq += 1;
-    store.sessionId = null;
-    setActiveSessionId(null);
-    messages.value = [];
-    // Remove seed from the URL first so a refresh cannot re-fire a new opener
-    await stripSeedQuery();
-    sessionLoadError.value = "";
-    // Gate already cleared by useMoodGate — call submit directly so onSubmit's
-    // moodBlocksChat guard cannot swallow the opener after the query was stripped.
-    await submit(text);
-  }
-}
+speakHold.stop = stopAllSpeak;
 
 const {
   moodGateNeeded,
@@ -283,43 +87,53 @@ const {
   onMoodChipClick,
 } = useMoodGate({ onReadyToChat: () => bootstrapChat() });
 
+const sideOpen = ref(false);
+
+const headerSub = computed(() => {
+  if (nickname.value && likeLabels.value.length) {
+    return `${nickname.value} · 喜欢${likeLabels.value[0]}`;
+  }
+  if (nickname.value) return `${nickname.value}，我在呀`;
+  return "我在呀";
+});
+
+const emptyHint = computed(() => {
+  const id = companion.value?.id || "nuan";
+  const name = companion.value?.name || "伙伴";
+  if (nickname.value && likeLabels.value.length) {
+    return `${name}在这儿。${nickname.value}好呀，还喜欢${likeLabels.value[0]}吗？今天想聊点什么？`;
+  }
+  return COMPANION_SAMPLES[id] || COMPANION_SAMPLES.nuan;
+});
+
 function onSubmit(text?: string) {
   if (moodBlocksChat.value) return;
-  sessionLoadError.value = "";
+  clearSessionError();
   return submit(text);
 }
 
-onBeforeUnmount(() => {
-  speakingIndex.value = null;
-  stopSpeak();
-});
+function onClear() {
+  clearSessionError();
+  stopAllSpeak();
+  clear();
+}
 
-watch(streaming, (busy) => {
-  if (busy) {
-    speakingIndex.value = null;
-    stopSpeak();
+function onStopStream() {
+  stopAllSpeak();
+  stop();
+}
+
+function regen() {
+  const lastUser = [...messages.value].reverse().find((m) => m.role === "user");
+  if (!lastUser || streaming.value) return;
+  if (messages.value.length && messages.value[messages.value.length - 1].role === "assistant") {
+    messages.value.pop();
   }
-});
-
-watch(speaking, (on) => {
-  if (on) return;
-  // speak() briefly sets speaking=false during cancel when switching bubbles;
-  // defer so the new speak() can set speaking=true before we clear the index.
-  queueMicrotask(() => {
-    if (!speaking.value) speakingIndex.value = null;
-  });
-});
-
-// History list → /chat?session= while ChatView may already be mounted
-watch(
-  () => route.query.session,
-  (sid, prev) => {
-    if (typeof sid === "string" && sid.trim() && sid !== prev) {
-      stopSpeak();
-      void loadSessionById(sid.trim());
-    }
-  },
-);
+  if (messages.value.length && messages.value[messages.value.length - 1].role === "user") {
+    messages.value.pop();
+  }
+  onSubmit(lastUser.content);
+}
 </script>
 
 <template>
