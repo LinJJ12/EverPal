@@ -371,3 +371,36 @@
 ### Next Steps
 
 - None - task complete
+
+
+## Session 12: 混合云端语音 TTS/ASR 收口
+
+**Date**: 2026-07-25
+**Task**: 混合云端语音 TTS/ASR 收口
+**Branch**: `main`
+
+### Summary
+
+百炼 TTS/ASR 云端优先+浏览器回退；capabilities/speech 与 utils/voice 结构整理；pytest 39 与 frontend build 通过后归档。
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `deddba2` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

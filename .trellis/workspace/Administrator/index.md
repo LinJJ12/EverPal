@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 11
-- **Last Active**: 2026-07-24
+- **Total Sessions**: 12
+- **Last Active**: 2026-07-25
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~373 | Active |
+| `journal-1.md` | ~406 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 12 | 2026-07-25 | 混合云端语音 TTS/ASR 收口 | `deddba2` | `main` |
 | 11 | 2026-07-24 | 语音检查修复与推送 | HEAD | `main` |
 | 10 | 2026-07-24 | 语音交互：点按说话与气泡朗读 | HEAD | `feature/voice-ux-bubble` |
 | 9 | 2026-07-24 | 语音切片审查修复与文档同步 | HEAD | `feature/voice-hardening` |
