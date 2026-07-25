@@ -1,4 +1,4 @@
-import { speechSynthesisSupported } from "@/utils/speech";
+import { speechSynthesisSupported } from "@/utils/voice/browser";
 
 export type CompanionVoiceProfile = {
   rate: number;
@@ -7,11 +7,11 @@ export type CompanionVoiceProfile = {
   prefer: "female" | "male" | "any";
 };
 
-/** Browser TTS cannot ship custom samples — differentiate via rate/pitch + system voice pick. */
+/** Browser TTS fallback — differentiate via rate/pitch + system voice pick. */
 export const COMPANION_VOICE: Record<string, CompanionVoiceProfile> = {
-  nuan: { rate: 0.92, pitch: 1.12, prefer: "female" }, // 温柔偏慢、略高
-  tiao: { rate: 1.12, pitch: 1.28, prefer: "female" }, // 活泼偏快、更高
-  cha: { rate: 0.88, pitch: 0.85, prefer: "male" }, // 沉稳偏慢、略低
+  nuan: { rate: 0.92, pitch: 1.12, prefer: "female" },
+  tiao: { rate: 1.12, pitch: 1.28, prefer: "female" },
+  cha: { rate: 0.88, pitch: 0.85, prefer: "male" },
 };
 
 const COMPANION_VOICE_ORDER = ["nuan", "tiao", "cha"] as const;
@@ -54,9 +54,7 @@ function companionIndex(companionId: string | null | undefined): number {
 }
 
 /**
- * Pick a zh system voice for this companion.
- * Prefer matching gender pool, then spread companions across that pool.
- * If only one voice exists, all companions share it (pitch/rate still differ).
+ * Pick a zh system voice for this companion (browser fallback only).
  */
 export function pickCompanionVoice(
   companionId: string | null | undefined,

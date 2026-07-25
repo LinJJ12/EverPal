@@ -44,14 +44,14 @@
 
 | Priority | Item | Status |
 |----------|------|--------|
-| P0 | Voice companion: click-to-talk STT + per-bubble read-aloud TTS; per-companion pitch/rate/voice pick | **Done (browser Web Speech)** — no `capabilities/speech` yet |
+| P0 | Voice companion: click-to-talk STT + per-bubble read-aloud TTS | **Done** — browser + cloud hybrid (`capabilities/speech`, DashScope TTS/ASR, browser fallback) |
 | P1 | Stronger long-term memory + daily mood check-in | Next |
 | P1 | Safe story library / official topic packs (after memory) | Planned |
 | P2 | Optional third-party moderation API; optional encyclopedia with **minors** safety gate | Deferred |
 | Later stage | Login / family account; parental consent & panel | Deferred |
 | Cancelled | Adult-oriented neutral skin | — |
 
-Voice STT text must go through the same safety path as typed input. Keys stay in `backend/.env` only (LLM). Browser speech uses Web Speech APIs — no cloud speech keys in `frontend/`.
+Voice STT text must go through the same safety path as typed input. Keys stay in `backend/.env` only (`LLM_*` and `DASHSCOPE_*`). No cloud speech keys in `frontend/`. Cloud TTS/ASR preferred when configured; browser Web Speech is the fallback.
 
 ## Decision test for new features
 

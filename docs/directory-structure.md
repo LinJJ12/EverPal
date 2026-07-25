@@ -18,7 +18,7 @@
 | 每层 **一句话职责 + 禁止**；`lib/` 白名单 | 见 §4 / §5 |
 | 脚手架后 **每层 README** 为协作入口 | 见 §7；未建代码前以本文为准 |
 | `.env.example` 提交、`.env` 不提交；Key 只在后端 | 见 §1.1 |
-| 不预建用不到的空目录 | 不做 `agent/`、家长空壳；浏览器语音已落在 `components/voice`，**勿**空建 `capabilities/speech` 除非上云端 STT/TTS |
+| 不预建用不到的空目录 | 不做 `agent/`、家长空壳；浏览器语音在 `components/voice`；云端语音在 `backend/src/capabilities/speech` |
 
 **刻意不照搬**：OmniStream 的 `pipeline/`（多步 Job）与 `agent/`（多轮工具）——玖伴 MVP 聊天是「单次流式管线」，用 `services/chat.py` 一条编排即可；日后若出现「固定多步后台 Job」再开 `pipeline/`。
 
@@ -126,7 +126,7 @@ api/                            # 只做 HTTP：校验 → 选入口 → 返回/
   └─ 简单 CRUD ────────────────► capabilities/* 或 storage/
                                       │
                                       ▼
-                                capabilities/         # persona / memory / safety / llm
+                                capabilities/         # persona / memory / safety / llm / speech
                                       │
                                       ▼
                                 storage/ + domain/ + config/ + prompts/ + data/lexicon/
@@ -146,14 +146,15 @@ LLM 客户端：只出自 config/（capabilities/llm 经 config 取客户端）
 | 流式陪伴对话 | `chat.ts` | `chat` | **`services/chat`** |
 | 会话列表/保存/回看 | `sessions.ts` | `sessions` | `storage` |
 | 档案 / 记忆查看清除 | `profile.ts` | `profile` | `capabilities/memory` + `storage` |
+| 语音朗读 / 听写 | `speech.ts` | `speech` | **`capabilities/speech`**（云端；前端浏览器回退） |
 
 ```text
 frontend views → composables → frontend/src/api/*  →  HTTP /v1/...
 backend api → services/chat | capabilities → storage / domain / config
 ```
 
-建议路径：`GET /health`，`GET /v1/companions`，`POST /v1/chat/stream`，`/v1/sessions`，`/v1/profile`。  
-**禁止对公网**：模型管理台、温度调试、原始 Provider 错误体。
+建议路径：`GET /health`，`GET /v1/companions`，`POST /v1/chat/stream`，`/v1/sessions`，`/v1/profile`，`POST /v1/speech/tts`，`POST /v1/speech/asr`。  
+**禁止对公网**：模型管理台、温度调试、原始 Provider 错误体、百炼 Key。
 
 ---
 
@@ -181,7 +182,8 @@ frontend/
 │   │   ├── chat.ts
 │   │   ├── companions.ts
 │   │   ├── sessions.ts
-│   │   └── profile.ts
+│   │   ├── profile.ts
+│   │   └── speech.ts             # TTS / ASR HTTP（无 Key）
 │   ├── views/                    # 一界面一目录
 │   │   ├── home/                 # 品牌首页（shell-hero）           UI-01
 │   │   ├── welcome/              # 欢迎 / 回访                      CMP-01
@@ -197,17 +199,19 @@ frontend/
 │   ├── composables/
 │   │   ├── useChatPage.ts
 │   │   ├── useChatStream.ts
-│   │   ├── useSpeechRecognition.ts   # 浏览器 STT（按住说话）
-│   │   └── useSpeechSynthesis.ts     # 浏览器 TTS（朗读）
+│   │   ├── useSpeechRecognition.ts   # 浏览器 STT 回退
+│   │   └── useSpeechSynthesis.ts     # 云端 TTS 优先 + 浏览器回退
 │   ├── components/
 │   │   ├── layout/               # AppHeader（NAV_PRIMARY + 更多）
 │   │   ├── chat/                 # Bubble、Composer、TopicCards
-│   │   ├── voice/                # HoldToTalkButton（二期语音）
+│   │   ├── voice/                # VoiceTalkButton（点我说话）
 │   │   └── companions/           # CompanionAvatar
 │   ├── stores/
 │   ├── themes/cartoon/           # cartoon.css + games.css（自 demo 迁入）
 │   ├── types/
-│   └── utils/                    # avatars、clientId、errors、speech 等
+│   └── utils/
+│       ├── avatars / clientId / errors / activeSession
+│       └── voice/                # browser · companionVoice · mediaRecorder
 └── tests/
 ```
 
@@ -230,7 +234,7 @@ frontend/
 2. 词库拦截、提示词组装、温和拒答主逻辑在后端。  
 3. 产品 UI 无 Tour / PRD 版本 /「不接真实大模型」。  
 4. 益智游戏：大厅在 `views/games/`；具体对局静态页在 `public/games/`（自 demo 迁入）。`demo/games/` 仍作对照。  
-5. 语音（浏览器切片）：`components/voice/VoiceTalkButton` + `useSpeechRecognition` / `useSpeechSynthesis`；转写进 composer → 现有发送管线；朗读在助手气泡下；`utils/companionVoice.ts` 区分伙伴。无成人模式页（`/mode` 仅重定向）。
+5. 语音分层：`api/speech.ts`（HTTP）→ composables → `components/voice/`；浏览器辅助在 `utils/voice/`。云端优先、浏览器回退；转写进 composer → 现有发送管线。无成人模式页（`/mode` 仅重定向）。
 
 ---
 
@@ -257,14 +261,19 @@ backend/
     │   ├── chat.py               # 流式；调用 services.chat
     │   ├── companions.py
     │   ├── sessions.py
-    │   └── profile.py
+    │   ├── profile.py
+    │   └── speech.py             # TTS / ASR 代理                     UI-06
     ├── services/
     │   └── chat.py               # 【一期唯一编排】管线顺序见下
     ├── capabilities/             # 被编排的单能力（可调 LLM，经 config）
     │   ├── persona.py            # 角色 + 未成年人提示合并           PER-*
     │   ├── memory.py             # 轻量记忆片段                       MEM-*
     │   ├── safety.py             # 入站/出站词库 + 拒答               SAF
-    │   └── llm.py                # OpenAI 兼容流式                    CMP-02
+    │   ├── llm.py                # OpenAI 兼容流式                    CMP-02
+    │   └── speech/               # 百炼语音包（见包内 README）         UI-06
+    │       ├── client.py         # Key / HTTP / URL allowlist
+    │       ├── tts.py
+    │       └── asr.py
     ├── prompts/                  # 纯文本提示词（便于 diff）
     │   ├── modes/child.md
     │   ├── companions/nuan.md | tiao.md | cha.md
@@ -282,7 +291,7 @@ backend/
     ├── config/
     │   ├── settings.py           # 读 .env
     │   └── llm.py                # 【唯一】创建 LLM 客户端
-    ├── schemas/                  # 请求/响应 DTO（与 frontend/types 对齐）
+    ├── schemas/                  # 请求/响应 DTO（chat / companion / speech…）
     └── lib/                      # 横切白名单：logging、exceptions
 ```
 
@@ -375,8 +384,8 @@ api/chat
 |------|----------|
 | 固定多步后台 Job | 再开 `backend/src/pipeline/`（参考 OmniStream） |
 | 多轮工具型智能体 | 再开 `backend/src/agent/`（非 MVP） |
-| 语音（浏览器 STT/TTS） | **已交付**：`frontend` `components/voice` + speech composables |
-| 语音（云端 STT/TTS） | 若需要再开 `backend/src/capabilities/speech`（当前不要空壳） |
+| 语音（浏览器 STT/TTS） | **已交付**：`frontend` `components/voice` + speech composables（云端失败回退） |
+| 语音（云端 STT/TTS） | `backend/src/capabilities/speech` + `api/speech.py`（`/v1/speech/tts`、`/asr`）；Key：`DASHSCOPE_*` |
 | 家长面板 | `views/parent` + `api/parent` |
 | 儿童主题皮肤变体 | `themes/` 下另议（**不做**成人向中性皮肤） |
 | 登录同步 | `api/auth` + storage 账号表 |

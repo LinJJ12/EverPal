@@ -5,7 +5,7 @@ import {
   speechRecognitionSupported,
   transcriptFromResult,
   type JiubanSpeechRecognition,
-} from "@/utils/speech";
+} from "@/utils/voice/browser";
 
 function mapRecognitionError(code: string): string {
   if (code === "not-allowed" || code === "service-not-allowed") {

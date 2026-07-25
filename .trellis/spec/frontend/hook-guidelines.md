@@ -13,8 +13,8 @@
 | `useSessions` | list/create/rename/delete sessions in local or server anonymous store |
 | `useChatStream` | send message, consume SSE/NDJSON, stop generation, surface friendly errors |
 | `useTopicCards` | mode-aware starter topics |
-| `useSpeechRecognition` | browser Web Speech STT (hold-to-talk); Chinese errors; no server keys |
-| `useSpeechSynthesis` | browser `speechSynthesis` read-aloud; cancel on stop |
+| `useSpeechRecognition` | browser Web Speech STT fallback; Chinese errors; no server keys |
+| `useSpeechSynthesis` | cloud TTS via `/v1/speech/tts` first, then browser `speechSynthesis`; cancel on stop |
 
 ## Rules
 
@@ -22,8 +22,8 @@
 2. Chat hooks must support **stop** mid-stream.
 3. On network/API failure, map to Chinese soft copy (see quality guidelines) — never throw raw upstream text into UI.
 4. Memory clear must go through an explicit hook/API, not ad-hoc `localStorage.clear()` in components.
-5. Browser voice STT must write into the composer and use the existing send path (same backend safety as typing); do not add cloud STT/TTS keys to the frontend for this slice.
-6. Browser TTS should vary by companion (`utils/companionVoice.ts` pitch/rate + system voice pick); do not assume a single global voice.
+5. Voice STT (cloud or browser) must write into the composer and use the existing send path; never put DashScope/LLM keys in the frontend.
+6. Cloud TTS voices come from backend `.env` mapping; browser fallback still uses `utils/voice/companionVoice.ts`.
 
 ## Forbidden
 

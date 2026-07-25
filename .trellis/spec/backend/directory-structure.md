@@ -7,20 +7,23 @@
 
 ```text
 api → services/chat (only MVP orchestrator)
-        → capabilities/{persona,memory,safety,llm}
+        → capabilities/{persona,memory,safety,llm,speech}
             → storage + domain + config + prompts + data/lexicon
 LLM client: config/llm only
+Speech client: capabilities/speech/client.py (DashScope; not LLM)
 lib: logging + exceptions whitelist — no business dump
 ```
 
 | Layer | One-liner | Forbidden |
 |-------|-----------|-----------|
-| `api/` | HTTP shape → call service/capability | Lexicon details; create LLM client |
+| `api/` | HTTP shape → call service/capability | Lexicon details; create LLM/DashScope clients |
 | `services/chat.py` | Fixed chat pipeline order | Prompt prose; lexicon implementation |
 | `capabilities/*` | Single reusable units | Second chat orchestrator; agent loop |
-| `storage/` | Persistence only | LLM calls |
+| `capabilities/speech/` | Package (tts/asr/client) — only multi-file capability | Empty shells; keys outside Settings |
+| `storage/` | Persistence only | LLM / speech upstream calls |
 | `domain/` | Enums / pure rules | I/O; read env |
 | `config/` | Settings + LLM factory | Business orchestration |
+| `schemas/` | Request/response DTOs | Upstream SDK types |
 | `lib/` | Cross-cutting utils | Companion domain concepts |
 
 ## Target tree (summary)
@@ -29,26 +32,28 @@ lib: logging + exceptions whitelist — no business dump
 backend/
 ├── .env.example / .env
 ├── main.py
-├── data/                      # runtime DB (gitignore contents)
-├── resource/                  # logs/cache/tmp
+├── data/
+├── resource/
 ├── src/
-│   ├── api/{health,chat,companions,sessions,profile}.py
+│   ├── api/{health,chat,companions,sessions,profile,speech}.py
 │   ├── services/chat.py
-│   ├── capabilities/{persona,memory,safety,llm}.py
+│   ├── capabilities/{persona,memory,safety,llm,safe_stream}.py
+│   ├── capabilities/speech/{client,tts,asr}.py
+│   ├── schemas/{chat,companion,speech}.py
 │   ├── prompts/{modes,companions,safety}/
 │   ├── data/lexicon/
 │   ├── storage/
 │   ├── domain/
 │   ├── config/
-│   ├── schemas/
 │   └── lib/
 └── tests/{unit,api,fixtures}/
 ```
 
 ## Hard rules
 
-1. Do not put LLM keys outside `backend/.env`.
-2. Do not invent `pipeline/` / `agent/` until a real multi-step Job or tool-loop is scheduled (OmniStream has them; 玖伴 MVP does not need empty shells).
+1. Do not put LLM / DashScope keys outside `backend/.env`.
+2. Do not invent `pipeline/` / `agent/` until a real multi-step Job or tool-loop is scheduled.
 3. Prefer extending existing layers over new top-level folders.
+4. Keep `capabilities/speech` as a **package** (TTS+ASR share client); other capabilities may stay single-file until they grow.
 
 Safety order: see `safety-pipeline.md` and `docs/directory-structure.md` §5.1.
