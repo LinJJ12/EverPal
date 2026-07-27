@@ -5,8 +5,10 @@ from dataclasses import dataclass
 
 from src.capabilities import safety as safety_cap
 from src.capabilities.wiki import client as wiki_client
+from src.capabilities.wiki.client import score_title_for_query, title_covers_topic
 from src.capabilities.wiki.hosts import is_allowed_wikipedia_url
 from src.capabilities.wiki.intent import (
+    extract_topic,
     looks_like_encyclopedia_question,
     search_queries_from_message,
 )
@@ -82,15 +84,47 @@ async def maybe_lookup(
         return None
 
     queries = search_queries_from_message(message)
-    page = None
+    topic = extract_topic(message)
+    best_page = None
+    best_score = -1
     used_query = ""
-    for query in queries[:3]:
-        page = await wiki_client.fetch_page_extract(query, settings=s)
-        if page is not None:
+
+    for query in queries[:4]:
+        page = await wiki_client.fetch_page_extract(
+            query,
+            topic=query,
+            settings=s,
+        )
+        if page is None:
+            continue
+        score = score_title_for_query(page.title, query, topic=query)
+        if score > best_score:
+            best_page = page
+            best_score = score
             used_query = query
-            break
-    if page is None:
-        log.info("wiki miss queries=%r", [q[:40] for q in queries])
+    page = best_page
+    if page is None or best_score < 4:
+        log.info(
+            "wiki miss queries=%r topic=%r best_score=%s",
+            [q[:40] for q in queries],
+            topic[:20],
+            best_score,
+        )
+        return None
+    relevance_topics: list[str] = []
+    for raw_t in (topic, used_query, *queries[:3]):
+        if not raw_t:
+            continue
+        peeled = extract_topic(raw_t) or raw_t
+        peeled = peeled.strip()
+        if peeled and peeled not in relevance_topics:
+            relevance_topics.append(peeled)
+    if not any(title_covers_topic(page.title, t) for t in relevance_topics):
+        log.info(
+            "wiki drop irrelevant title=%r topics=%r",
+            page.title[:40],
+            [t[:20] for t in relevance_topics],
+        )
         return None
     log.debug("wiki matched query=%r", used_query[:40])
 

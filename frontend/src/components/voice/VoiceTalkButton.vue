@@ -10,8 +10,13 @@ import {
 } from "@/utils/voice/mediaRecorder";
 import { sanitizeSpeechTranscript } from "@/utils/voice/browser";
 
-const props = defineProps<{ disabled?: boolean }>();
+const props = defineProps<{ disabled?: boolean; compact?: boolean }>();
 const emit = defineEmits<{ transcript: [text: string]; error: [message: string] }>();
+
+const idleLabel = computed(() => (props.compact ? "说话" : "点我说话"));
+const busyLabel = computed(() => (props.compact ? "识别中" : "识别中…"));
+const doneLabel = "说完了";
+const unavailableLabel = computed(() => (props.compact ? "语音" : "语音不可用"));
 
 const browser = useSpeechRecognition();
 const cloudListening = ref(false);
@@ -229,22 +234,23 @@ onBeforeUnmount(() => {
     v-if="supported"
     type="button"
     class="btn btn-secondary voice-talk"
-    :class="{ listening }"
+    :class="{ listening, compact: props.compact }"
     :disabled="disabled || cloudBusy"
     :aria-pressed="listening"
-    :aria-label="listening ? '说完了' : '点我说话'"
+    :aria-label="listening ? doneLabel : idleLabel"
     @click="onClick"
   >
-    {{ cloudBusy ? "识别中…" : listening ? "说完了" : "点我说话" }}
+    {{ cloudBusy ? busyLabel : listening ? doneLabel : idleLabel }}
   </button>
   <button
     v-else
     type="button"
     class="btn btn-secondary voice-talk"
+    :class="{ compact: props.compact }"
     disabled
     title="当前浏览器暂不支持语音，请打字聊"
     aria-label="语音不可用"
   >
-    语音不可用
+    {{ unavailableLabel }}
   </button>
 </template>

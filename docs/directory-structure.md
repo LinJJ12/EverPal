@@ -227,8 +227,8 @@ frontend/
 │   │   └── useSpeechSynthesis.ts     # 云端 TTS 优先 + 浏览器回退
 │   ├── components/
 │   │   ├── layout/               # AppHeader（NAV_PRIMARY + 更多）
-│   │   ├── chat/                 # Bubble、Composer（含「百科」开关）、TopicCards、ChatSources
-│   │   ├── voice/                # VoiceTalkButton（点我说话）
+│   │   ├── chat/                 # Bubble、Composer（多行+底栏工具；含「百科」）、TopicCards、ChatSources
+│   │   ├── voice/                # VoiceTalkButton（compact「说话」/ 默认「点我说话」）
 │   │   ├── mood/                 # MoodGate / MoodSticker / moodOptions
 │   │   └── companions/           # CompanionAvatar
 │   ├── stores/
@@ -268,7 +268,8 @@ frontend/
 7. 历史月历：`api/history.ts` + `useHistoryCalendar`；周一起始公历；对话日按消息东八区日；无农历。
 8. 会话隔离：切换伙伴 / 「新建对话」清空当前屏与 active session；旧线程仅从历史 `?session=` 进入。场景 / 安全 `?seed=` 须同时清 `store.sessionId` 与 `utils/activeSession`。
 9. 聊天侧栏展开偏好：`utils/chatSidebar.ts`（勿在 `ChatView` 内直接读写 localStorage）。
-10. 联网百科：输入栏 **「百科」** 按钮（`ChatComposer` + `wikiMode`）；请求带 `use_wiki`；仅此时后端检索。发送时立即熄灭（一次一问）；切换伙伴 / 加载会话 / 新建对话会 `resetWikiMode`。重新生成若原回复带 sources 则再次 `useWiki`。来源仅 SSE `done.sources` + `parseChatSources` 白名单；UI 为 `ChatSources.vue`。
+10. 联网百科：输入区底栏 **「百科」**（`ChatComposer` + `wikiMode`）；请求带 `use_wiki`；仅此时后端检索。发送时立即熄灭（一次一问）；切换伙伴 / 加载会话 / 新建对话会 `resetWikiMode`。重新生成若原回复带 sources 则再次 `useWiki`。来源仅 SSE `done.sources` + `parseChatSources` 白名单；UI 为 `ChatSources.vue`。后端对检索结果做标题相关性门控（错条丢弃，不挂来源）。
+11. 聊天输入区（`ChatComposer`）：整宽多行 `textarea`（自动增高）+ 底栏「百科 / 说话 / 发送」；Enter 发送、Shift+Enter 换行；仅 `streaming` 时显示「停止」（勿用 `disabled` 兼作停止条件）。
 
 ---
 
@@ -306,11 +307,11 @@ backend/
     │   ├── memory.py             # 轻量记忆片段                       MEM-*
     │   ├── safety.py             # 入站/出站词库 + 拒答               SAF
     │   ├── llm.py                # OpenAI 兼容流式                    CMP-02
-    │   ├── wiki/                 # 联网百科：按钮触发；MediaWiki 摘要（含意图/查询扩展）
-    │   │   ├── intent.py         # 查询扩展（非自动触发）
+    │   ├── wiki/                 # 联网百科：按钮触发；MediaWiki 摘要 + 相关性门控
+    │   │   ├── intent.py         # 主题抽取 / 查询扩展（非自动触发）
     │   │   ├── hosts.py          # Wikipedia HTTPS 主机白名单
-    │   │   ├── client.py
-    │   │   ├── lookup.py         # maybe_lookup(force=…)；仅 chat 在 use_wiki 时调用
+    │   │   ├── client.py         # 检索 + 标题打分 / title_covers_topic
+    │   │   ├── lookup.py         # maybe_lookup；多查询择优；不相关则 None
     │   │   └── README.md
     │   └── speech/               # 百炼语音包（见包内 README）         UI-06
     │       ├── client.py         # Key / HTTP / URL allowlist
@@ -347,7 +348,7 @@ backend/
 api/chat
   → services/chat
        1. capabilities/safety    入站 → 硬命中则拒答（不调 LLM；优先于拼提示）
-       1b. capabilities/wiki     仅当请求 use_wiki=true → 维基摘要（词库过滤；失败跳过）
+       1b. capabilities/wiki     仅当请求 use_wiki=true → 维基摘要（相关性门控 + 词库过滤；失败跳过）
        2. capabilities/persona   + prompts + memory 片段 + 可选百科块
        3. capabilities/llm       流式 token（客户端来自 config.llm）
        4. capabilities/safe_stream 窗口化出站词库闸门（先检再发给客户端；命中则温和改写）
@@ -464,3 +465,5 @@ api/chat
 | v0.7 | 2026-07-27 | `capabilities/wiki` 联网百科；聊天管线 1b；SSE `sources` |
 | v0.8 | 2026-07-27 | 前端树补 `ChatSources` / `useChatStream` sources；硬约束 §4.2.10 |
 | v0.9 | 2026-07-27 | 百科改为显式「百科」按钮 + `use_wiki`；重置/再生成约定 |
+| v0.10 | 2026-07-27 | 百科相关性：主题抽取、多查询择优、`title_covers_topic`；错配不挂来源 |
+| v0.11 | 2026-07-27 | `ChatComposer` 多行输入 + 底栏工具；`streaming` 与 `disabled` 分离 |

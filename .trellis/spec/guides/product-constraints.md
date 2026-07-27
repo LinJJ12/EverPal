@@ -49,7 +49,7 @@
 | P1 | Safe story library / official topic packs | **Done** — `frontend/src/content/packs.ts` |
 | P1 | Session isolation + new chat | **Done** — switch companion = blank; backend session↔companion check |
 | P2 | Optional third-party moderation API | Deferred — lexicon primary |
-| P2 | Encyclopedia with **minors** safety gate | **Done (MVP)** — explicit「百科」button → zhwiki tool → collapsible sources; silent fallback |
+| P2 | Encyclopedia with **minors** safety gate | **Done (MVP)** — composer toolbar「百科」→ zhwiki tool → title relevance gate → collapsible sources; silent fallback |
 | Later stage | Login / family account; parental consent & panel | Deferred |
 | Cancelled | Adult-oriented neutral skin | — |
 

@@ -20,7 +20,7 @@ lib: logging + exceptions whitelist — no business dump
 | `api/` | HTTP shape → call service/capability | Lexicon details; create LLM/DashScope clients |
 | `services/chat.py` | Fixed chat pipeline order | Prompt prose; lexicon implementation |
 | `capabilities/*` | Single reusable units | Second chat orchestrator; agent loop |
-| `capabilities/wiki/` | Intent + MediaWiki extract + host allowlist | Open-web search; second orchestrator |
+| `capabilities/wiki/` | Intent/query expand + MediaWiki extract + relevance gate + host allowlist | Open-web search; second orchestrator; attach irrelevant sources |
 | `capabilities/speech/` | Package (tts/asr/client) — only multi-file capability | Empty shells; keys outside Settings |
 | `storage/` | Persistence only | LLM / speech upstream calls; pure enum tables |
 | `domain/` | Enums / pure rules (`moods.py`) | I/O; read env |

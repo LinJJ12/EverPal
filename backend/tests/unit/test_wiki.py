@@ -5,9 +5,16 @@ from unittest.mock import AsyncMock, patch
 import httpx
 import pytest
 
-from src.capabilities.wiki.client import WikiPage, fetch_page_extract, page_url
+from src.capabilities.wiki.client import (
+    WikiPage,
+    fetch_page_extract,
+    page_url,
+    score_title_for_query,
+    title_covers_topic,
+)
 from src.capabilities.wiki.hosts import is_allowed_wikipedia_host, is_allowed_wikipedia_url
 from src.capabilities.wiki.intent import (
+    extract_topic,
     looks_like_encyclopedia_question,
     search_queries_from_message,
     search_query_from_message,
@@ -43,19 +50,51 @@ def test_search_query_strips_question_shell():
     assert "为什么" not in q
 
 
+def test_extract_topic_what_is():
+    assert extract_topic("什么是性？") == "性"
+    assert extract_topic("什么是恐龙") == "恐龙"
+    assert extract_topic("恐龙是什么？") == "恐龙"
+
+
+def test_search_queries_prefer_topic_first():
+    qs = search_queries_from_message("什么是性？")
+    assert qs[0] == "性"
+
+
 def test_search_queries_prefer_natural_question():
     qs = search_queries_from_message("为什么天是蓝的？")
     assert "天空 蓝色" in qs or "天空" in qs
-    assert qs[0] in {"天 蓝", "天空 蓝色", "天空"} or "天" in qs[0]
+
+
+def test_title_relevance_rejects_math_for_sex_question():
+    assert extract_topic("什么是性？") == "性"
+    assert not title_covers_topic("什么是数学？", "性")
+    assert not title_covers_topic("什么是数学", "性")
+    assert not title_covers_topic("什么是数学？", "什么是性")
+    assert not title_covers_topic("急性肠胃炎", "性")
+    assert title_covers_topic("性别", "性")
+    assert title_covers_topic("恐龙", "恐龙")
+    # Shared question shell must not count as relevance
+    assert score_title_for_query("什么是数学？", "什么是性", topic="性") < 0
 
 
 def test_score_title_prefers_sky_over_frog():
-    from src.capabilities.wiki.client import score_title_for_query
+    sky = score_title_for_query("天空", "天空 蓝色", topic="天空")
+    frog = score_title_for_query("天蓝丛蛙", "天是蓝的", topic="天是蓝的")
+    anime = score_title_for_query("知道天空有多藍的人啊", "天空 蓝色", topic="天空 蓝色")
+    assert sky >= 4
+    assert frog < 0
+    assert sky > anime
 
-    sky = score_title_for_query("天空", "天空 蓝色")
-    frog = score_title_for_query("天蓝丛蛙", "天是蓝的")
-    assert sky > frog
-    assert sky >= 3
+
+def test_search_queries_sky_expansions_before_clause():
+    qs = search_queries_from_message("为什么天是蓝的？")
+    assert "天空" in qs or "天空 蓝色" in qs
+    # Expanded keywords should appear before the noisy clause「天是蓝的」
+    if "天是蓝的" in qs and "天空" in qs:
+        assert qs.index("天空") < qs.index("天是蓝的") or (
+            "天空 蓝色" in qs and qs.index("天空 蓝色") < qs.index("天是蓝的")
+        )
 
 
 def test_page_url():
@@ -284,11 +323,12 @@ async def test_chat_skips_wiki_on_input_rewrite():
 
 
 @pytest.mark.asyncio
-async def test_maybe_lookup_force_skips_intent_gate():
-    s = Settings(wiki_enabled=True, wiki_max_chars=200)
+async def test_maybe_lookup_drops_irrelevant_page_for_topic():
+    """Regression:「什么是性」must not accept「什么是数学」as a source."""
+    s = Settings(wiki_enabled=True)
     page = WikiPage(
-        title="开心",
-        extract="开心是一种积极情绪。",
+        title="什么是数学？",
+        extract="数学是研究数量等的科学。",
         url="https://zh.wikipedia.org/wiki/x",
     )
     with patch(
@@ -296,6 +336,5 @@ async def test_maybe_lookup_force_skips_intent_gate():
         new_callable=AsyncMock,
         return_value=page,
     ):
-        # Chitchat wording — without force would skip; with force still looks up.
-        out = await maybe_lookup("今天好开心呀", mode=Mode.CHILD, settings=s, force=True)
-    assert out is not None
+        out = await maybe_lookup("什么是性？", mode=Mode.CHILD, settings=s, force=True)
+    assert out is None

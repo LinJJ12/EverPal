@@ -422,6 +422,7 @@ function regen() {
                 v-model="input"
                 v-model:wiki-mode="wikiMode"
                 :disabled="streaming || sessionLoading || moodBlocksChat"
+                :streaming="streaming"
                 @send="onSubmit()"
                 @stop="onStopStream()"
               />

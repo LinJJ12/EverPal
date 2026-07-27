@@ -107,9 +107,9 @@ npm run dev
 
 浏览器进入「聊天」页即可验证 SSE 流式回复（需 `backend/.env` 中 LLM 可用，或后端允许的 mock 配置）。
 
-**语音（可选）**：在 `backend/.env` 配置 `DASHSCOPE_API_KEY`（及按需的 `DASHSCOPE_BASE_URL` / `DASHSCOPE_COMPAT_BASE_URL`、音色变量）。有 Key 时聊天页「点我说话 / 朗读」走云端；无 Key 或上游失败时自动回退浏览器 Web Speech。变量名见 `backend/.env.example`。
+**语音（可选）**：在 `backend/.env` 配置 `DASHSCOPE_API_KEY`（及按需的 `DASHSCOPE_BASE_URL` / `DASHSCOPE_COMPAT_BASE_URL`、音色变量）。有 Key 时聊天页输入区「说话」与气泡「朗读」走云端；无 Key 或上游失败时自动回退浏览器 Web Speech。变量名见 `backend/.env.example`。
 
-**联网百科（可选）**：默认开启（`WIKI_ENABLED=true`）。聊天页点输入栏旁 **「百科」** 后再发送，才会查维基；普通聊天不检索。超时/无结果静默降级。可用 `WIKI_TIMEOUT_SECONDS` / `WIKI_MAX_CHARS` 调节；设 `WIKI_ENABLED=false` 关闭。
+**联网百科（可选）**：默认开启（`WIKI_ENABLED=true`）。聊天页在输入区底栏点 **「百科」** 后再发送，才会查维基；普通聊天不检索。超时/无结果/标题与主题不相关时静默降级（不挂错来源）。可用 `WIKI_TIMEOUT_SECONDS` / `WIKI_MAX_CHARS` 调节；设 `WIKI_ENABLED=false` 关闭。
 
 冒烟脚本（后端已启动时）：
 
@@ -117,6 +117,8 @@ npm run dev
 conda activate chatbot
 cd backend
 python scripts/e2e_smoke.py
+# 可选：维基相关性（需外网）
+python scripts/wiki_relevance_smoke.py
 ```
 
 ---

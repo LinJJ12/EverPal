@@ -707,30 +707,77 @@
   font-weight: 600;
 }
 
+/* ChatGPT / 豆包式：上方整行输入，底栏放工具与发送 */
 .composer {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   gap: 8px;
-  padding: 8px 10px;
+  padding: 12px 14px 10px;
   width: 100%;
-  background: color-mix(in srgb, #fff 78%, var(--color-muted-bg));
+  background: color-mix(in srgb, #fff 88%, var(--color-muted-bg));
   border: 1px solid var(--color-border);
-  border-radius: 16px;
+  border-radius: 22px;
+  box-shadow: 0 1px 0 color-mix(in srgb, #fff 70%, transparent);
+}
+
+.page-chat .composer textarea {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  max-height: 140px;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  padding: 4px 2px;
+  font-size: calc(1.05rem * var(--demo-font-scale));
+  line-height: 1.45;
+  font-family: inherit;
+  color: var(--color-foreground);
+  background: transparent;
+  outline: none;
   box-shadow: none;
+  resize: none;
+  overflow-y: auto;
+  field-sizing: content;
+}
+
+.page-chat .composer textarea:focus {
+  outline: none;
+}
+
+.page-chat .composer textarea::placeholder {
+  color: color-mix(in srgb, var(--color-muted) 85%, transparent);
+}
+
+.composer-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 40px;
+}
+
+.composer-tools,
+.composer-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
 }
 
 .composer-wiki {
   flex-shrink: 0;
   appearance: none;
-  min-width: 3.25rem;
-  min-height: 42px;
-  padding: 0 10px;
-  border-radius: 14px;
+  min-width: 2.75rem;
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 999px;
   border: 1px solid var(--color-border);
-  background: color-mix(in srgb, #fff 85%, var(--color-muted-bg));
+  background: color-mix(in srgb, #fff 70%, var(--color-muted-bg));
   color: var(--color-foreground);
   font: inherit;
-  font-size: 0.92rem;
+  font-size: 0.86rem;
   font-weight: 800;
   cursor: pointer;
   transition: background var(--ease), border-color var(--ease), color var(--ease);
@@ -751,42 +798,43 @@
   cursor: not-allowed;
 }
 
-.page-chat .composer input {
-  flex: 1;
-  min-height: 44px;
-  border: none;
-  border-radius: 12px;
-  padding: 0 10px;
-  font-size: calc(1rem * var(--demo-font-scale));
-  font-family: inherit;
-  background: transparent;
-  outline: none;
+.composer .voice-talk {
+  flex-shrink: 0;
+  min-width: 0;
+  min-height: 36px;
+  padding-inline: 12px;
+  user-select: none;
+  border-radius: 999px;
+  font-size: 0.86rem;
+  font-weight: 700;
   box-shadow: none;
 }
 
-.page-chat .composer input:focus {
-  outline: none;
-}
-
-.composer .voice-talk {
-  flex-shrink: 0;
-  min-width: 5.75rem;
-  min-height: 42px;
-  user-select: none;
-  border-radius: 14px;
+.composer .voice-talk.compact {
+  min-width: 3.25rem;
 }
 
 .composer .voice-talk.listening {
   background: linear-gradient(135deg, #ffe8a3, #ffd06a);
   border-color: #e0b84a;
   color: #5a3d00;
-  font-weight: 700;
+  font-weight: 800;
 }
 
-.composer .btn {
-  min-height: 42px;
-  padding-inline: 18px;
-  border-radius: 14px;
+.composer .composer-send,
+.composer .composer-stop {
+  min-height: 36px;
+  min-width: 4.25rem;
+  padding-inline: 16px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.composer .composer-send:disabled {
+  opacity: 0.4;
+  transform: none;
+  cursor: not-allowed;
 }
 
 .chat-toolbar,

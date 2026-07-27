@@ -9,7 +9,7 @@
 user message
   → input lexicon check (first — cheap; skip prompt/LLM on hard hit)
       → on hard hit: return soft refusal (do not call LLM)
-  → optional wiki lookup (only if request.use_wiki; lexicon on extract; soft-fail skip)
+  → optional wiki lookup (only if request.use_wiki; relevance gate + lexicon on extract; soft-fail skip)
   → build system prompt (mode + companion + memory snippet [+ wiki block])
   → LLM generate with windowed output lexicon gate (safe_stream)
       → flush only lexicon-safe prefixes to the client

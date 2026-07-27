@@ -2,8 +2,7 @@ from __future__ import annotations
 
 import re
 
-# Factual / encyclopedia-ish cues (minors companion Chinese).
-# Avoid broad location chitchat like「你在哪」— that is not encyclopedia intent.
+# Factual / encyclopedia-ish cues (legacy helpers; product trigger is UI「百科」).
 _INTENT_PATTERNS = (
     r"为什么",
     r"为啥",
@@ -31,7 +30,62 @@ _INTENT_RE = re.compile("|".join(_INTENT_PATTERNS))
 
 _WHY_IS_RE = re.compile(r"为什么(?P<sub>.+?)是(?P<pred>.+?)的?[?？!！。.~～]*$")
 
-# Pure chat / emotion — do not search even if a cue substring appears oddly.
+_TOPIC_PATTERNS = (
+    re.compile(r"^(?:请问|请|帮我)?(?:什么是|啥是|什么叫|啥叫)(?P<topic>.+)$"),
+    re.compile(r"^(?P<topic>.+?)(?:是什么|是啥|叫什么)(?:意思)?$"),
+    re.compile(r"^(?:请|帮我)?解释一下(?P<topic>.+)$"),
+)
+
+# Shared function words — never use alone for relevance.
+_STOPWORDS = frozenset(
+    {
+        "的",
+        "了",
+        "呢",
+        "吗",
+        "嘛",
+        "啊",
+        "呀",
+        "吧",
+        "么",
+        "什麼",
+        "什么",
+        "是",
+        "叫",
+        "有",
+        "在",
+        "与",
+        "和",
+        "及",
+        "或",
+        "对",
+        "从",
+        "到",
+        "为",
+        "被",
+        "把",
+        "给",
+        "让",
+        "请",
+        "问",
+        "一下",
+        "怎么",
+        "怎样",
+        "如何",
+        "为何",
+        "为啥",
+        "为什么",
+        "百科",
+        "科普",
+        "解释",
+        "讲讲",
+        "告诉",
+        "我",
+        "你",
+        "一下",
+    }
+)
+
 _CHITCHAT_RE = re.compile(
     r"^(你好|您好|嗨|哈喽|在吗|早上好|晚安|谢谢|谢谢你|好的|嗯嗯|哈哈|"
     r"今天好开心|好难过|我想你了|陪我聊会|无聊|"
@@ -51,7 +105,7 @@ def looks_like_encyclopedia_question(text: str) -> bool:
 
 
 def search_query_from_message(text: str) -> str:
-    """Light cleanup for MediaWiki opensearch (keep Chinese content words)."""
+    """Light cleanup for MediaWiki search (keep Chinese content words)."""
     q = (text or "").strip()
     q = re.sub(r"^(请帮我|麻烦|能不能|可以|请问)+", "", q)
     for pat in (
@@ -75,13 +129,33 @@ def search_query_from_message(text: str) -> str:
     return q.strip() or (text or "").strip()[:64]
 
 
+def extract_topic(text: str) -> str:
+    """
+    Core subject of a kids question, e.g.「什么是性」→「性」,「恐龙是什么」→「恐龙」.
+    Used for search preference and title relevance (must appear in wiki title).
+    """
+    raw = (text or "").strip()
+    raw = re.sub(r"[?？!！。.~～]+$", "", raw).strip()
+    for cre in _TOPIC_PATTERNS:
+        m = cre.match(raw)
+        if m:
+            topic = (m.group("topic") or "").strip(" 的了呢啊呀嘛")
+            if topic and topic not in _STOPWORDS:
+                return topic[:40]
+    cleaned = search_query_from_message(text)
+    if cleaned and cleaned not in _STOPWORDS:
+        return cleaned[:40]
+    return ""
+
+
 def search_queries_from_message(text: str) -> list[str]:
     """
     Candidate queries for MediaWiki search.
-    Expand「为什么X是Y的」into keyword queries; keep natural text as fallback.
+    Prefer the extracted topic first so「什么是性」searches「性」, not the whole question shell.
     """
     raw = (text or "").strip()
     raw_stripped = re.sub(r"[?？!！。.~～]+$", "", raw).strip()
+    topic = extract_topic(text)
     cleaned = search_query_from_message(text)
     extras: list[str] = []
     m = _WHY_IS_RE.search(raw_stripped)
@@ -96,8 +170,11 @@ def search_queries_from_message(text: str) -> list[str]:
             elif len(sub) <= 2:
                 extras.append(sub)
     out: list[str] = []
-    for q in (*extras, raw_stripped, cleaned):
+    # Prefer expanded keyword queries before the raw clause (「天是蓝的」is noisy on zhwiki).
+    for q in (*extras, topic, cleaned, raw_stripped):
         q = (q or "").strip()
-        if q and q not in out:
+        if not q or q in _STOPWORDS:
+            continue
+        if q not in out:
             out.append(q[:80])
     return out
