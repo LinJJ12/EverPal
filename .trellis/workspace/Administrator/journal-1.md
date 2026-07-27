@@ -437,3 +437,36 @@
 ### Next Steps
 
 - None - task complete
+
+
+## Session 14: 百科相关性与输入区底栏
+
+**Date**: 2026-07-27
+**Task**: 百科相关性与输入区底栏
+**Branch**: `main`
+
+### Summary
+
+硬化维基标题相关性门控与多查询择优；聊天输入改为多行+底栏工具；归档 wiki-search / safe-stories / session-new-chat；文档与冒烟脚本同步。
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `305560e` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
