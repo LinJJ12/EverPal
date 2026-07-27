@@ -545,6 +545,53 @@
   padding-left: 2px;
 }
 
+.chat-sources {
+  margin: 4px 0 2px;
+  max-width: min(100%, 36rem);
+  font-size: 0.82rem;
+  color: var(--color-muted);
+}
+
+.chat-sources-summary {
+  cursor: pointer;
+  font-weight: 700;
+  list-style: none;
+  padding: 4px 2px;
+  border-radius: 8px;
+  user-select: none;
+}
+
+.chat-sources-summary::-webkit-details-marker {
+  display: none;
+}
+
+.chat-sources-summary::before {
+  content: "▸ ";
+  display: inline-block;
+  transition: transform 0.15s ease;
+}
+
+.chat-sources[open] > .chat-sources-summary::before {
+  transform: rotate(90deg);
+}
+
+.chat-sources-list {
+  margin: 4px 0 0;
+  padding: 0 0 0 1rem;
+  list-style: disc;
+}
+
+.chat-sources-link {
+  color: var(--color-foreground);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  word-break: break-all;
+}
+
+.chat-sources-link:hover {
+  color: var(--color-primary);
+}
+
 .bubble-speak {
   appearance: none;
   border: none;
@@ -652,6 +699,14 @@
   font-size: 0.9rem;
 }
 
+.composer-wiki-hint {
+  margin: 0 0 8px;
+  padding: 0 4px;
+  color: var(--color-muted);
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
 .composer {
   display: flex;
   align-items: center;
@@ -662,6 +717,38 @@
   border: 1px solid var(--color-border);
   border-radius: 16px;
   box-shadow: none;
+}
+
+.composer-wiki {
+  flex-shrink: 0;
+  appearance: none;
+  min-width: 3.25rem;
+  min-height: 42px;
+  padding: 0 10px;
+  border-radius: 14px;
+  border: 1px solid var(--color-border);
+  background: color-mix(in srgb, #fff 85%, var(--color-muted-bg));
+  color: var(--color-foreground);
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background var(--ease), border-color var(--ease), color var(--ease);
+}
+
+.composer-wiki:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--color-primary) 45%, var(--color-border));
+}
+
+.composer-wiki.active {
+  background: color-mix(in srgb, var(--color-primary) 22%, #fff);
+  border-color: color-mix(in srgb, var(--color-primary) 55%, var(--color-border));
+  color: color-mix(in srgb, var(--color-primary) 75%, #3a2a1a);
+}
+
+.composer-wiki:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .page-chat .composer input {

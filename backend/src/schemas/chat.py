@@ -21,3 +21,5 @@ class ChatStreamRequest(BaseModel):
     client_id: str = ""
     session_id: str = ""
     persist: bool = True
+    # Explicit encyclopedia mode from UI (kids tap「百科」); no silent auto-search.
+    use_wiki: bool = False

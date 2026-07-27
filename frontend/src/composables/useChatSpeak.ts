@@ -1,7 +1,7 @@
 import { onBeforeUnmount, ref, watch, type Ref } from "vue";
 import { useSpeechSynthesis } from "@/composables/useSpeechSynthesis";
 
-type ChatMsg = { role: "user" | "assistant"; content: string };
+type ChatMsg = { role: "user" | "assistant"; content: string; sources?: { title: string; url: string }[] };
 
 /**
  * Bubble-level read-aloud controls for /chat (karaoke progress lives in useSpeechSynthesis).

@@ -7,10 +7,11 @@
 
 ```text
 api → services/chat (only MVP orchestrator)
-        → capabilities/{persona,memory,safety,llm,speech}
+        → capabilities/{persona,memory,safety,llm,wiki,speech}
             → storage + domain + config + prompts + data/lexicon
 LLM client: config/llm only
 Speech client: capabilities/speech/client.py (DashScope; not LLM)
+Wiki client: capabilities/wiki/client.py (MediaWiki; allowlisted hosts)
 lib: logging + exceptions whitelist — no business dump
 ```
 
@@ -19,6 +20,7 @@ lib: logging + exceptions whitelist — no business dump
 | `api/` | HTTP shape → call service/capability | Lexicon details; create LLM/DashScope clients |
 | `services/chat.py` | Fixed chat pipeline order | Prompt prose; lexicon implementation |
 | `capabilities/*` | Single reusable units | Second chat orchestrator; agent loop |
+| `capabilities/wiki/` | Intent + MediaWiki extract + host allowlist | Open-web search; second orchestrator |
 | `capabilities/speech/` | Package (tts/asr/client) — only multi-file capability | Empty shells; keys outside Settings |
 | `storage/` | Persistence only | LLM / speech upstream calls; pure enum tables |
 | `domain/` | Enums / pure rules (`moods.py`) | I/O; read env |
@@ -38,6 +40,7 @@ backend/
 │   ├── api/{health,chat,companions,sessions,profile,mood,speech}.py
 │   ├── services/chat.py
 │   ├── capabilities/{persona,memory,safety,llm,safe_stream}.py
+│   ├── capabilities/wiki/{intent,hosts,client,lookup}.py
 │   ├── capabilities/speech/{client,tts,asr}.py
 │   ├── schemas/{chat,companion,speech,mood}.py
 │   ├── prompts/{modes,companions,safety}/

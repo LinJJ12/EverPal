@@ -1,7 +1,7 @@
 # 玖伴 · 仓库目录与文件约定
 
 > **目的**：每个文件夹/文件用一句话说清「只负责什么、禁止什么」，方便后期加功能而不搅成泥球。  
-> **依据**：[`docs/PRD.md`](./PRD.md) v0.5.4。  
+> **依据**：[`docs/PRD.md`](./PRD.md) v0.5.5。  
 > **结构借鉴**：本机旁路仓 **OmniStream**（与本仓库并列，例如桌面上的 `OmniStream/`；**不在本 Git 仓库内**）的前后端分离、`api` 垂直对齐、编排 vs 单能力分层、目录 README 所有权；**业务内容按陪伴 PRD，不照搬直播带货模块**。克隆本仓的协作者无需、也无法依赖该路径。  
 > **命名**：正式根目录为 `frontend/`、`backend/`（不用 `web/`、`server/`）。
 
@@ -133,7 +133,7 @@ api/                            # 只做 HTTP：校验 → 选入口 → 返回/
   └─ 简单 CRUD ────────────────► capabilities/* 或 storage/
                                       │
                                       ▼
-                                capabilities/         # persona / memory / safety / llm / speech
+                                capabilities/         # persona / memory / safety / llm / wiki / speech
                                       │
                                       ▼
                                 storage/ + domain/ + config/ + prompts/ + data/lexicon/
@@ -150,7 +150,7 @@ LLM 客户端：只出自 config/（capabilities/llm 经 config 取客户端）
 |-----------------|-----------------|-----------------|------------|
 | 探活 | （可选）`http` 健康 | `health` | — |
 | 角色列表 | `companions.ts` | `companions` | `capabilities/persona` 或静态 prompts 元数据 |
-| 流式陪伴对话 | `chat.ts` | `chat` | **`services/chat`** |
+| 流式陪伴对话 | `chat.ts` | `chat` | **`services/chat`**（可含 `capabilities/wiki` 摘要注入；`done.sources`） |
 | 会话列表/保存/回看 | `sessions.ts` | `sessions` | `storage` |
 | 历史月历（对话日+心情） | `history.ts` | `history` | `storage/history_repo`（消息日 UTC+8；稀疏 days） |
 | 档案 / 记忆查看清除 | `profile.ts` | `profile` | `capabilities/memory` + `storage` |
@@ -206,7 +206,7 @@ frontend/
 │   │   ├── profile/              # 昵称 + 喜好                      MEM-01/02
 │   │   ├── companions/           # ≥3 官方角色；无恋爱               PER-01, CMP-07
 │   │   ├── scenes/               # 场景 + 短故事入口 → chat seed（读 content/packs）
-│   │   ├── chat/                 # 流式聊 / 停止 / 话题卡 / 语音     CMP-02~05, UI-06
+│   │   ├── chat/                 # 流式聊 / 停止 / 话题卡 / 语音 / 百科来源折叠     CMP-02~05, UI-06, 百科
 │   │   ├── history/              # 月历：对话日 + 心情               UI-02
 │   │   ├── memory/               # 记忆查看 / 清除 / 今日心情        MEM-03
 │   │   ├── settings/             # 本地设置；无 API Key UI           UI-04
@@ -217,7 +217,7 @@ frontend/
 │   │   └── openers.ts                # 伙伴空态开场白
 │   ├── composables/
 │   │   ├── useChatPage.ts
-│   │   ├── useChatStream.ts
+│   │   ├── useChatStream.ts          # SSE；解析可选 sources（维基白名单）
 │   │   ├── useChatSession.ts         # 会话加载 / 伙伴切换 / bootstrap
 │   │   ├── useChatSpeak.ts           # 气泡朗读控制
 │   │   ├── useMoodGate.ts            # /chat 今日心情门闸 + 延后 bootstrap
@@ -227,13 +227,13 @@ frontend/
 │   │   └── useSpeechSynthesis.ts     # 云端 TTS 优先 + 浏览器回退
 │   ├── components/
 │   │   ├── layout/               # AppHeader（NAV_PRIMARY + 更多）
-│   │   ├── chat/                 # Bubble、Composer、TopicCards
+│   │   ├── chat/                 # Bubble、Composer（含「百科」开关）、TopicCards、ChatSources
 │   │   ├── voice/                # VoiceTalkButton（点我说话）
 │   │   ├── mood/                 # MoodGate / MoodSticker / moodOptions
 │   │   └── companions/           # CompanionAvatar
 │   ├── stores/
-│   ├── themes/cartoon/           # cartoon.css + mood.css + chat.css + history.css + games.css
-│   ├── types/
+│   ├── themes/cartoon/           # cartoon.css + mood.css + chat.css（含来源折叠）+ history.css + games.css
+│   ├── types/                    # 含 ChatSource（维基引用）
 │   └── utils/
 │       ├── avatars / clientId / errors / activeSession / chatSidebar / timeCn / gamesMeta
 │       └── voice/                # browser · companionVoice · mediaRecorder · speakProgress
@@ -253,6 +253,8 @@ frontend/
 | 皮肤 | `themes/cartoon/` | 组件内散落 hex |
 | 官方话题 / 场景 / 故事 / 开场白 | `content/packs.ts`、`content/openers.ts` | `api/`、`avatars.ts`、多 view 各写一份 |
 | 本机会话指针 / 侧栏偏好 | `utils/activeSession.ts`、`utils/chatSidebar.ts` | view 内散落 `localStorage` |
+| 百科来源折叠 UI | `components/chat/ChatSources.vue` | view 内手写外链；信任模型输出的 URL |
+| SSE `sources` 解析 / 白名单 | `composables/useChatStream.ts`（`parseChatSources`） | 在 view 里解析；放行非维基主机 |
 | 用户可见错误文案 | `api/http` 映射或 `utils/errors.ts` | 直接上屏 `error.message` |
 
 ### 4.2 前端硬约束
@@ -266,6 +268,7 @@ frontend/
 7. 历史月历：`api/history.ts` + `useHistoryCalendar`；周一起始公历；对话日按消息东八区日；无农历。
 8. 会话隔离：切换伙伴 / 「新建对话」清空当前屏与 active session；旧线程仅从历史 `?session=` 进入。场景 / 安全 `?seed=` 须同时清 `store.sessionId` 与 `utils/activeSession`。
 9. 聊天侧栏展开偏好：`utils/chatSidebar.ts`（勿在 `ChatView` 内直接读写 localStorage）。
+10. 联网百科：输入栏 **「百科」** 按钮（`ChatComposer` + `wikiMode`）；请求带 `use_wiki`；仅此时后端检索。发送时立即熄灭（一次一问）；切换伙伴 / 加载会话 / 新建对话会 `resetWikiMode`。重新生成若原回复带 sources 则再次 `useWiki`。来源仅 SSE `done.sources` + `parseChatSources` 白名单；UI 为 `ChatSources.vue`。
 
 ---
 
@@ -303,6 +306,12 @@ backend/
     │   ├── memory.py             # 轻量记忆片段                       MEM-*
     │   ├── safety.py             # 入站/出站词库 + 拒答               SAF
     │   ├── llm.py                # OpenAI 兼容流式                    CMP-02
+    │   ├── wiki/                 # 联网百科：按钮触发；MediaWiki 摘要（含意图/查询扩展）
+    │   │   ├── intent.py         # 查询扩展（非自动触发）
+    │   │   ├── hosts.py          # Wikipedia HTTPS 主机白名单
+    │   │   ├── client.py
+    │   │   ├── lookup.py         # maybe_lookup(force=…)；仅 chat 在 use_wiki 时调用
+    │   │   └── README.md
     │   └── speech/               # 百炼语音包（见包内 README）         UI-06
     │       ├── client.py         # Key / HTTP / URL allowlist
     │       ├── tts.py
@@ -338,12 +347,14 @@ backend/
 api/chat
   → services/chat
        1. capabilities/safety    入站 → 硬命中则拒答（不调 LLM；优先于拼提示）
-       2. capabilities/persona   + prompts + memory 片段（可含 storage 记忆）
+       1b. capabilities/wiki     仅当请求 use_wiki=true → 维基摘要（词库过滤；失败跳过）
+       2. capabilities/persona   + prompts + memory 片段 + 可选百科块
        3. capabilities/llm       流式 token（客户端来自 config.llm）
        4. capabilities/safe_stream 窗口化出站词库闸门（先检再发给客户端；命中则温和改写）
        5. storage                落库消息 + safety_action（需 client_id）
        6. capabilities/memory    规则抽取喜好/自称等写入记忆
        附：request_id 贯穿日志；安全命中写入 resource/logs/safety_audit.jsonl
+          done SSE 可带 sources（仅本回合实际注入摘要时）
 ```
 
 ### 5.2 后端各层一句话
@@ -450,3 +461,6 @@ api/chat
 | v0.4 | 2026-07-23 | 修正 OmniStream 引用说明；统一 composables 与 views 命名（去掉 composables/pages） |
 | v0.5 | 2026-07-25 | 新增 `frontend/src/content/`（话题/场景/短故事 packs）；scenes 页含短故事分组 |
 | v0.6 | 2026-07-25 | 会话隔离约定；`content/openers`；`utils/chatSidebar`；去掉 avatars 过渡 re-export |
+| v0.7 | 2026-07-27 | `capabilities/wiki` 联网百科；聊天管线 1b；SSE `sources` |
+| v0.8 | 2026-07-27 | 前端树补 `ChatSources` / `useChatStream` sources；硬约束 §4.2.10 |
+| v0.9 | 2026-07-27 | 百科改为显式「百科」按钮 + `use_wiki`；重置/再生成约定 |

@@ -1,6 +1,6 @@
 # Frontend Directory Structure
 
-> **Source of truth:** [`docs/directory-structure.md`](../../../docs/directory-structure.md) (v0.3+, OmniStream-inspired layers).  
+> **Source of truth:** [`docs/directory-structure.md`](../../../docs/directory-structure.md) (v0.8+).  
 > App root: **`frontend/`**. HTTP only via `src/api/`. Screens live in `src/views/`.
 
 ## Layer mental model
@@ -12,18 +12,19 @@ views / composables → components
 official topics/scenes/stories → content/packs.ts
 voice helpers → utils/voice/*
 mood UI constants → components/mood/moodOptions.ts
+encyclopedia sources UI → components/chat/ChatSources.vue
 ```
 
 | Layer | One-liner | Forbidden |
 |-------|-----------|-----------|
 | `views/` | One screen per folder | Raw `fetch` |
-| `composables/` | Page/interaction logic (`useMoodGate` for chat mood) | Bypass `api` for HTTP |
+| `composables/` | Page/interaction logic (`useMoodGate` for chat mood; `useChatStream` parses optional `sources`) | Bypass `api` for HTTP |
 | `api/` | Sole HTTP client; files align with backend resources | DOM; UI constants; writing global stores; speech keys |
 | `content/` | Static topic / scene / story packs + companion openers | HTTP; duplicating copy across views |
 | `stores/` | Cross-page state | Direct HTTP |
-| `components/` | Reusable UI (`voice/`, `mood/` gate+sticker+options) | Route-level business |
+| `components/` | Reusable UI (`chat/` includes `ChatSources`; `voice/`, `mood/`) | Route-level business |
 | `utils/voice/` | Browser STT/TTS helpers + MediaRecorder + speakProgress | HTTP calls |
-| `themes/cartoon/` | Skin tokens (`cartoon.css`, `mood.css`, `games.css`) | Business rules |
+| `themes/cartoon/` | Skin tokens (`cartoon.css`, `mood.css`, `chat.css`, …) | Business rules |
 
 ## Target tree (summary)
 
@@ -35,12 +36,13 @@ frontend/
 │   ├── api/                   # http, chat, companions, sessions, profile, mood, speech
 │   ├── content/               # packs.ts + openers.ts
 │   ├── views/                 # home … chat … scenes … memory … games, safety
-│   ├── composables/           # useChatPage, useChatStream, useChatSession, useChatSpeak,
-│   │                          # useMoodGate, useTopicCards, useSpeechRecognition, …
+│   ├── composables/           # useChatPage, useChatStream (+ parseChatSources), useChatSession,
+│   │                          # useChatSpeak, useMoodGate, useTopicCards, useSpeech*, …
 │   ├── components/{layout,chat,voice,mood,companions}/
+│   │                          # chat: Bubble, Composer, TopicCards, ChatSources
 │   ├── stores/
 │   ├── themes/cartoon/        # cartoon.css + mood.css + chat.css + history.css + games.css
-│   ├── types/
+│   ├── types/                 # includes ChatSource
 │   └── utils/
 │       ├── activeSession / chatSidebar / avatars / clientId / errors / timeCn / gamesMeta
 │       └── voice/{browser,companionVoice,mediaRecorder,speakProgress}.ts
@@ -49,7 +51,7 @@ frontend/
 
 ## Vertical API map
 
-See `docs/directory-structure.md` §3 (includes `speech` + `mood`). Change FE+BE+that table in the same PR.
+See `docs/directory-structure.md` §3 (includes `speech` + `mood`; chat stream may carry wiki `sources`). Change FE+BE+that table in the same PR.
 
 ## Demo notes
 

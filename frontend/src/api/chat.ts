@@ -19,6 +19,8 @@ export interface ChatStreamBody {
   history?: ChatMessage[];
   session_id?: string;
   persist?: boolean;
+  /** Kid tapped「百科」— server may attach zhwiki sources. */
+  use_wiki?: boolean;
 }
 
 export function streamChat(

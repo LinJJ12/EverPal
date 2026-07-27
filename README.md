@@ -32,7 +32,7 @@ npm run dev
 
 | 路径 | 说明 |
 |------|------|
-| [`docs/PRD.md`](docs/PRD.md) | 产品需求（v0.5.4） |
+| [`docs/PRD.md`](docs/PRD.md) | 产品需求（v0.5.5） |
 | [`docs/diagrams.md`](docs/diagrams.md) | 流程 / 架构图 |
 | [`docs/directory-structure.md`](docs/directory-structure.md) | **`frontend/` · `backend/` 目录与文件约定**（按 PRD） |
 | [`docs/dev-setup.md`](docs/dev-setup.md) | **本地开发 / Conda `chatbot` / Git 提交边界** |
@@ -57,6 +57,7 @@ npm run dev
 - **故事 / 话题**：官方话题卡（聊天空态）+ `/scenes` 短故事分组；静态内容源 `frontend/src/content/packs.ts`（审定开场 + LLM 续写）
 - **会话隔离**：切换伙伴默认空白新对话；「新建对话」脱离当前线程；旧会话仅从历史进入；后端拒绝跨伙伴串写同一 `session_id`
 - **聊天 UI**：可折叠侧栏、暖色铺满对话区、历史快捷入口；顶栏与其它页同一居中宽度
+- **联网百科**：输入栏旁点「百科」再发送 → 查中文维基（`capabilities/wiki`）；失败静默降级；气泡可折叠来源（`WIKI_*`，默认开）
 
 登录 / 家长管控仍为另阶段。详见 [`docs/PRD.md`](docs/PRD.md) §4.2 与 `.trellis/spec/guides/product-constraints.md`。
 

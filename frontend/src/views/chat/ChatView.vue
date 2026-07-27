@@ -9,6 +9,7 @@ import { useChatSpeak } from "@/composables/useChatSpeak";
 import { useMoodGate } from "@/composables/useMoodGate";
 import ChatBubble from "@/components/chat/ChatBubble.vue";
 import ChatComposer from "@/components/chat/ChatComposer.vue";
+import ChatSources from "@/components/chat/ChatSources.vue";
 import TopicCards from "@/components/chat/TopicCards.vue";
 import CompanionAvatar from "@/components/companions/CompanionAvatar.vue";
 import MoodGate from "@/components/mood/MoodGate.vue";
@@ -20,6 +21,7 @@ const { companion, nickname, likeLabels, companions } = storeToRefs(store);
 const {
   messages,
   input,
+  wikiMode,
   listEl,
   streaming,
   error,
@@ -27,6 +29,7 @@ const {
   submit,
   stop,
   clear,
+  resetWikiMode,
 } = useChatPage();
 
 /** Filled after useChatSpeak so session switch can stop TTS without circular init. */
@@ -48,6 +51,7 @@ const {
   submit,
   stopStream: stop,
   stopSpeak: () => speakHold.stop(),
+  resetLocalUi: resetWikiMode,
 });
 
 const {
@@ -121,10 +125,10 @@ const emptyHint = computed(() => {
   return COMPANION_SAMPLES[id] || COMPANION_SAMPLES.nuan;
 });
 
-function onSubmit(text?: string) {
+function onSubmit(text?: string, sendOpts?: { useWiki?: boolean }) {
   if (moodBlocksChat.value) return;
   clearSessionError();
-  return submit(text);
+  return submit(text, sendOpts);
 }
 
 function onClear() {
@@ -141,13 +145,16 @@ function onStopStream() {
 function regen() {
   const lastUser = [...messages.value].reverse().find((m) => m.role === "user");
   if (!lastUser || streaming.value) return;
+  const last = messages.value[messages.value.length - 1];
+  const wasWiki =
+    last?.role === "assistant" && Array.isArray(last.sources) && last.sources.length > 0;
   if (messages.value.length && messages.value[messages.value.length - 1].role === "assistant") {
     messages.value.pop();
   }
   if (messages.value.length && messages.value[messages.value.length - 1].role === "user") {
     messages.value.pop();
   }
-  onSubmit(lastUser.content);
+  onSubmit(lastUser.content, wasWiki ? { useWiki: true } : undefined);
 }
 </script>
 
@@ -333,6 +340,15 @@ function regen() {
                   :speak-ratio="speaking && speakingIndex === i ? speakRatio : -1"
                   :speak-paused="speaking && speakPaused && speakingIndex === i"
                 />
+                <ChatSources
+                  v-if="
+                    m.role === 'assistant' &&
+                    m.sources?.length &&
+                    m.content.trim() &&
+                    !(streaming && i === messages.length - 1)
+                  "
+                  :sources="m.sources"
+                />
                 <div
                   v-if="m.role === 'assistant' && m.content.trim() && !(streaming && i === messages.length - 1)"
                   class="bubble-speak-row"
@@ -404,6 +420,7 @@ function regen() {
               />
               <ChatComposer
                 v-model="input"
+                v-model:wiki-mode="wikiMode"
                 :disabled="streaming || sessionLoading || moodBlocksChat"
                 @send="onSubmit()"
                 @stop="onStopStream()"

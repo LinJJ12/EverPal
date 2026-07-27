@@ -9,6 +9,8 @@ from src.capabilities import memory as memory_cap
 from src.capabilities import persona as persona_cap
 from src.capabilities import safety as safety_cap
 from src.capabilities.safe_stream import gated_llm_deltas
+from src.capabilities.wiki import maybe_lookup
+from src.capabilities.wiki.lookup import sources_for_sse
 from src.config.settings import Settings, get_settings
 from src.domain.enums import Mode, SafetyAction
 from src.lib.exceptions import AppError
@@ -215,6 +217,24 @@ async def run_chat_stream(
         likes=profile_likes,
         client_id=client_id,
     )
+
+    wiki_sources: list[dict[str, str]] = []
+    wiki_block = ""
+    # Only when the kid explicitly taps「百科」(use_wiki); never silent auto-search.
+    allow_wiki = bool(getattr(req, "use_wiki", False)) and not (
+        hit and hit.action == SafetyAction.REWRITE
+    )
+    if allow_wiki:
+        try:
+            wiki = await maybe_lookup(req.message, mode=mode, settings=s, force=True)
+            if wiki is not None:
+                payload = sources_for_sse(wiki)
+                if payload:
+                    wiki_block = wiki.prompt_block()
+                    wiki_sources = payload
+        except Exception as exc:  # noqa: BLE001 — never break chat on wiki errors
+            log.warning("wiki lookup failed: %s", type(exc).__name__)
+
     try:
         system = persona_cap.build_system(
             companion_id=companion_id,
@@ -223,6 +243,8 @@ async def run_chat_stream(
             likes=profile_likes,
             memory_snippet=mem,
         )
+        if wiki_block:
+            system = f"{system}\n\n{wiki_block}"
     except AppError as exc:
         yield StreamEvent("error", {"code": exc.code, "message": exc.message})
         return
@@ -287,15 +309,20 @@ async def run_chat_stream(
         mode=mode,
     )
 
-    log.info("chat done action=%s session=%s", action.value, session_id)
-    yield StreamEvent(
-        "done",
-        {
-            "safety_action": action.value,
-            "session_id": session_id,
-            "request_id": get_request_id(),
-        },
+    log.info(
+        "chat done action=%s session=%s wiki_sources=%s",
+        action.value,
+        session_id,
+        len(wiki_sources),
     )
+    done_payload: dict = {
+        "safety_action": action.value,
+        "session_id": session_id,
+        "request_id": get_request_id(),
+    }
+    if wiki_sources:
+        done_payload["sources"] = wiki_sources
+    yield StreamEvent("done", done_payload)
 
 
 def encode_sse(event: StreamEvent) -> str:

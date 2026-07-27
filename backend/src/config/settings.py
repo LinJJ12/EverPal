@@ -45,6 +45,12 @@ class Settings(BaseSettings):
     speech_tts_max_chars: int = 2000
     speech_asr_max_bytes: int = 10 * 1024 * 1024
 
+    # 中文维基百科检索（联网百科；关则静默跳过）
+    wiki_enabled: bool = True
+    wiki_api_base: str = "https://zh.wikipedia.org/w/api.php"
+    wiki_timeout_seconds: float = 3.0
+    wiki_max_chars: int = 600
+
     @property
     def cors_origin_list(self) -> list[str]:
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]

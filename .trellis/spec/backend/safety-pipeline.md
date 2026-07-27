@@ -9,13 +9,15 @@
 user message
   → input lexicon check (first — cheap; skip prompt/LLM on hard hit)
       → on hard hit: return soft refusal (do not call LLM)
-  → build system prompt (mode + companion + memory snippet)
+  → optional wiki lookup (only if request.use_wiki; lexicon on extract; soft-fail skip)
+  → build system prompt (mode + companion + memory snippet [+ wiki block])
   → LLM generate with windowed output lexicon gate (safe_stream)
       → flush only lexicon-safe prefixes to the client
       → on hit: keep flushed safe prefix + soft refusal (never send unchecked pending)
   → persist message + safety_action
   → memory extract only if allowed (not on block/rewrite; gate user text again)
   → safety audit jsonl + request_id on logs
+  → done SSE may include sources when wiki snippet was injected
 ```
 
 ## Lexicon file contract

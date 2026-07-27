@@ -109,6 +109,8 @@ npm run dev
 
 **语音（可选）**：在 `backend/.env` 配置 `DASHSCOPE_API_KEY`（及按需的 `DASHSCOPE_BASE_URL` / `DASHSCOPE_COMPAT_BASE_URL`、音色变量）。有 Key 时聊天页「点我说话 / 朗读」走云端；无 Key 或上游失败时自动回退浏览器 Web Speech。变量名见 `backend/.env.example`。
 
+**联网百科（可选）**：默认开启（`WIKI_ENABLED=true`）。聊天页点输入栏旁 **「百科」** 后再发送，才会查维基；普通聊天不检索。超时/无结果静默降级。可用 `WIKI_TIMEOUT_SECONDS` / `WIKI_MAX_CHARS` 调节；设 `WIKI_ENABLED=false` 关闭。
+
 冒烟脚本（后端已启动时）：
 
 ```powershell

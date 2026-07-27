@@ -10,7 +10,7 @@ import {
   setSessionForCompanion,
 } from "@/utils/activeSession";
 
-type ChatMsg = { role: "user" | "assistant"; content: string };
+type ChatMsg = { role: "user" | "assistant"; content: string; sources?: { title: string; url: string }[] };
 
 /** Shared across ChatView remounts so a stale getSession cannot reattach sessionId. */
 let chatSessionLoadSeq = 0;
@@ -20,9 +20,11 @@ let chatSessionLoadSeq = 0;
  */
 export function useChatSession(opts: {
   messages: Ref<ChatMsg[]>;
-  submit: (text?: string) => void | Promise<unknown>;
+  submit: (text?: string, sendOpts?: { useWiki?: boolean }) => void | Promise<unknown>;
   stopStream: () => void;
   stopSpeak: () => void;
+  /** Clear composer-local UI (e.g.百科 mode) on companion/session reset. */
+  resetLocalUi?: () => void;
 }) {
   const store = useProfileStore();
   const { companion } = storeToRefs(store);
@@ -45,6 +47,7 @@ export function useChatSession(opts: {
     const gen = ++chatSessionLoadSeq;
     sessionLoading.value = true;
     sessionLoadError.value = "";
+    opts.resetLocalUi?.();
     try {
       const { getSession } = await import("@/api/sessions");
       const s = await getSession(sid);
@@ -95,6 +98,7 @@ export function useChatSession(opts: {
       sessionLoadError.value = "";
       opts.stopSpeak();
       opts.stopStream();
+      opts.resetLocalUi?.();
       opts.messages.value = [];
       store.sessionId = null;
       setActiveSessionId(null);
@@ -148,6 +152,7 @@ export function useChatSession(opts: {
       chatSessionLoadSeq += 1;
       store.sessionId = null;
       setActiveSessionId(null);
+      opts.resetLocalUi?.();
       opts.messages.value = [];
       await stripSeedQuery();
       sessionLoadError.value = "";

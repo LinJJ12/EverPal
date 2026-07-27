@@ -7,9 +7,16 @@ export interface Companion {
   blurb: string;
 }
 
+/** Encyclopedia citation from SSE `done.sources` (zhwiki). */
+export interface ChatSource {
+  title: string;
+  url: string;
+}
+
 export interface ChatMessage {
   role: "user" | "assistant" | "system";
   content: string;
+  sources?: ChatSource[];
 }
 
 export type MemoryCategory = "like" | "dislike" | "event" | "preference";
