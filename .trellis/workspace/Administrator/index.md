@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 14
+- **Total Sessions**: 15
 - **Last Active**: 2026-07-27
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~472 | Active |
+| `journal-1.md` | ~507 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 15 | 2026-07-27 | 归档已交付二期任务 | `9d1f1ff`, `89432bf`, `91e57a9` | `main` |
 | 14 | 2026-07-27 | 百科相关性与输入区底栏 | `305560e` | `main` |
 | 13 | 2026-07-25 | 朗读进度与暂停继续 | `bd494df` | `main` |
 | 12 | 2026-07-25 | 混合云端语音 TTS/ASR 收口 | `deddba2` | `main` |

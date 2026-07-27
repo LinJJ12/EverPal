@@ -470,3 +470,38 @@
 ### Next Steps
 
 - None - task complete
+
+
+## Session 15: 归档已交付二期任务
+
+**Date**: 2026-07-27
+**Task**: 归档已交付二期任务
+**Branch**: `main`
+
+### Summary
+
+归档 memory-mood-checkin、history-calendar、games-four-new（功能早已上线，仅补任务状态）。
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `9d1f1ff` | (see git log) |
+| `89432bf` | (see git log) |
+| `91e57a9` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
