@@ -571,3 +571,36 @@
 ### Next Steps
 
 - None - task complete
+
+
+## Session 18: 安全抽检基线与报告
+
+**Date**: 2026-07-29
+**Task**: 安全抽检基线与报告
+**Branch**: `main`
+
+### Summary
+
+扩展 safety_cases 基线、补 child_extra、归档 docs/safety-audit-report.md；质检 PASS。父任务体验打磨待启动。
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `abad08b` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

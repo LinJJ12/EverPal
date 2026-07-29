@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/backend/safety-pipeline.md", "reason": "Verify pipeline and soft refusal compliance"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Check test coverage and quality bar"}
+{"file": ".trellis/spec/guides/product-constraints.md", "reason": "No adult/romance loopholes in changes"}
+{"file": "docs/PRD.md", "reason": "Acceptance against SAF-01..04"}

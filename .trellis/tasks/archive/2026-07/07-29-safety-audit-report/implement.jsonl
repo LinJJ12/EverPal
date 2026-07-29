@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/backend/safety-pipeline.md", "reason": "Mandatory safety order, lexicon contract, soft refusal rules"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Test and quality expectations for backend changes"}
+{"file": ".trellis/spec/backend/directory-structure.md", "reason": "Where lexicon/tests/docs belong; no new agent layer"}
+{"file": ".trellis/spec/guides/product-constraints.md", "reason": "Minors-only product boundaries"}
+{"file": "docs/PRD.md", "reason": "SAF requirements and reply norms for audit coverage"}

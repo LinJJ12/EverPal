@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 17
+- **Total Sessions**: 18
 - **Last Active**: 2026-07-29
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~573 | Active |
+| `journal-1.md` | ~606 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 18 | 2026-07-29 | 安全抽检基线与报告 | `abad08b` | `main` |
 | 17 | 2026-07-29 | 百科 lemma 与记忆规则增强 | `714c75e` | `main` |
 | 16 | 2026-07-29 | 入站审核与 CI pytest | `3bfa007` | `main` |
 | 15 | 2026-07-27 | 归档已交付二期任务 | `9d1f1ff`, `89432bf`, `91e57a9` | `main` |
