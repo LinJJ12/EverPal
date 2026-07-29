@@ -19,6 +19,17 @@ def test_minors_prompt_loaded():
     assert "心事" in text or "共情" in text or "倾诉" in text or "家长" in text
 
 
+def test_system_prompts_avoid_lexicon_substrings():
+    """Rules text must not embed block lexicon terms (model echo → output gate)."""
+    from src.capabilities.safety import check_input, clear_lexicon_cache
+
+    clear_lexicon_cache()
+    for cid in ("nuan", "tiao", "cha"):
+        text = build_system(companion_id=cid, mode=Mode.CHILD, nickname="小木")
+        hit = check_input(text, Mode.CHILD)
+        assert hit is None, f"{cid} system prompt hits lexicon: {hit}"
+
+
 def test_mode_coerce_legacy_adult():
     assert Mode.coerce("adult") is Mode.CHILD
     assert Mode.coerce("ADULT") is Mode.CHILD

@@ -15,17 +15,17 @@
 
 ## Child map
 
-| 子任务 | 目录 | 状态意图 |
-|--------|------|----------|
-| 安全抽检报告与词库打磨 | `07-29-safety-audit-report` | **实现完成 · check PASS**（待你确认归档/提交） |
-| 陪伴体验内容打磨 | `07-29-companion-experience-polish` | 下一步可 start |
+| 子任务 | 目录 | 状态 |
+|--------|------|------|
+| 安全抽检报告与词库打磨 | `archive/2026-07/07-29-safety-audit-report` | **已归档** |
+| 陪伴体验内容打磨 | `07-29-companion-experience-polish` | **待本轮归档** |
 
 ## Cross-child acceptance
 
-- [ ] 安全报告可归档且 pytest 基线绿
-- [ ] 体验轻打磨不削弱安全、无恋爱/成人模式
-- [ ] 父任务整合核对一次
-- [ ] 不含：家长面板、登录、Docker、Agent、向量记忆、内容翻倍
+- [x] 安全报告可归档且 pytest 基线绿
+- [x] 体验轻打磨不削弱安全、无恋爱/成人模式；系统提示避开词库子串
+- [x] 父任务整合核对一次（文档已同步 README / PRD / product-constraints）
+- [x] 不含：家长面板、登录、Docker、Agent、向量记忆、内容翻倍
 
 ## Constraints
 

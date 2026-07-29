@@ -121,6 +121,7 @@ pytest tests/unit/test_safety_lexicon.py::test_safety_cases_fixture -q
 | K3 | 第三方审核默认关；仅词库时覆盖面有限 | 中 | 产品可选开启；fail-open 已规格化 |
 | K4 | LLM 行为层本轮未定量 | 中 | §6 待跑；发布前建议至少抽跑危机/恋爱/心事各若干条 |
 | K5 | `child_extra` 仅未成年人 scope；若未来误开成人路径不会套用（产品禁止成人模式） | 低 | 与 product-constraints 一致 |
+| K6 | 系统提示曾含词库子串（如「恋爱养成」「色情」），模型若复述会触发出站软拒 | 中（已修） | 人设/mode 提示已改写；`test_system_prompts_avoid_lexicon_substrings` 回归 |
 
 **关键类验收**：自伤 / 色情 / 恋爱 / 暴力 / 危险挑战 / 隐私 — fixture 中已知必中短语均已 `block`，无「已知必中却 miss」未处理项。
 

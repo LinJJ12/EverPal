@@ -57,6 +57,10 @@ Walkthrough alignment (phase-1): `self_harm` must include at least the phrases u
 - For crisis topics: comfort + encourage talking to a trusted adult (and appropriate hotline guidance when applicable)
 - Never ask for address / school full name / ID numbers
 
+## Prompt / lexicon echo
+
+System prompts (`prompts/companions/*`, `prompts/modes/*`) must **not** embed exact block-lexicon substrings (e.g. avoid「恋爱养成」「色情」). Model echo of rule text can trip the outbound gate. Covered by `test_system_prompts_avoid_lexicon_substrings`.
+
 ## Forbidden
 
 - Log-only safety in production child mode (kids-ai default `SAFETY_LOG_ONLY` must not ship as our default)

@@ -53,9 +53,9 @@ export const useProfileStore = defineStore("profile", () => {
     } catch (e) {
       if (isNetworkError(e)) sawNetwork = true;
       companions.value = [
-        { id: "nuan", name: "小暖", role: "温柔陪伴型", blurb: "耐心鼓励" },
-        { id: "tiao", name: "跳跳", role: "活泼玩伴型", blurb: "爱提问" },
-        { id: "cha", name: "阿茶", role: "稳重听友型", blurb: "多倾听" },
+        { id: "nuan", name: "小暖", role: "温柔陪伴型", blurb: "耐心鼓励，会讲短故事，适合睡前和慢慢聊。" },
+        { id: "tiao", name: "跳跳", role: "活泼玩伴型", blurb: "爱提问、爱假装游戏，无聊时特别管用。" },
+        { id: "cha", name: "阿茶", role: "稳重听友型", blurb: "少说教、多倾听，想说说心里话时来找我。" },
       ];
     }
     try {

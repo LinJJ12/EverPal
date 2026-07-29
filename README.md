@@ -153,9 +153,10 @@ npm run build
 - **一期**：feature-complete（内部测试，非对外发布）
 - **二期近程**：语音、心情/记忆、故事、会话隔离、月历、游戏、百科、可选审核 — 已交付
 - **近补**：百科口语 lemma（`src/data/wiki`）+ 记忆去重 /「记住」/ likes 同步 — 已交付
+- **近补**：安全抽检自动化基线 + 三人设/话题包轻打磨 — 已交付（LLM 行为清单仍待跑）
 - **另阶段**：登录 / 家庭账号、家长同意与面板；向量记忆另开任务
 - **发布前欠账**：Docker / 试用包；本地提交需 `git push`（若网络可达）
-- **安全抽检**：词库/闸门自动化基线已归档 → [`docs/safety-audit-report.md`](docs/safety-audit-report.md)（LLM 行为清单待跑）
+- **安全抽检**：词库/闸门自动化基线 → [`docs/safety-audit-report.md`](docs/safety-audit-report.md)（LLM 行为清单待跑）
 
 详情：[`docs/PRD.md`](docs/PRD.md) §4.2 · [`.trellis/spec/guides/product-constraints.md`](.trellis/spec/guides/product-constraints.md)
 

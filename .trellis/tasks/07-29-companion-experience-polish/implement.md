@@ -2,11 +2,11 @@
 
 ## Checklist
 
-1. [ ] 通读三人设 + packs，列「语气不清 / 尬 / 说教」点
-2. [ ] 修订 companion prompts
-3. [ ] 润色 packs；按需少量补缺
-4. [ ] 人工对照：话题 ≥4；无危险 seed
-5. [ ] `frontend` 构建或现有内容相关检查（若有）通过
+1. [x] 通读三人设 + packs，列「语气不清 / 尬 / 说教」点
+2. [x] 修订 companion prompts（nuan/tiao/cha）
+3. [x] 润色 packs + openers + persona blurbs；补「有件开心的事」话题/场景各 1
+4. [x] 人工对照：话题 ≥4；seed 词库未误杀
+5. [x] `frontend` `npm run build` 通过；backend unit pytest 全绿
 
 ## Validation
 
