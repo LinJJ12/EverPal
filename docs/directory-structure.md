@@ -136,7 +136,7 @@ api/                            # 只做 HTTP：校验 → 选入口 → 返回/
                                 capabilities/         # persona / memory / safety / llm / wiki / speech
                                       │
                                       ▼
-                                storage/ + domain/ + config/ + prompts/ + data/lexicon/
+                                storage/ + domain/ + config/ + prompts/ + data/{lexicon,wiki}/
 
 横切：lib/（日志、统一异常）——不得反向依赖上层，不得塞业务
 LLM 客户端：只出自 config/（capabilities/llm 经 config 取客户端）
@@ -309,6 +309,7 @@ backend/
     │   ├── llm.py                # OpenAI 兼容流式                    CMP-02
     │   ├── wiki/                 # 联网百科：按钮触发；MediaWiki 摘要 + 相关性门控
     │   │   ├── intent.py         # 主题抽取 / 查询扩展（非自动触发）
+    │   │   ├── lemma.py          # 加载口语→检索词（JSON 在 data/wiki）
     │   │   ├── hosts.py          # Wikipedia HTTPS 主机白名单
     │   │   ├── client.py         # 检索 + 标题打分 / title_covers_topic
     │   │   ├── lookup.py         # maybe_lookup；多查询择优；不相关则 None
@@ -327,7 +328,9 @@ backend/
     │   ├── companions/nuan.md | tiao.md | cha.md
     │   └── safety/               # 可选危机附加
     ├── data/
-    │   └── lexicon/              # 词库 JSON（按类拆文件）
+    │   ├── lexicon/              # 词库 JSON（按类拆文件）
+    │   └── wiki/
+    │       └── lemma_map.json    # 口语短问 → MediaWiki 检索词（≤3）
     ├── storage/                  # 只做读写与路径；禁止 LLM
     │   ├── db.py
     │   ├── profile_repo.py
@@ -373,6 +376,7 @@ api/chat
 | `capabilities/*` | 可复用单能力（人设/记忆/安全/LLM） | 启动第二套聊天顺序；实现 agent loop |
 | `prompts/**` | 提示词正文 | 业务 if/else |
 | `data/lexicon/` | 词库条目 | 散落在代码字符串 |
+| `data/wiki/` | 百科静态映射（lemma 等） | 放进 `capabilities/wiki/` 旁；运行时 DB |
 | `storage/` | DB/文件读写 | 调 LLM；编排多步 |
 | `domain/` | 枚举与纯规则 | 网络 I/O；读 env（走 `config`） |
 | `config/` | 环境变量与 LLM 客户端工厂 | 业务编排 |
@@ -474,3 +478,4 @@ api/chat
 | v0.10 | 2026-07-27 | 百科相关性：主题抽取、多查询择优、`title_covers_topic`；错配不挂来源 |
 | v0.11 | 2026-07-27 | `ChatComposer` 多行输入 + 底栏工具；`streaming` 与 `disabled` 分离 |
 | v0.12 | 2026-07-29 | `capabilities/moderation` 可选入站审核；管线 1a |
+| v0.13 | 2026-07-29 | 百科 `lemma.py` + 静态数据 `data/wiki/lemma_map.json`；测试 fixtures 归位 `tests/fixtures/` |

@@ -41,8 +41,7 @@
 | 故事 / 话题 | 官方 packs；空态话题卡 + `/scenes` 短故事 |
 | 历史 | 月历（对话日 + 心情） |
 | 游戏 | 本地离线大厅 **12 款** |
-| 联网百科 | 显式「百科」→ 中文维基；口语 lemma + 相关性门控；可折叠来源 |
-
+| 联网百科 | 显式「百科」→ 中文维基；口语 lemma（`data/wiki`）+ 相关性门控；可折叠来源 |
 | 审核（可选） | 阿里云入站文本审核；默认关；fail-open |
 
 ---
@@ -55,12 +54,13 @@
 ├── backend/           FastAPI 陪伴 BFF
 │   ├── services/chat  唯一编排：安全 → 审核? → wiki? → 人设 → LLM → 出站闸门
 │   ├── capabilities/  persona · memory · safety · wiki · moderation · speech · llm
+│   ├── data/          lexicon（词库）· wiki/lemma_map（口语检索词）
 │   └── storage/       档案 / 会话 / 心情 / 历史（SQLite）
 ├── demo/              HTML 产品壳对照（不接真模型）
 └── docs/              PRD · 目录约定 · 联调说明
 ```
 
-Key 只放 `backend/.env`，前端不持模型密钥。
+Key 只放 `backend/.env`，前端不持模型密钥。目录细则见 [`docs/directory-structure.md`](docs/directory-structure.md)。
 
 ---
 
@@ -152,8 +152,9 @@ npm run build
 
 - **一期**：feature-complete（内部测试，非对外发布）
 - **二期近程**：语音、心情/记忆、故事、会话隔离、月历、游戏、百科、可选审核 — 已交付
-- **另阶段**：登录 / 家庭账号、家长同意与面板
-- **发布前欠账**：Docker / 试用包、系统化安全抽检报告
+- **近补**：百科口语 lemma（`src/data/wiki`）+ 记忆去重 /「记住」/ likes 同步 — 已交付
+- **另阶段**：登录 / 家庭账号、家长同意与面板；向量记忆另开任务
+- **发布前欠账**：Docker / 试用包、系统化安全抽检报告；本地提交需 `git push`（若网络可达）
 
 详情：[`docs/PRD.md`](docs/PRD.md) §4.2 · [`.trellis/spec/guides/product-constraints.md`](.trellis/spec/guides/product-constraints.md)
 

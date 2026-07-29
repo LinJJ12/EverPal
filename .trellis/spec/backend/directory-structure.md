@@ -8,7 +8,7 @@
 ```text
 api → services/chat (only MVP orchestrator)
         → capabilities/{persona,memory,safety,llm,wiki,speech}
-            → storage + domain + config + prompts + data/lexicon
+            → storage + domain + config + prompts + data/{lexicon,wiki}
 LLM client: config/llm only
 Speech client: capabilities/speech/client.py (DashScope; not LLM)
 Wiki client: capabilities/wiki/client.py (MediaWiki; allowlisted hosts)
@@ -41,16 +41,18 @@ backend/
 │   ├── api/{health,chat,companions,sessions,profile,mood,speech}.py
 │   ├── services/chat.py
 │   ├── capabilities/{persona,memory,safety,llm,safe_stream}.py
-│   ├── capabilities/wiki/{intent,hosts,client,lookup}.py
+│   ├── capabilities/wiki/{intent,lemma,hosts,client,lookup}.py
+│   ├── capabilities/moderation/{acs3,client,check}.py
 │   ├── capabilities/speech/{client,tts,asr}.py
-│   ├── schemas/{chat,companion,speech,mood}.py
+│   ├── schemas/{chat,companion,speech,mood,history}.py
 │   ├── prompts/{modes,companions,safety}/
 │   ├── data/lexicon/
-│   ├── storage/{db,profile_repo,session_repo,memory_repo,mood_repo}.py
-│   ├── domain/{enums,moods}.py
+│   ├── data/wiki/lemma_map.json   # colloquial → search terms (not beside wiki/*.py)
+│   ├── storage/{db,profile_repo,session_repo,memory_repo,mood_repo,history_repo}.py
+│   ├── domain/{enums,moods,time_cn}.py
 │   ├── config/
 │   └── lib/
-└── tests/{unit,api,fixtures}/
+└── tests/{unit,api,fixtures}/     # fixtures/ at tests root (not unit/fixtures)
 ```
 
 ## Hard rules

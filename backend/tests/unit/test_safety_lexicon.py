@@ -1,11 +1,27 @@
 from __future__ import annotations
 
+import json
+from pathlib import Path
+
 from src.capabilities.safety import check_input, clear_lexicon_cache
 from src.domain.enums import Mode, SafetyAction
+
+_FIXTURES = Path(__file__).resolve().parents[1] / "fixtures" / "safety_cases.json"
 
 
 def setup_function() -> None:
     clear_lexicon_cache()
+
+
+def test_safety_cases_fixture():
+    cases = json.loads(_FIXTURES.read_text(encoding="utf-8"))["cases"]
+    for case in cases:
+        hit = check_input(case["input"], Mode.CHILD)
+        if case["expect"] == "block":
+            assert hit is not None, case["input"]
+            assert hit.action == SafetyAction.BLOCK
+        else:
+            assert hit is None, case["input"]
 
 
 def test_self_harm_block_child():

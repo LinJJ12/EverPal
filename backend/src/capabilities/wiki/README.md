@@ -5,7 +5,7 @@ Server-side encyclopedia tool for `services/chat` (only when request `use_wiki=t
 | File | Role |
 |------|------|
 | `intent.py` | Topic extract + query expansion + lemma merge |
-| `lemma.py` / `lemma_map.json` | Colloquial short asks → search terms |
+| `lemma.py` | Load colloquial → search terms from `src/data/wiki/lemma_map.json` |
 | `hosts.py` | Wikipedia HTTPS host/URL allowlist |
 | `client.py` | MediaWiki search + extracts；`score_title_for_query` / `title_covers_topic` |
 | `lookup.py` | `maybe_lookup(force=True)`：多查询择优；标题不相关则 `None`；prompt block + SSE sources |

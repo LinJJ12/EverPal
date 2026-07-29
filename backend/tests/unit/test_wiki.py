@@ -58,10 +58,11 @@ def test_extract_topic_colloquial():
 
 def test_search_queries_lemma_sky_colloquial():
     qs = search_queries_from_message("天为啥蓝？")
-    assert "天空" in qs or "天空 蓝色" in qs
-    assert qs.index("天空") < qs.index("天为啥蓝") or (
-        "天空 蓝色" in qs and qs.index("天空 蓝色") < len(qs)
-    )
+    assert "天空 蓝色" in qs or "天空" in qs
+    lemma_hit = next(q for q in ("天空 蓝色", "天空") if q in qs)
+    raw = "天为啥蓝"
+    if raw in qs:
+        assert qs.index(lemma_hit) < qs.index(raw)
 
 
 def test_search_queries_talk_about_dinosaur():

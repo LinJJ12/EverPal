@@ -61,6 +61,8 @@ python main.py
 
 - 分层：`src/README.md`
 - 硬规则：`docs/guide/rules.md`
+- 静态数据：`src/data/lexicon/`（词库）、`src/data/wiki/lemma_map.json`（百科口语检索词）
+- 测试夹具：`tests/fixtures/`（勿放在 `tests/unit/fixtures/`）
 - 安全审计：`resource/logs/safety_audit.jsonl`（运行时生成）
 - 出站：窗口化 gated 流式（`OUTPUT_FLUSH_CHARS`，默认 16）
 

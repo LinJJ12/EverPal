@@ -15,7 +15,9 @@
 ## 2. 聊天纵向路径
 
 ```text
-API → services/chat → capabilities（persona / memory / safety / llm / safe_stream）→ storage
+API → services/chat
+        → safety → moderation? → wiki? → persona(+memory) → llm → safe_stream → storage
+静态数据：src/data/lexicon/、src/data/wiki/
 LLM 客户端只出自 config/llm
 ```
 

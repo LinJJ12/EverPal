@@ -7,7 +7,8 @@ import re
 from functools import lru_cache
 from pathlib import Path
 
-_LEMMA_PATH = Path(__file__).with_name("lemma_map.json")
+# Static data lives under src/data/ (same pattern as data/lexicon/)
+_LEMMA_PATH = Path(__file__).resolve().parents[2] / "data" / "wiki" / "lemma_map.json"
 _PUNCT_RE = re.compile(r"[\s?？!！。.~～、，,；;：:\"'“”‘’（）()【】\[\]…]+")
 
 
