@@ -313,6 +313,11 @@ backend/
     │   │   ├── client.py         # 检索 + 标题打分 / title_covers_topic
     │   │   ├── lookup.py         # maybe_lookup；多查询择优；不相关则 None
     │   │   └── README.md
+    │   ├── moderation/           # 可选阿里云入站审核（词库后；默认关；fail-open）SAF-07
+    │   │   ├── acs3.py           # ACS3 签名
+    │   │   ├── client.py         # TextModerationPlus
+    │   │   ├── check.py          # RiskLevel → SafetyHit
+    │   │   └── README.md
     │   └── speech/               # 百炼语音包（见包内 README）         UI-06
     │       ├── client.py         # Key / HTTP / URL allowlist
     │       ├── tts.py
@@ -347,7 +352,8 @@ backend/
 ```text
 api/chat
   → services/chat
-       1. capabilities/safety    入站 → 硬命中则拒答（不调 LLM；优先于拼提示）
+       1. capabilities/safety    入站词库 → 硬命中则拒答（不调 LLM；优先于拼提示）
+       1a. capabilities/moderation 可选；词库未命中后；超时 fail-open（MODERATION_*）
        1b. capabilities/wiki     仅当请求 use_wiki=true → 维基摘要（相关性门控 + 词库过滤；失败跳过）
        2. capabilities/persona   + prompts + memory 片段 + 可选百科块
        3. capabilities/llm       流式 token（客户端来自 config.llm）
@@ -467,3 +473,4 @@ api/chat
 | v0.9 | 2026-07-27 | 百科改为显式「百科」按钮 + `use_wiki`；重置/再生成约定 |
 | v0.10 | 2026-07-27 | 百科相关性：主题抽取、多查询择优、`title_covers_topic`；错配不挂来源 |
 | v0.11 | 2026-07-27 | `ChatComposer` 多行输入 + 底栏工具；`streaming` 与 `disabled` 分离 |
+| v0.12 | 2026-07-29 | `capabilities/moderation` 可选入站审核；管线 1a |

@@ -8,6 +8,7 @@ from src.capabilities import llm as llm_cap
 from src.capabilities import memory as memory_cap
 from src.capabilities import persona as persona_cap
 from src.capabilities import safety as safety_cap
+from src.capabilities.moderation import check_input as moderation_check
 from src.capabilities.safe_stream import gated_llm_deltas
 from src.capabilities.wiki import maybe_lookup
 from src.capabilities.wiki.lookup import sources_for_sse
@@ -169,9 +170,26 @@ async def run_chat_stream(
     yield StreamEvent("meta", meta)
 
     hit = safety_cap.check_input(req.message, mode)
+    if not (hit and hit.action == SafetyAction.BLOCK):
+        try:
+            mod_hit = await moderation_check(
+                req.message,
+                settings=s,
+                chat_id=session_id,
+            )
+            if mod_hit and mod_hit.action == SafetyAction.BLOCK:
+                hit = mod_hit
+        except Exception as exc:  # noqa: BLE001 — fail-open
+            log.warning("moderation check failed: %s", type(exc).__name__)
+
     if hit and hit.action == SafetyAction.BLOCK:
+        audit_phase = (
+            "input_moderation"
+            if (hit.category or "").startswith("moderation:")
+            else "input"
+        )
         _audit(
-            phase="input",
+            phase=audit_phase,
             mode=mode,
             companion_id=companion_id,
             action=hit.action.value,

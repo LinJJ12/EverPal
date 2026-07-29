@@ -111,6 +111,8 @@ npm run dev
 
 **联网百科（可选）**：默认开启（`WIKI_ENABLED=true`）。聊天页在输入区底栏点 **「百科」** 后再发送，才会查维基；普通聊天不检索。超时/无结果/标题与主题不相关时静默降级（不挂错来源）。可用 `WIKI_TIMEOUT_SECONDS` / `WIKI_MAX_CHARS` 调节；设 `WIKI_ENABLED=false` 关闭。
 
+**第三方入站审核（可选）**：默认关闭（`MODERATION_ENABLED=false`）。开通阿里云 AI 安全护栏并配置 `MODERATION_ACCESS_KEY_ID` / `MODERATION_ACCESS_KEY_SECRET` 后，词库未命中的用户消息会再走 `query_security_check`；超时或上游错误 **fail-open**（放行，词库仍兜底）。与 `DASHSCOPE_API_KEY` 分开。
+
 冒烟脚本（后端已启动时）：
 
 ```powershell
@@ -148,6 +150,16 @@ python main.py
 | [`frontend/README.md`](../frontend/README.md) | 前端启动 |
 | [`directory-structure.md`](./directory-structure.md) | 目录与 `.env` 约定 |
 | [`backend/docs/guide/rules.md`](../backend/docs/guide/rules.md) | 后端硬规则（Key 不上前端等） |
+| [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) | CI：`pytest` + frontend build |
+
+本地与 CI 一致的后端测试：
+
+```powershell
+conda activate chatbot
+cd backend
+pip install -e ".[dev]"
+pytest -q
+```
 
 ---
 

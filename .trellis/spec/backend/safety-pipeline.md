@@ -1,7 +1,7 @@
 # Backend Safety Pipeline
 
-> Phase-1 approach from PRD: **system prompt constraints + rule lexicon** (no third-party moderation API yet).
-> Adapt patterns from `vendor/kids-ai/lib/safety_gate.py` (MIT) — do not import that module as a hard dependency.
+> Phase-1 approach from PRD: **system prompt constraints + rule lexicon**.
+> Optional Phase-2 P2: Aliyun inbound text moderation after lexicon (`MODERATION_*`, default off, fail-open).
 
 ## Pipeline order (mandatory)
 
@@ -9,6 +9,9 @@
 user message
   → input lexicon check (first — cheap; skip prompt/LLM on hard hit)
       → on hard hit: return soft refusal (do not call LLM)
+  → optional moderation.check_input (only if MODERATION_ENABLED + AccessKey)
+      → high/medium risk (or attack/sensitive S3–S4): soft refusal
+      → timeout / upstream error: log + continue (fail-open)
   → optional wiki lookup (only if request.use_wiki; relevance gate + lexicon on extract; soft-fail skip)
   → build system prompt (mode + companion + memory snippet [+ wiki block])
   → LLM generate with windowed output lexicon gate (safe_stream)

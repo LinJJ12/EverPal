@@ -51,6 +51,16 @@ class Settings(BaseSettings):
     wiki_timeout_seconds: float = 3.0
     wiki_max_chars: int = 600
 
+    # 阿里云 AI 安全护栏入站文本审核（默认关；与 DASHSCOPE_API_KEY 分开）
+    moderation_enabled: bool = False
+    moderation_access_key_id: str = ""
+    moderation_access_key_secret: str = ""
+    moderation_endpoint: str = "https://green-cip.cn-shanghai.aliyuncs.com"
+    moderation_service: str = "query_security_check"
+    moderation_timeout_seconds: float = 2.0
+    # Comma-separated RiskLevel values that trigger block (fail-open on errors).
+    moderation_block_risk_levels: str = "high,medium"
+
     @property
     def cors_origin_list(self) -> list[str]:
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
@@ -62,6 +72,19 @@ class Settings(BaseSettings):
     @property
     def has_dashscope_key(self) -> bool:
         return bool(self.dashscope_api_key.strip())
+
+    @property
+    def moderation_ready(self) -> bool:
+        return bool(
+            self.moderation_enabled
+            and self.moderation_access_key_id.strip()
+            and self.moderation_access_key_secret.strip()
+        )
+
+    @property
+    def moderation_block_levels(self) -> frozenset[str]:
+        parts = (self.moderation_block_risk_levels or "high,medium").split(",")
+        return frozenset(p.strip().lower() for p in parts if p.strip())
 
     def tts_voice_for(self, companion_id: str) -> str:
         cid = (companion_id or "nuan").strip().lower()

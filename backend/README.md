@@ -66,6 +66,17 @@ python main.py
 
 依赖清单：`pyproject.toml`（`pip install -e ".[dev]"`）。不强制维护 `requirements.txt`。
 
+## 测试
+
+```powershell
+conda activate chatbot
+cd backend
+pip install -e ".[dev]"
+pytest -q
+```
+
+GitHub Actions：推送到 `main` 或开 PR 时会跑 `backend pytest`（见 `.github/workflows/ci.yml`）。
+
 联调冒烟（需已 `python main.py`）：
 
 ```powershell

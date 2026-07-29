@@ -21,6 +21,7 @@ lib: logging + exceptions whitelist — no business dump
 | `services/chat.py` | Fixed chat pipeline order | Prompt prose; lexicon implementation |
 | `capabilities/*` | Single reusable units | Second chat orchestrator; agent loop |
 | `capabilities/wiki/` | Intent/query expand + MediaWiki extract + relevance gate + host allowlist | Open-web search; second orchestrator; attach irrelevant sources |
+| `capabilities/moderation/` | Optional Aliyun inbound TextModerationPlus after lexicon | Replace lexicon; fail-closed by default; DashScope sk as AK |
 | `capabilities/speech/` | Package (tts/asr/client) — only multi-file capability | Empty shells; keys outside Settings |
 | `storage/` | Persistence only | LLM / speech upstream calls; pure enum tables |
 | `domain/` | Enums / pure rules (`moods.py`) | I/O; read env |

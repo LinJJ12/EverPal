@@ -48,7 +48,7 @@
 | P1 | Stronger long-term memory + daily mood check-in | **Done** — chat gate + prompt inject + per-item memory delete |
 | P1 | Safe story library / official topic packs | **Done** — `frontend/src/content/packs.ts` |
 | P1 | Session isolation + new chat | **Done** — switch companion = blank; backend session↔companion check |
-| P2 | Optional third-party moderation API | Deferred — lexicon primary |
+| P2 | Optional third-party moderation API | **Done (optional)** — Aliyun `query_security_check` inbound after lexicon; `MODERATION_*` default off; fail-open |
 | P2 | Encyclopedia with **minors** safety gate | **Done (MVP)** — composer toolbar「百科」→ zhwiki tool → title relevance gate → collapsible sources; silent fallback |
 | Later stage | Login / family account; parental consent & panel | Deferred |
 | Cancelled | Adult-oriented neutral skin | — |

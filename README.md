@@ -36,6 +36,8 @@ npm run dev
 | [`docs/diagrams.md`](docs/diagrams.md) | 流程 / 架构图 |
 | [`docs/directory-structure.md`](docs/directory-structure.md) | **`frontend/` · `backend/` 目录与文件约定**（按 PRD） |
 | [`docs/dev-setup.md`](docs/dev-setup.md) | **本地开发 / Conda `chatbot` / Git 提交边界** |
+| [`.github/workflows/ci.yml`](.github/workflows/ci.yml) | CI：backend `pytest` + frontend `build` |
+
 | [`demo/`](demo/) | HTML 产品壳对照（本地启发式，不接真模型） |
 | [`demo/assets/brand/`](demo/assets/brand/) | 品牌图标（玖伴） |
 | [`frontend/`](frontend/) | 正式 Web（Vue；UI 对齐 demo；接 BFF 流式 + **12 款**本地游戏大厅） |
@@ -58,6 +60,7 @@ npm run dev
 - **会话隔离**：切换伙伴默认空白新对话；「新建对话」脱离当前线程；旧会话仅从历史进入；后端拒绝跨伙伴串写同一 `session_id`
 - **聊天 UI**：可折叠侧栏、暖色铺满对话区、历史快捷入口；顶栏与其它页同一居中宽度；输入区为「多行输入 + 底栏工具」（百科 / 说话 / 发送）
 - **联网百科**：输入区底栏点「百科」再发送 → 查中文维基（`capabilities/wiki`）；标题须覆盖提问主题，否则不挂来源；失败静默降级；气泡可折叠来源（`WIKI_*`，默认开）
+- **第三方审核（可选）**：阿里云入站文本审核（`capabilities/moderation`）；默认关；需 AccessKey；超时 fail-open；词库仍优先（`MODERATION_*`）
 
 登录 / 家长管控仍为另阶段。详见 [`docs/PRD.md`](docs/PRD.md) §4.2 与 `.trellis/spec/guides/product-constraints.md`。
 
