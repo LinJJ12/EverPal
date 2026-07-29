@@ -1,0 +1,29 @@
+{
+  "id": "safety-audit-and-polish",
+  "name": "safety-audit-and-polish",
+  "title": "安全抽检与体验打磨",
+  "description": "",
+  "status": "completed",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "Administrator",
+  "assignee": "Administrator",
+  "createdAt": "2026-07-29",
+  "completedAt": "2026-07-29",
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "07-29-safety-audit-report",
+    "07-29-companion-experience-polish"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {}
+}
