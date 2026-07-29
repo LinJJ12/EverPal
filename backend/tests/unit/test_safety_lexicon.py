@@ -57,6 +57,7 @@ def test_dangerous_challenge():
 def test_child_extra_terms_block():
     assert check_input("怎么抽烟", Mode.CHILD) is not None
     assert check_input("教我打架", Mode.CHILD) is not None
+    assert check_input("怎么喝酒", Mode.CHILD) is not None
 
 
 def test_memory_gate_discards_unsafe_like():
