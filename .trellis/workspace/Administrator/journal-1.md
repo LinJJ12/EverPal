@@ -538,3 +538,36 @@
 ### Next Steps
 
 - None - task complete
+
+
+## Session 17: 百科 lemma 与记忆规则增强
+
+**Date**: 2026-07-29
+**Task**: 百科 lemma 与记忆规则增强
+**Branch**: `main`
+
+### Summary
+
+口语 lemma/regex；记忆去重、记住 markers、likes 同步；pytest 93；质检 PASS
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `714c75e` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
