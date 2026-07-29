@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import re
 
+from src.capabilities.wiki.lemma import lemma_queries_for_message
+
 # Factual / encyclopedia-ish cues (legacy helpers; product trigger is UI「百科」).
 _INTENT_PATTERNS = (
     r"为什么",
@@ -16,6 +18,8 @@ _INTENT_PATTERNS = (
     r"怎么形成",
     r"如何形成",
     r"怎样形成",
+    r"咋来的",
+    r"从哪来",
     r"有多大",
     r"有多高",
     r"多少度",
@@ -23,17 +27,22 @@ _INTENT_PATTERNS = (
     r"百科",
     r"科普",
     r"解释一下",
-    r"讲讲.{0,12}是",
+    r"讲讲",
 )
 
 _INTENT_RE = re.compile("|".join(_INTENT_PATTERNS))
 
-_WHY_IS_RE = re.compile(r"为什么(?P<sub>.+?)是(?P<pred>.+?)的?[?？!！。.~～]*$")
+_WHY_IS_RE = re.compile(
+    r"(?:为什么|为啥)(?P<sub>.+?)是(?P<pred>.+?)的?[?？!！。.~～]*$"
+)
 
 _TOPIC_PATTERNS = (
     re.compile(r"^(?:请问|请|帮我)?(?:什么是|啥是|什么叫|啥叫)(?P<topic>.+)$"),
     re.compile(r"^(?P<topic>.+?)(?:是什么|是啥|叫什么)(?:意思)?$"),
     re.compile(r"^(?:请|帮我)?解释一下(?P<topic>.+)$"),
+    re.compile(r"^(?:请|帮我)?讲讲(?P<topic>.+)$"),
+    re.compile(r"^(?P<topic>.+?)咋来的$"),
+    re.compile(r"^(?P<topic>.+?)(?:是)?从哪[里儿]?来的?$"),
 )
 
 # Shared function words — never use alone for relevance.
@@ -83,6 +92,7 @@ _STOPWORDS = frozenset(
         "我",
         "你",
         "一下",
+        "咋",
     }
 )
 
@@ -122,6 +132,10 @@ def search_query_from_message(text: str) -> str:
         r"解释一下",
         r"讲讲",
         r"告诉我",
+        r"咋回事",
+        r"咋来的",
+        r"咋",
+        r"从哪[里儿]?来的?",
         r"[?？!！。.~～]+$",
     ):
         q = re.sub(pat, " ", q)
@@ -151,13 +165,14 @@ def extract_topic(text: str) -> str:
 def search_queries_from_message(text: str) -> list[str]:
     """
     Candidate queries for MediaWiki search.
-    Prefer the extracted topic first so「什么是性」searches「性」, not the whole question shell.
+    Prefer lemma map + extracted topic so short/colloquial asks hit encyclopedia titles.
     """
     raw = (text or "").strip()
     raw_stripped = re.sub(r"[?？!！。.~～]+$", "", raw).strip()
+    lemma_extras = lemma_queries_for_message(text)
     topic = extract_topic(text)
     cleaned = search_query_from_message(text)
-    extras: list[str] = []
+    extras: list[str] = list(lemma_extras)
     m = _WHY_IS_RE.search(raw_stripped)
     if m:
         sub = (m.group("sub") or "").strip()

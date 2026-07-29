@@ -76,6 +76,54 @@ def test_memory_extract_dispatch_categories(tmp_path, monkeypatch):
         assert mems[0]["category"] == expected, text
 
 
+def test_memory_dedupes_repeated_like(tmp_path, monkeypatch):
+    monkeypatch.setenv("DATABASE_URL", f"sqlite:///{tmp_path / 'm5.db'}")
+    from src.config.settings import get_settings
+
+    get_settings.cache_clear()
+    init_db()
+    profile_repo.ensure_profile("dedup-1")
+    assert maybe_extract_from_turn(client_id="dedup-1", user_text="我喜欢画画", mode=Mode.CHILD)
+    assert (
+        maybe_extract_from_turn(client_id="dedup-1", user_text="我喜欢画画！", mode=Mode.CHILD)
+        is None
+    )
+    assert len(memory_repo.list_memories("dedup-1")) == 1
+
+
+def test_memory_remember_instruction(tmp_path, monkeypatch):
+    monkeypatch.setenv("DATABASE_URL", f"sqlite:///{tmp_path / 'm6.db'}")
+    from src.config.settings import get_settings
+
+    get_settings.cache_clear()
+    init_db()
+    profile_repo.ensure_profile("rem-1")
+    note = maybe_extract_from_turn(
+        client_id="rem-1",
+        user_text="帮我记住明天要带水彩笔",
+        mode=Mode.CHILD,
+    )
+    assert note is not None
+    mems = memory_repo.list_memories("rem-1")
+    assert mems[0]["category"] == "preference"
+    assert "水彩笔" in mems[0]["text"]
+
+
+def test_memory_like_syncs_profile_likes(tmp_path, monkeypatch):
+    monkeypatch.setenv("DATABASE_URL", f"sqlite:///{tmp_path / 'm7.db'}")
+    from src.config.settings import get_settings
+
+    get_settings.cache_clear()
+    init_db()
+    profile_repo.ensure_profile("like-sync-1")
+    maybe_extract_from_turn(client_id="like-sync-1", user_text="我喜欢恐龙", mode=Mode.CHILD)
+    profile = profile_repo.get_profile("like-sync-1")
+    assert profile is not None
+    assert "恐龙" in (profile.get("likes") or [])
+    s = snippet(client_id="like-sync-1")
+    assert "恐龙" in s
+
+
 def test_snippet_orders_by_category(tmp_path, monkeypatch):
     monkeypatch.setenv("DATABASE_URL", f"sqlite:///{tmp_path / 'm4.db'}")
     from src.config.settings import get_settings

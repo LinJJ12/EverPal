@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import re
+
 from src.capabilities import safety as safety_cap
 from src.domain.enums import Mode
 from src.storage import memory_repo, mood_repo, profile_repo
@@ -15,16 +17,23 @@ _SNIPPET_CATEGORY_ORDER = {
 _DISLIKE_MARKERS = ("我不喜欢", "我讨厌")
 _LIKE_MARKERS = ("我喜欢", "我爱")
 _PREFERENCE_MARKERS = ("我叫", "我的名字是")
+_REMEMBER_MARKERS = ("帮我记住", "请记住", "记一下", "别忘了")
 _EVENT_DAY_MARKERS = ("今天", "昨天")
 _EVENT_ACTION_MARKERS = ("去了", "发生了", "参加了")
 
+_LIKE_OBJECT_RE = re.compile(r"(?:我喜欢|我爱)(?P<obj>.+)$")
+_PUNCT_RE = re.compile(r"[\s?？!！。.~～、，,；;：:\"'“”‘’]+")
+_MAX_LIKES = 12
+
 
 def _detect_category(text: str) -> str | None:
-    """Priority: dislike > like > preference > event. Returns None if no rule hits."""
+    """Priority: dislike > like > remember > preference > event."""
     if any(m in text for m in _DISLIKE_MARKERS):
         return "dislike"
     if any(m in text for m in _LIKE_MARKERS):
         return "like"
+    if any(m in text for m in _REMEMBER_MARKERS):
+        return "preference"
     if any(m in text for m in _PREFERENCE_MARKERS):
         return "preference"
     has_day = any(m in text for m in _EVENT_DAY_MARKERS)
@@ -32,6 +41,32 @@ def _detect_category(text: str) -> str | None:
     if has_day and has_action:
         return "event"
     return None
+
+
+def extract_like_object(text: str) -> str | None:
+    """「我喜欢画画」→「画画」."""
+    t = (text or "").strip()
+    m = _LIKE_OBJECT_RE.search(t)
+    if not m:
+        return None
+    obj = (m.group("obj") or "").strip()
+    obj = _PUNCT_RE.sub("", obj)
+    obj = obj.strip(" 的了呢啊呀嘛吧哦")
+    if not obj or len(obj) > 16:
+        return None
+    return obj
+
+
+def _sync_like_to_profile(client_id: str, user_text: str) -> None:
+    obj = extract_like_object(user_text)
+    if not obj:
+        return
+    profile = profile_repo.ensure_profile(client_id)
+    likes = [str(x).strip() for x in (profile.get("likes") or []) if str(x).strip()]
+    if obj in likes:
+        return
+    likes = [obj, *[x for x in likes if x != obj]][:_MAX_LIKES]
+    profile_repo.upsert_profile(client_id, likes=likes)
 
 
 def snippet(
@@ -98,6 +133,7 @@ def maybe_extract_from_turn(
     """Rule-based light extract (no extra LLM). Returns saved text or None.
 
     Memory-gate: discard if user text hits lexicon (health / self-harm / PII / etc.).
+    Dedupes near-identical notes; syncs like objects into profile.likes.
     """
     _ = assistant_text  # reserved for future extractors
     cid = (client_id or "").strip()
@@ -112,5 +148,11 @@ def maybe_extract_from_turn(
     if category is None:
         return None
     note = t[:80]
+    if memory_repo.has_similar_memory(cid, note):
+        if category == "like":
+            _sync_like_to_profile(cid, t)
+        return None
     memory_repo.add_memory(cid, note, category=category)
+    if category == "like":
+        _sync_like_to_profile(cid, t)
     return note

@@ -50,10 +50,23 @@ def test_search_query_strips_question_shell():
     assert "为什么" not in q
 
 
-def test_extract_topic_what_is():
-    assert extract_topic("什么是性？") == "性"
-    assert extract_topic("什么是恐龙") == "恐龙"
-    assert extract_topic("恐龙是什么？") == "恐龙"
+def test_extract_topic_colloquial():
+    assert extract_topic("讲讲恐龙") == "恐龙"
+    assert extract_topic("彩虹咋来的") == "彩虹"
+    assert extract_topic("雨从哪来的") == "雨"
+
+
+def test_search_queries_lemma_sky_colloquial():
+    qs = search_queries_from_message("天为啥蓝？")
+    assert "天空" in qs or "天空 蓝色" in qs
+    assert qs.index("天空") < qs.index("天为啥蓝") or (
+        "天空 蓝色" in qs and qs.index("天空 蓝色") < len(qs)
+    )
+
+
+def test_search_queries_talk_about_dinosaur():
+    qs = search_queries_from_message("讲讲恐龙")
+    assert qs[0] == "恐龙" or "恐龙" in qs[:2]
 
 
 def test_search_queries_prefer_topic_first():

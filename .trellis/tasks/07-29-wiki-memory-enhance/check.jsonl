@@ -1,0 +1,6 @@
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Memory/wiki unit coverage; no safety regressions"}
+{"file": ".trellis/spec/backend/safety-pipeline.md", "reason": "Lexicon gate before memory extract; wiki soft-fail"}
+{"file": ".trellis/spec/backend/directory-structure.md", "reason": "Wiki lemma lives under capabilities/wiki/"}
+{"file": ".trellis/tasks/07-29-wiki-memory-enhance/prd.md", "reason": "Acceptance: lemma, remember, likes sync, dedupe"}
+{"file": ".trellis/tasks/07-29-wiki-memory-enhance/design.md", "reason": "Lemma merge order + memory normalize rules"}
+{"file": ".trellis/tasks/07-29-wiki-memory-enhance/research/mcp-skills.md", "reason": "Confirm MCP not wired into chat path"}
