@@ -505,3 +505,36 @@
 ### Next Steps
 
 - None - task complete
+
+
+## Session 16: 入站审核与 CI pytest
+
+**Date**: 2026-07-29
+**Task**: 入站审核与 CI pytest
+**Branch**: `main`
+
+### Summary
+
+阿里云入站审核 MVP；ACS3 签名含 content-type；新增 GitHub Actions 跑 pytest + frontend build；任务归档。
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `3bfa007` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
