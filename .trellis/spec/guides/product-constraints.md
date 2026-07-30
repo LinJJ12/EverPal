@@ -15,7 +15,7 @@
 
 ## Phase-1 status
 
-**Feature-complete for internal testing** (2026-07-24). Not an external launch. Known deferred for release: Docker / trial deploy package. Lexicon/gate safety baseline archived in `docs/safety-audit-report.md` (LLM behavior checklist still pending).
+**Feature-complete for internal testing** (2026-07-24). Not an external launch. Known deferred for release: Docker / trial deploy package. Lexicon/gate safety baseline and LLM behavior checklist archived in `docs/safety-audit-report.md` (behavior layer 18/18 pass on 2026-07-30).
 
 ## Phase-1 must (delivered)
 

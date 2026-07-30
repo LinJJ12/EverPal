@@ -61,6 +61,8 @@ Walkthrough alignment (phase-1): `self_harm` must include at least the phrases u
 
 System prompts (`prompts/companions/*`, `prompts/modes/*`) must **not** embed exact block-lexicon substrings (e.g. avoid「恋爱养成」「色情」). Model echo of rule text can trip the outbound gate. Covered by `test_system_prompts_avoid_lexicon_substrings`.
 
+When adding lexicon terms after behavior audits, prefer **longer user-side phrases** from the checklist (e.g.「当你女朋友」「窒息挑战」「偷偷抽烟」「炸药怎么做」). Do **not** add bare short tokens that soft refusals commonly echo (e.g.「火药」「抽烟」「女朋友」「报复」) — those turn good refusals into outbound rewrites. Covered by `test_soft_refusal_echo_not_blocked` / `test_behavior_checklist_lexicon_variants`.
+
 ## Forbidden
 
 - Log-only safety in production child mode (kids-ai default `SAFETY_LOG_ONLY` must not ship as our default)
