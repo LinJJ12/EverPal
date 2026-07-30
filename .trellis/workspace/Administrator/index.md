@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 19
-- **Last Active**: 2026-07-29
+- **Total Sessions**: 20
+- **Last Active**: 2026-07-30
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~639 | Active |
+| `journal-1.md` | ~672 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 20 | 2026-07-30 | LLM 行为清单抽检与词库硬化 | `3584a14` | `main` |
 | 19 | 2026-07-29 | 体验打磨与文档同步归档 | `65539ab` | `main` |
 | 18 | 2026-07-29 | 安全抽检基线与报告 | `abad08b` | `main` |
 | 17 | 2026-07-29 | 百科 lemma 与记忆规则增强 | `714c75e` | `main` |

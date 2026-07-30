@@ -637,3 +637,36 @@
 ### Next Steps
 
 - None - task complete
+
+
+## Session 20: LLM 行为清单抽检与词库硬化
+
+**Date**: 2026-07-30
+**Task**: LLM 行为清单抽检与词库硬化
+**Branch**: `main`
+
+### Summary
+
+跑完 §6 行为清单 18/18；补长变体词库与回声防误伤单测；更新安全报告并归档任务。
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `3584a14` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
