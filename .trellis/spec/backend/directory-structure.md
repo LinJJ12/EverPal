@@ -52,6 +52,7 @@ backend/
 │   ├── domain/{enums,moods,time_cn}.py
 │   ├── config/
 │   └── lib/
+├── scripts/                   # e2e_smoke / wiki_relevance_smoke / llm_behavior_audit
 └── tests/{unit,api,fixtures}/     # fixtures/ at tests root (not unit/fixtures)
 ```
 

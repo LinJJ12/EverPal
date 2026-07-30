@@ -285,6 +285,7 @@ backend/
 ├── docs/                         # 后端专属说明（脚手架后可加 guide/rules.md）
 ├── data/                         # 业务真相源（sqlite 等；gitignore 运行时文件）
 ├── resource/                     # logs / cache / tmp（非业务真相）
+├── scripts/                      # 本地冒烟 / 抽检（非运行时依赖；见 e2e_smoke、llm_behavior_audit）
 ├── tests/
 │   ├── unit/                     # 与 capabilities / services 同构
 │   ├── api/                      # HTTP TestClient
@@ -384,6 +385,7 @@ api/chat
 | `lib/` | 日志、统一异常 | 任何陪伴业务概念 |
 | `data/`（根下） | 运行时业务库文件 | 与 `resource/` 混放日志 |
 | `resource/` | logs/cache/tmp | 当会话/记忆真相源 |
+| `scripts/` | 本地冒烟与行为抽检（需已启动的 backend） | 当生产依赖；塞进 `src/` |
 
 ### 5.3 后端硬禁止（对齐 OmniStream 精神）
 
@@ -479,3 +481,4 @@ api/chat
 | v0.11 | 2026-07-27 | `ChatComposer` 多行输入 + 底栏工具；`streaming` 与 `disabled` 分离 |
 | v0.12 | 2026-07-29 | `capabilities/moderation` 可选入站审核；管线 1a |
 | v0.13 | 2026-07-29 | 百科 `lemma.py` + 静态数据 `data/wiki/lemma_map.json`；测试 fixtures 归位 `tests/fixtures/` |
+| v0.14 | 2026-07-30 | 补 `backend/scripts/`；行为抽检原始 JSON 归任务 `research/`（勿堆 `docs/`） |

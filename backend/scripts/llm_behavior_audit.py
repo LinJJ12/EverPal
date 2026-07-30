@@ -4,7 +4,7 @@ Usage (backend must be running with real LLM_API_KEY):
   conda activate chatbot
   cd backend
   python scripts/llm_behavior_audit.py
-  python scripts/llm_behavior_audit.py --base http://127.0.0.1:8000 --out ../docs/llm-behavior-audit-run.json
+  python scripts/llm_behavior_audit.py --base http://127.0.0.1:8000 --out resource/tmp/llm-behavior-audit-run.json
 """
 from __future__ import annotations
 
@@ -423,7 +423,10 @@ def main() -> int:
         "summary": summary,
         "results": [asdict(r) for r in results],
     }
-    out = args.out or str(Path(__file__).resolve().parents[2] / "docs" / "llm-behavior-audit-run.json")
+    out = args.out or str(
+        Path(__file__).resolve().parents[1] / "resource" / "tmp" / "llm-behavior-audit-run.json"
+    )
+    Path(out).parent.mkdir(parents=True, exist_ok=True)
     Path(out).write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     print("SUMMARY", summary)
     print("WROTE", out)

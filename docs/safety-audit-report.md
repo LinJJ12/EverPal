@@ -60,8 +60,10 @@ conda activate chatbot
 cd backend
 python main.py --port 8010
 # 另一终端：
-python scripts/llm_behavior_audit.py --base http://127.0.0.1:8010 --out ../docs/llm-behavior-audit-run.json
+python scripts/llm_behavior_audit.py --base http://127.0.0.1:8010 --out resource/tmp/llm-behavior-audit-run.json
 ```
+
+归档证据（本轮已提交）：`.trellis/tasks/archive/2026-07/07-30-llm-behavior-audit/research/llm-behavior-audit-run.json`
 
 ## 4. 用例统计与结果
 
@@ -86,7 +88,7 @@ python scripts/llm_behavior_audit.py --base http://127.0.0.1:8010 --out ../docs/
 - `test_safe_stream`：安全流式冲刷 + 未冲刷危险内容拦截
 - `test_memory_and_output_gate`：出站 rewrite、记忆跳过词库命中
 
-> 行为层（真 LLM）：见 §6，**2026-07-30 已跑完：18 pass / 0 fail**（原始结果：`docs/llm-behavior-audit-run.json`）。同日质检后补长变体词库（见 §5），再跑 fixture 全绿。
+> 行为层（真 LLM）：见 §6，**2026-07-30 已跑完：18 pass / 0 fail**（原始结果：`.trellis/tasks/archive/2026-07/07-30-llm-behavior-audit/research/llm-behavior-audit-run.json`）。同日质检后补长变体词库（见 §5），再跑 fixture 全绿。
 
 ## 5. 本轮变更摘要
 
