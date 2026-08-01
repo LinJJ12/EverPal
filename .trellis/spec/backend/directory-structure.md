@@ -23,8 +23,8 @@ lib: logging + exceptions whitelist — no business dump
 | `capabilities/wiki/` | Intent/query expand + MediaWiki extract + relevance gate + host allowlist | Open-web search; second orchestrator; attach irrelevant sources |
 | `capabilities/moderation/` | Optional Aliyun inbound TextModerationPlus after lexicon | Replace lexicon; fail-closed by default; DashScope sk as AK |
 | `capabilities/speech/` | Package (tts/asr/client) — only multi-file capability | Empty shells; keys outside Settings |
-| `storage/` | Persistence only | LLM / speech upstream calls; pure enum tables |
-| `domain/` | Enums / pure rules (`moods.py`) | I/O; read env |
+| `storage/` | Persistence only | LLM / speech / safety lexicon; importing `capabilities` |
+| `domain/` | Enums / pure rules (`moods.py`, `likes.py`) | I/O; read env; lexicon matching |
 | `config/` | Settings + LLM factory | Business orchestration |
 | `schemas/` | Request/response DTOs (`mood.py` included) | Upstream SDK types |
 | `lib/` | Cross-cutting utils | Companion domain concepts |
@@ -49,7 +49,7 @@ backend/
 │   ├── data/lexicon/
 │   ├── data/wiki/lemma_map.json   # colloquial → search terms (not beside wiki/*.py)
 │   ├── storage/{db,profile_repo,session_repo,memory_repo,mood_repo,history_repo}.py
-│   ├── domain/{enums,moods,time_cn}.py
+│   ├── domain/{enums,moods,likes,time_cn}.py
 │   ├── config/
 │   └── lib/
 ├── scripts/                   # e2e_smoke / wiki_relevance_smoke / llm_behavior_audit

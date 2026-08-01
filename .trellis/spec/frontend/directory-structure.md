@@ -10,6 +10,8 @@ views → composables → api → backend
               ↘ stores
 views / composables → components
 official topics/scenes/stories → content/packs.ts
+like suggestions → content/likes.ts
+safety demo seeds → content/safetySamples.ts
 voice helpers → utils/voice/*
 mood UI constants → components/mood/moodOptions.ts
 encyclopedia sources UI → components/chat/ChatSources.vue
@@ -20,7 +22,7 @@ encyclopedia sources UI → components/chat/ChatSources.vue
 | `views/` | One screen per folder | Raw `fetch` |
 | `composables/` | Page/interaction logic (`useMoodGate` for chat mood; `useChatStream` parses optional `sources`) | Bypass `api` for HTTP |
 | `api/` | Sole HTTP client; files align with backend resources | DOM; UI constants; writing global stores; speech keys |
-| `content/` | Static topic / scene / story packs + companion openers | HTTP; duplicating copy across views |
+| `content/` | Static packs / openers / like chips / safety samples | HTTP; duplicating copy across views or stuffing into `types/` |
 | `stores/` | Cross-page state | Direct HTTP |
 | `components/` | Reusable UI (`chat/` includes `ChatSources`; `voice/`, `mood/`) | Route-level business |
 | `utils/voice/` | Browser STT/TTS helpers + MediaRecorder + speakProgress | HTTP calls |
@@ -34,7 +36,7 @@ frontend/
 ├── .env                       # gitignored; never LLM/DashScope keys
 ├── src/
 │   ├── api/                   # http, chat, companions, sessions, profile, mood, speech
-│   ├── content/               # packs.ts + openers.ts
+│   ├── content/               # packs · openers · likes · safetySamples
 │   ├── views/                 # home … chat … scenes … memory … games, safety
 │   ├── composables/           # useChatPage, useChatStream (+ parseChatSources), useChatSession,
 │   │                          # useChatSpeak, useMoodGate, useTopicCards, useSpeech*, …

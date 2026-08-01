@@ -4,6 +4,7 @@ import json
 import time
 from typing import Any
 
+from src.domain.likes import normalize_likes
 from src.storage.db import db_session
 
 
@@ -52,7 +53,8 @@ def upsert_profile(
     nick = profile["nickname"] if nickname is None else nickname.strip()
     md = "child" if mode is None else _normalize_mode(mode)
     comp = profile["companion_id"] if companion_id is None else companion_id
-    like_list = profile["likes"] if likes is None else _normalize_likes(likes)
+    # Storage only does shape normalize; lexicon filtering belongs in api/capabilities.
+    like_list = profile["likes"] if likes is None else normalize_likes(likes)
     now = time.time()
     with db_session() as conn:
         conn.execute(
@@ -70,28 +72,6 @@ def _normalize_mode(mode: str | None) -> str:
     return "child"
 
 
-_MAX_PROFILE_LIKES = 6
-_MAX_LIKE_CHARS = 12
-
-
-def _normalize_likes(likes: list[str] | None) -> list[str]:
-    """Kids may type free-text likes; keep short, unique, capped; drop lexicon hits."""
-    # Local import: avoid storage↔capabilities import cycles at module load.
-    from src.capabilities.safety import check_input
-
-    out: list[str] = []
-    for raw in likes or []:
-        text = " ".join(str(raw).strip().split())[:_MAX_LIKE_CHARS]
-        if not text or text in out:
-            continue
-        if check_input(text, "child") is not None:
-            continue
-        out.append(text)
-        if len(out) >= _MAX_PROFILE_LIKES:
-            break
-    return out
-
-
 def _row_to_profile(row: Any) -> dict[str, Any]:
     likes = json.loads(row["likes_json"] or "[]")
     raw = likes if isinstance(likes, list) else []
@@ -100,6 +80,6 @@ def _row_to_profile(row: Any) -> dict[str, Any]:
         "nickname": row["nickname"] or "",
         "mode": _normalize_mode(row["mode"]),
         "companion_id": row["companion_id"] or "nuan",
-        "likes": _normalize_likes([str(x) for x in raw]),
+        "likes": normalize_likes([str(x) for x in raw]),
         "updated_at": row["updated_at"],
     }

@@ -63,6 +63,10 @@ System prompts (`prompts/companions/*`, `prompts/modes/*`) must **not** embed ex
 
 When adding lexicon terms after behavior audits, prefer **longer user-side phrases** from the checklist (e.g.「当你女朋友」「窒息挑战」「偷偷抽烟」「炸药怎么做」). Do **not** add bare short tokens that soft refusals commonly echo (e.g.「火药」「抽烟」「女朋友」「报复」) — those turn good refusals into outbound rewrites. Covered by `test_soft_refusal_echo_not_blocked` / `test_behavior_checklist_lexicon_variants`.
 
+## Profile likes
+
+Free-text likes (max 6 × 12 chars) are normalized in `domain/likes.py` and lexicon-filtered via `safety.sanitize_profile_likes` in **`api/profile`** (and memory like-sync). **`storage/` must not import safety/lexicon** — only persist already-sanitized lists (shape normalize with `domain.likes.normalize_likes` is OK).
+
 ## Forbidden
 
 - Log-only safety in production child mode (kids-ai default `SAFETY_LOG_ONLY` must not ship as our default)

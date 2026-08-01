@@ -6,8 +6,8 @@
 
 ## 1. 三条硬禁止
 
-1. **`api/`** 不写词库匹配细节，不直接创建 LLM HTTP 客户端。  
-2. **`storage/`** 不调 LLM，不做聊天编排。  
+1. **`api/`** 不写词库 JSON 细节，不直接创建 LLM HTTP 客户端（喜好过滤可调 `safety.sanitize_profile_likes`）。  
+2. **`storage/`** 不调 LLM，不做聊天编排，**不导入** `capabilities` / 词库。  
 3. **新功能先选已有层**；放不进再开文档讨论——禁止默默塞进 `lib/`。
 
 ---

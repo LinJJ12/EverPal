@@ -4,7 +4,7 @@ import type { Companion, Mode, Profile } from "@/types";
 import { fetchCompanions } from "@/api/companions";
 import { fetchProfile, patchProfile } from "@/api/profile";
 import { ApiError } from "@/api/http";
-import { LIKE_OPTIONS } from "@/types";
+import { LIKE_OPTIONS } from "@/content/likes";
 import { getActiveSessionId, setActiveSessionId } from "@/utils/activeSession";
 
 export const useProfileStore = defineStore("profile", () => {

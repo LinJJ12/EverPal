@@ -3,7 +3,7 @@ import { computed, ref, watch } from "vue";
 import { RouterLink, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useProfileStore } from "@/stores/profile";
-import { LIKE_OPTIONS } from "@/types";
+import { LIKE_OPTIONS } from "@/content/likes";
 
 const MAX_LIKES = 6;
 const MAX_LIKE_LEN = 12;

@@ -44,7 +44,7 @@ def test_profile_and_memory_roundtrip(isolated_db: Path):
     assert memory_repo.list_memories("dev-1") == []
 
 
-def test_profile_likes_normalize_cap_dedupe_and_safety(isolated_db: Path):
+def test_profile_likes_normalize_cap_and_dedupe(isolated_db: Path):
     from src.storage import profile_repo
 
     p = profile_repo.upsert_profile(
@@ -58,13 +58,22 @@ def test_profile_likes_normalize_cap_dedupe_and_safety(isolated_db: Path):
             "画画",
             "阅读",
             "多余第七个",
-            "怎么抽烟",  # lexicon hit — must drop
             "",
         ],
     )
     assert p["likes"] == ["乐高", "钢琴", "篮球", "游泳", "画画", "阅读"]
-    assert "怎么抽烟" not in p["likes"]
     assert "多余第七个" not in p["likes"]
+
+
+def test_sanitize_profile_likes_drops_lexicon_hits(isolated_db: Path):
+    from src.capabilities.safety import sanitize_profile_likes
+    from src.storage import profile_repo
+
+    cleaned = sanitize_profile_likes(["乐高", "怎么抽烟", "钢琴"])
+    assert cleaned == ["乐高", "钢琴"]
+    p = profile_repo.upsert_profile("likes-safe", likes=cleaned)
+    assert p["likes"] == ["乐高", "钢琴"]
+    assert "怎么抽烟" not in p["likes"]
 
 
 def test_memory_category_roundtrip_and_normalize(isolated_db: Path):

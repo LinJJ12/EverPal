@@ -4,5 +4,7 @@
 
 - `packs.ts`：话题 / 场景 / 短故事唯一内容源；UI 经 composable / view 读取
 - `openers.ts`：伙伴空态开场白
-- 禁止把内容常量塞进 `api/` 或散落在多个 view 各写一份
+- `likes.ts`：档案页喜好推荐标签（自定义喜好仍可手填）
+- `safetySamples.ts`：安全边界页演示种子句
+- 禁止把内容常量塞进 `api/`、`types/` 或散落在多个 view 各写一份
 - 故事本期仅为审定开场种子，续写走聊天管线（LLM）

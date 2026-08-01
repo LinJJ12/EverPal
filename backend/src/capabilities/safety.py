@@ -60,3 +60,20 @@ def filter_output(text: str, mode: Mode | str) -> tuple[str, SafetyAction]:
     if hit and hit.action in (SafetyAction.BLOCK, SafetyAction.REWRITE):
         return hit.reply, hit.action
     return text, SafetyAction.NONE
+
+
+def sanitize_profile_likes(likes: list[str] | None, mode: Mode | str = Mode.CHILD) -> list[str]:
+    """Drop lexicon hits, then apply domain normalize (cap/dedupe). Used by api + memory sync."""
+    from src.domain.likes import MAX_LIKE_CHARS, MAX_PROFILE_LIKES, normalize_likes
+
+    safe: list[str] = []
+    for raw in likes or []:
+        text = " ".join(str(raw).strip().split())[:MAX_LIKE_CHARS]
+        if not text or text in safe:
+            continue
+        if check_input(text, mode) is not None:
+            continue
+        safe.append(text)
+        if len(safe) >= MAX_PROFILE_LIKES:
+            break
+    return normalize_likes(safe)

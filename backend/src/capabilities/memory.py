@@ -4,6 +4,7 @@ import re
 
 from src.capabilities import safety as safety_cap
 from src.domain.enums import Mode
+from src.domain.likes import MAX_PROFILE_LIKES
 from src.storage import memory_repo, mood_repo, profile_repo
 
 # Snippet order among memory rows (lower = earlier in prompt)
@@ -23,7 +24,6 @@ _EVENT_ACTION_MARKERS = ("去了", "发生了", "参加了")
 
 _LIKE_OBJECT_RE = re.compile(r"(?:我喜欢|我爱)(?P<obj>.+)$")
 _PUNCT_RE = re.compile(r"[\s?？!！。.~～、，,；;：:\"'“”‘’]+")
-_MAX_LIKES = 6
 
 
 def _detect_category(text: str) -> str | None:
@@ -65,8 +65,11 @@ def _sync_like_to_profile(client_id: str, user_text: str) -> None:
     likes = [str(x).strip() for x in (profile.get("likes") or []) if str(x).strip()]
     if obj in likes:
         return
-    likes = [obj, *[x for x in likes if x != obj]][:_MAX_LIKES]
-    profile_repo.upsert_profile(client_id, likes=likes)
+    merged = [obj, *[x for x in likes if x != obj]][:MAX_PROFILE_LIKES]
+    profile_repo.upsert_profile(
+        client_id,
+        likes=safety_cap.sanitize_profile_likes(merged),
+    )
 
 
 def snippet(

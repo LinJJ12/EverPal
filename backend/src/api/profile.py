@@ -4,6 +4,7 @@ from fastapi import APIRouter, Header, HTTPException, Query
 from pydantic import BaseModel, Field
 from typing import Literal
 
+from src.capabilities.safety import sanitize_profile_likes
 from src.storage import memory_repo, profile_repo
 
 router = APIRouter(prefix="/v1", tags=["profile"])
@@ -60,12 +61,13 @@ def patch_profile(
     x_client_id: str | None = Header(default=None, alias="X-Client-Id"),
 ) -> ProfileOut:
     cid = _cid(client_id, x_client_id)
+    likes = None if body.likes is None else sanitize_profile_likes(body.likes)
     p = profile_repo.upsert_profile(
         cid,
         nickname=body.nickname,
         mode=body.mode,
         companion_id=body.companion_id,
-        likes=body.likes,
+        likes=likes,
     )
     mems = memory_repo.list_memories(cid)
     return ProfileOut(

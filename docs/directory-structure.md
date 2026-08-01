@@ -214,7 +214,9 @@ frontend/
 │   │   └── safety/               # 安全边界示例入口
 │   ├── content/
 │   │   ├── packs.ts                  # 话题 / 场景 / 短故事唯一内容源
-│   │   └── openers.ts                # 伙伴空态开场白
+│   │   ├── openers.ts                # 伙伴空态开场白
+│   │   ├── likes.ts                  # 档案喜好推荐标签
+│   │   └── safetySamples.ts          # 安全边界演示种子
 │   ├── composables/
 │   │   ├── useChatPage.ts
 │   │   ├── useChatStream.ts          # SSE；解析可选 sources（维基白名单）
@@ -251,7 +253,7 @@ frontend/
 | 跨页状态 | `stores/*` | 到处 `localStorage` 无封装 |
 | 本机持久化辅助 | `stores` 或薄 `utils/storage.ts` | 与 API 混在同一文件且职责不清 |
 | 皮肤 | `themes/cartoon/` | 组件内散落 hex |
-| 官方话题 / 场景 / 故事 / 开场白 | `content/packs.ts`、`content/openers.ts` | `api/`、`avatars.ts`、多 view 各写一份 |
+| 官方话题 / 场景 / 故事 / 开场白 / 喜好推荐 / 安全演示句 | `content/*.ts` | `api/`、`types/`、多 view 各写一份 |
 | 本机会话指针 / 侧栏偏好 | `utils/activeSession.ts`、`utils/chatSidebar.ts` | view 内散落 `localStorage` |
 | 百科来源折叠 UI | `components/chat/ChatSources.vue` | view 内手写外链；信任模型输出的 URL |
 | SSE `sources` 解析 / 白名单 | `composables/useChatStream.ts`（`parseChatSources`） | 在 view 里解析；放行非维基主机 |
@@ -342,6 +344,7 @@ backend/
     ├── domain/                   # 纯模型/枚举/规则数据；无 I/O
     │   ├── enums.py              # Mode、SafetyAction…
     │   ├── moods.py              # MOOD_IDS / normalize / labels
+    │   ├── likes.py              # 喜好条数/字数归一化（无词库）
     │   └── time_cn.py            # 东八区日历日解析（mood / history 共用）
     ├── config/
     │   ├── settings.py           # 读 .env
@@ -378,8 +381,8 @@ api/chat
 | `prompts/**` | 提示词正文 | 业务 if/else |
 | `data/lexicon/` | 词库条目 | 散落在代码字符串 |
 | `data/wiki/` | 百科静态映射（lemma 等） | 放进 `capabilities/wiki/` 旁；运行时 DB |
-| `storage/` | DB/文件读写 | 调 LLM；编排多步 |
-| `domain/` | 枚举与纯规则 | 网络 I/O；读 env（走 `config`） |
+| `storage/` | DB/文件读写 | 调 LLM；编排多步；**导入 capabilities/词库** |
+| `domain/` | 枚举与纯规则（含 `likes` 条数/字数归一化） | 网络 I/O；读 env；词库匹配 |
 | `config/` | 环境变量与 LLM 客户端工厂 | 业务编排 |
 | `schemas/` | DTO | 副作用 |
 | `lib/` | 日志、统一异常 | 任何陪伴业务概念 |
@@ -389,8 +392,8 @@ api/chat
 
 ### 5.3 后端硬禁止（对齐 OmniStream 精神）
 
-1. **`api/`** 不写安全词匹配细节，不直接创建 LLM 客户端。  
-2. **`storage/`** 不调 LLM。  
+1. **`api/`** 不写词库 JSON 细节，不直接创建 LLM 客户端；喜好词库过滤走 `capabilities/safety.sanitize_profile_likes`。  
+2. **`storage/`** 不调 LLM，**不导入** `capabilities` / 词库。  
 3. **新功能先选已有层**；放不进再开文档讨论——**禁止默默丢进 `lib/`**。  
 4. **`capabilities`** 不导入 `services`（防环）；`domain` / `lib` 不依赖上层。
 
@@ -482,3 +485,4 @@ api/chat
 | v0.12 | 2026-07-29 | `capabilities/moderation` 可选入站审核；管线 1a |
 | v0.13 | 2026-07-29 | 百科 `lemma.py` + 静态数据 `data/wiki/lemma_map.json`；测试 fixtures 归位 `tests/fixtures/` |
 | v0.14 | 2026-07-30 | 补 `backend/scripts/`；行为抽检原始 JSON 归任务 `research/`（勿堆 `docs/`） |
+| v0.15 | 2026-08-01 | `content/likes`·`safetySamples`；`domain/likes`；喜好词库过滤不进 `storage` |
