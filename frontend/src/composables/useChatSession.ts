@@ -1,4 +1,4 @@
-import { ref, watch, type Ref } from "vue";
+import { computed, ref, watch, type Ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useProfileStore } from "@/stores/profile";
@@ -6,6 +6,7 @@ import { ApiError } from "@/api/http";
 import { friendlyError } from "@/utils/errors";
 import {
   getActiveSessionId,
+  getSessionForCompanion,
   setActiveSessionId,
   setSessionForCompanion,
 } from "@/utils/activeSession";
@@ -34,6 +35,20 @@ export function useChatSession(opts: {
   const sessionLoading = ref(false);
   const sessionLoadError = ref("");
   const sideError = ref("");
+  /** Bumps so canResumeLast re-reads localStorage companion→session map. */
+  const resumeTick = ref(0);
+
+  function bumpResumeUi() {
+    resumeTick.value += 1;
+  }
+
+  const canResumeLast = computed(() => {
+    void resumeTick.value;
+    const cid = companion.value?.id || store.companionId;
+    if (!cid || sessionLoading.value) return false;
+    if (store.sessionId || opts.messages.value.length > 0) return false;
+    return !!getSessionForCompanion(cid);
+  });
 
   async function stripSeedQuery() {
     if (route.path !== "/chat") return;
@@ -92,8 +107,13 @@ export function useChatSession(opts: {
     sideError.value = "";
     const previousId = companion.value?.id || store.companionId;
     try {
+      // Keep leaving companion's thread pointer for later「继续上次」.
+      const leavingSid = (store.sessionId || getActiveSessionId() || "").trim();
+      if (previousId && leavingSid) {
+        setSessionForCompanion(previousId, leavingSid);
+      }
       await store.save({ companion_id: id });
-      // New blank chat for this companion; resume old threads only via history.
+      // Blank new chat by default; do not auto-load target companion's last thread.
       chatSessionLoadSeq += 1;
       sessionLoadError.value = "";
       opts.stopSpeak();
@@ -102,11 +122,31 @@ export function useChatSession(opts: {
       opts.messages.value = [];
       store.sessionId = null;
       setActiveSessionId(null);
-      if (previousId) setSessionForCompanion(previousId, null);
-      setSessionForCompanion(id, null);
+      bumpResumeUi();
     } catch (e) {
       sideError.value = friendlyError(e);
     }
+  }
+
+  /** Explicit resume of this companion's last local thread (not auto on switch). */
+  async function resumeLastSession() {
+    const cid = companion.value?.id || store.companionId;
+    if (!cid) return;
+    const sid = getSessionForCompanion(cid);
+    if (!sid) {
+      bumpResumeUi();
+      return;
+    }
+    sideError.value = "";
+    opts.stopSpeak();
+    const ok = await loadSessionById(sid);
+    if (!ok) {
+      setSessionForCompanion(cid, null);
+      if (!sessionLoadError.value) {
+        sessionLoadError.value = "上次对话找不到了，咱们开新的吧";
+      }
+    }
+    bumpResumeUi();
   }
 
   /**
@@ -175,11 +215,18 @@ export function useChatSession(opts: {
     },
   );
 
+  watch(
+    [() => store.sessionId, () => opts.messages.value.length, companion],
+    () => bumpResumeUi(),
+  );
+
   return {
     sessionLoading,
     sessionLoadError,
     sideError,
+    canResumeLast,
     pickCompanion,
+    resumeLastSession,
     loadSessionById,
     bootstrapChat,
     clearSessionError,

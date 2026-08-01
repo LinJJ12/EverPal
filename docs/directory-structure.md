@@ -266,7 +266,7 @@ frontend/
 5. 语音分层：`api/speech.ts`（HTTP）→ composables → `components/voice/`；浏览器辅助在 `utils/voice/`。云端优先、浏览器回退；转写进 composer → 现有发送管线。无成人模式页（`/mode` 仅重定向）。
 6. 今日心情：`api/mood.ts`（HTTP）+ `components/mood/moodOptions.ts`（UI 常量）+ `useMoodGate`（门闸）；`MoodGate` 每日首次进 `/chat`；写入后端后由 `memory.snippet` 注入系统提示；记忆页可改签与单条删除。
 7. 历史月历：`api/history.ts` + `useHistoryCalendar`；周一起始公历；对话日按消息东八区日；无农历。
-8. 会话隔离：切换伙伴 / 「新建对话」清空当前屏与 active session；旧线程仅从历史 `?session=` 进入。场景 / 安全 `?seed=` 须同时清 `store.sessionId` 与 `utils/activeSession`。
+8. 会话隔离：切换伙伴 / 「新建对话」清空当前屏与 active session（切换前保存离开伙伴的本机 session 指针）；默认不自动加载。恢复旧线程：侧栏/空态 **「继续上次」**，或历史 `?session=`。场景 / 安全 `?seed=` 须同时清 `store.sessionId` 与 `utils/activeSession`。
 9. 聊天侧栏展开偏好：`utils/chatSidebar.ts`（勿在 `ChatView` 内直接读写 localStorage）。
 10. 联网百科：输入区底栏 **「百科」**（`ChatComposer` + `wikiMode`）；请求带 `use_wiki`；仅此时后端检索。发送时立即熄灭（一次一问）；切换伙伴 / 加载会话 / 新建对话会 `resetWikiMode`。重新生成若原回复带 sources 则再次 `useWiki`。来源仅 SSE `done.sources` + `parseChatSources` 白名单；UI 为 `ChatSources.vue`。后端对检索结果做标题相关性门控（错条丢弃，不挂来源）。
 11. 聊天输入区（`ChatComposer`）：整宽多行 `textarea`（自动增高）+ 底栏「百科 / 说话 / 发送」；Enter 发送、Shift+Enter 换行；仅 `streaming` 时显示「停止」（勿用 `disabled` 兼作停止条件）。

@@ -5,7 +5,11 @@ import { storeToRefs } from "pinia";
 import { useProfileStore } from "@/stores/profile";
 import CompanionAvatar from "@/components/companions/CompanionAvatar.vue";
 import { COMPANION_SAMPLES } from "@/content/openers";
-import { setActiveSessionId, setSessionForCompanion } from "@/utils/activeSession";
+import {
+  getActiveSessionId,
+  setActiveSessionId,
+  setSessionForCompanion,
+} from "@/utils/activeSession";
 
 const store = useProfileStore();
 const { companions, companionId, nickname, likeLabels } = storeToRefs(store);
@@ -26,12 +30,15 @@ async function pick(id: string) {
   if (id === companionId.value) return;
   const previousId = companionId.value;
   try {
+    // Preserve leaving companion's thread for chat-side「继续上次」.
+    const leavingSid = (store.sessionId || getActiveSessionId() || "").trim();
+    if (previousId && leavingSid) {
+      setSessionForCompanion(previousId, leavingSid);
+    }
     await store.save({ companion_id: id });
-    // Blank chat on next /chat visit; old threads only via history.
+    // Blank chat on next /chat visit; resume only via「继续上次」or history.
     store.sessionId = null;
     setActiveSessionId(null);
-    if (previousId) setSessionForCompanion(previousId, null);
-    setSessionForCompanion(id, null);
   } catch (e) {
     alert(e instanceof Error ? e.message : "保存失败，请确认后端已启动");
   }

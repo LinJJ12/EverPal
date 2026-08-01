@@ -188,6 +188,36 @@
   color: var(--color-primary);
 }
 
+.chat-resume-btn {
+  appearance: none;
+  margin: 0 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--color-secondary) 35%, var(--color-border));
+  background: color-mix(in srgb, var(--color-secondary) 14%, #fff);
+  color: #1a7a6e;
+  font-weight: 800;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-align: center;
+  transition: background var(--ease), border-color var(--ease);
+}
+
+.chat-resume-btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-secondary) 22%, #fff);
+}
+
+.chat-resume-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.chat-resume-btn-inline {
+  display: block;
+  margin: 0 auto 12px;
+  max-width: 220px;
+}
+
 .chat-side-memory {
   display: flex;
   flex-direction: column;

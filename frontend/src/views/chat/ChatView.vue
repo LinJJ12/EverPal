@@ -43,7 +43,9 @@ const {
   sessionLoading,
   sessionLoadError,
   sideError,
+  canResumeLast,
   pickCompanion,
+  resumeLastSession,
   bootstrapChat,
   clearSessionError,
 } = useChatSession({
@@ -231,6 +233,15 @@ function regen() {
             </div>
           </button>
         </div>
+        <button
+          v-if="canResumeLast"
+          type="button"
+          class="chat-resume-btn"
+          :disabled="sessionLoading"
+          @click="resumeLastSession"
+        >
+          继续上次
+        </button>
         <p v-if="sideError" class="note chat-side-error">
           {{ sideError }}
         </p>
@@ -326,7 +337,18 @@ function regen() {
               <p v-else-if="sessionLoadError" class="chat-empty-hint chat-empty-error">
                 {{ sessionLoadError }}
               </p>
-              <p v-else-if="!messages.length" class="chat-empty-hint">{{ emptyHint }}</p>
+              <template v-else-if="!messages.length">
+                <p class="chat-empty-hint">{{ emptyHint }}</p>
+                <button
+                  v-if="canResumeLast"
+                  type="button"
+                  class="chat-resume-btn chat-resume-btn-inline"
+                  :disabled="sessionLoading"
+                  @click="resumeLastSession"
+                >
+                  继续上次对话
+                </button>
+              </template>
               <div
                 v-for="(m, i) in messages"
                 :key="i"
