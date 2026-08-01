@@ -670,3 +670,36 @@
 ### Next Steps
 
 - None - task complete
+
+
+## Session 21: 侧栏继续上次会话
+
+**Date**: 2026-08-01
+**Task**: 侧栏继续上次会话
+**Branch**: `main`
+
+### Summary
+
+换伙伴保留本机 session 指针；侧栏/空态「继续上次」一键恢复，不自动加载。
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `HEAD` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
