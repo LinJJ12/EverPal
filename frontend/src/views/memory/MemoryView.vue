@@ -131,7 +131,7 @@ async function clear() {
           </p>
           <div class="tag-cloud">
             <span v-for="l in likeLabels" :key="l" class="tag on">{{ l }}</span>
-            <span v-if="!likeLabels.length" class="note">还没有喜好标签，可在「档案」页点选。</span>
+            <span v-if="!likeLabels.length" class="note">还没有喜好，可在「档案」页自己填写（最多 6 个）。</span>
           </div>
         </section>
 

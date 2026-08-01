@@ -23,7 +23,7 @@ _EVENT_ACTION_MARKERS = ("去了", "发生了", "参加了")
 
 _LIKE_OBJECT_RE = re.compile(r"(?:我喜欢|我爱)(?P<obj>.+)$")
 _PUNCT_RE = re.compile(r"[\s?？!！。.~～、，,；;：:\"'“”‘’]+")
-_MAX_LIKES = 12
+_MAX_LIKES = 6
 
 
 def _detect_category(text: str) -> str | None:

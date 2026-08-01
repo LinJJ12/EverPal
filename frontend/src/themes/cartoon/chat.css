@@ -264,16 +264,6 @@
   background: var(--color-muted-bg);
 }
 
-.chat-side-link-primary {
-  background: color-mix(in srgb, var(--color-secondary) 12%, #fff);
-  color: #1a7a6e;
-  border: 1px solid color-mix(in srgb, var(--color-secondary) 28%, var(--color-border));
-}
-
-.chat-side-link-primary:hover {
-  background: color-mix(in srgb, var(--color-secondary) 18%, #fff);
-}
-
 .chat-header-actions a.chat-action {
   text-decoration: none;
   display: inline-flex;

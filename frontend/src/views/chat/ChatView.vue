@@ -255,9 +255,7 @@ function regen() {
           </div>
         </div>
         <div class="chat-side-links">
-          <RouterLink class="chat-side-link chat-side-link-primary" to="/history">
-            历史对话
-          </RouterLink>
+          <RouterLink class="chat-side-link" to="/history">历史对话</RouterLink>
           <RouterLink class="chat-side-link" to="/scenes">情境对话</RouterLink>
           <RouterLink class="chat-side-link" to="/memory">记忆面板</RouterLink>
           <RouterLink class="chat-side-link" to="/settings">本地设置</RouterLink>

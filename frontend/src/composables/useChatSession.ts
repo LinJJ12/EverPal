@@ -5,6 +5,7 @@ import { useProfileStore } from "@/stores/profile";
 import { ApiError } from "@/api/http";
 import { friendlyError } from "@/utils/errors";
 import {
+  forgetSessionId,
   getActiveSessionId,
   getSessionForCompanion,
   setActiveSessionId,
@@ -93,6 +94,8 @@ export function useChatSession(opts: {
       if (e instanceof ApiError && e.code === "not_found") {
         store.sessionId = null;
         setActiveSessionId(null);
+        // Drop stale companion→session pointers for deleted threads.
+        forgetSessionId(sid);
       }
       return false;
     } finally {
@@ -140,11 +143,9 @@ export function useChatSession(opts: {
     sideError.value = "";
     opts.stopSpeak();
     const ok = await loadSessionById(sid);
-    if (!ok) {
-      setSessionForCompanion(cid, null);
-      if (!sessionLoadError.value) {
-        sessionLoadError.value = "上次对话找不到了，咱们开新的吧";
-      }
+    // Pointer already cleared inside loadSessionById on not_found; keep it on network blips.
+    if (!ok && !getSessionForCompanion(cid) && !sessionLoadError.value) {
+      sessionLoadError.value = "上次对话找不到了，咱们开新的吧";
     }
     bumpResumeUi();
   }

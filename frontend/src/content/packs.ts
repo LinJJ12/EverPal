@@ -111,6 +111,16 @@ export const SCENE_PACK: PackItem[] = [
     mode: "child",
     seed: "今天有件开心的事，想跟你说说。",
   },
+  {
+    id: "scene-story",
+    kind: "scene",
+    label: "听个短故事",
+    theme: "安静陪伴",
+    blurb: "想听温柔好懂的小故事时，来找阿茶慢慢讲",
+    companion_id: "cha",
+    mode: "child",
+    seed: "我想听个短故事，请讲得温柔一点、好懂一点。",
+  },
 ];
 
 /** Safe short-story openers on /scenes (LLM continues after seed). */

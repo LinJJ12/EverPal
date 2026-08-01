@@ -93,8 +93,14 @@ export const useProfileStore = defineStore("profile", () => {
         companion_id: companionId.value,
         likes: likes.value,
       });
+      // Prefer server-normalized fields (e.g. likes capped / safety-filtered).
+      nickname.value = p.nickname ?? nickname.value;
+      mode.value = (p.mode as Mode) || mode.value;
+      companionId.value = p.companion_id || companionId.value;
+      likes.value = Array.isArray(p.likes) ? p.likes : likes.value;
       memories.value = p.memories || memories.value;
       backendUnreachable.value = false;
+      applyModeChrome();
     } catch (e) {
       nickname.value = prev.nickname;
       mode.value = prev.mode;
