@@ -1,8 +1,10 @@
 <p align="center">
-  <img src="frontend/public/brand/logo.png" alt="玖伴" width="128" />
+  <img src="frontend/public/brand/logo.png" alt="玖伴 Everpal" width="128" />
 </p>
 
 <h1 align="center">玖伴</h1>
+
+<p align="center"><b>Everpal</b></p>
 
 <p align="center"><b>九久相伴，永远有人回应</b></p>
 
@@ -49,7 +51,7 @@
 ## 系统架构
 
 ```
-玖伴
+玖伴 / Everpal
 ├── frontend/          Vue 3 + Vite（卡通 UI、SSE 聊天、语音、游戏大厅）
 ├── backend/           FastAPI 陪伴 BFF
 │   ├── services/chat  唯一编排：安全 → 审核? → wiki? → 人设 → LLM → 出站闸门

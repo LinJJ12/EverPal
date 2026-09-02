@@ -1,4 +1,4 @@
-# 玖伴 Backend
+# 玖伴（Everpal）Backend
 
 陪伴 BFF：人设 + 分龄 + 词库安全 + OpenAI 兼容流式。目录约定见仓库 [`docs/directory-structure.md`](../docs/directory-structure.md)。
 

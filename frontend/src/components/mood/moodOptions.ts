@@ -4,7 +4,7 @@ export type MoodId = "happy" | "calm" | "tired" | "sad" | "angry" | "hope";
 
 export type MoodFaceStyle = "emoji" | "sticker";
 
-const FACE_STYLE_KEY = "jiuban-mood-face-style";
+const FACE_STYLE_KEY = "everpal-mood-face-style";
 
 const MOOD_ID_SET = new Set<string>(["happy", "calm", "tired", "sad", "angry", "hope"]);
 

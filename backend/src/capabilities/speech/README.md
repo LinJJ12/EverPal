@@ -1,6 +1,6 @@
 # `capabilities/speech`
 
-Cloud voice for 玖伴 (DashScope / 百炼).
+Cloud voice for 玖伴 / Everpal (DashScope / 百炼).
 
 | File | Responsibility |
 |------|----------------|

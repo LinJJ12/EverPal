@@ -17,7 +17,7 @@ const lead = computed(() => {
     const likeBit = likeLabels.value.length ? `还喜欢${likeLabels.value[0]}吗？` : "";
     return `${name}记得你。${likeBit}可以挑个场景聊聊，也可以直接开始聊天。`;
   }
-  return "玖伴是面向小学生与初中生的 AI 陪伴助手——九久相伴，永远有人回应。耐心听完、说话好懂、记得你是谁。";
+  return "玖伴（Everpal）是面向小学生与初中生的 AI 陪伴助手——九久相伴，永远有人回应。耐心听完、说话好懂、记得你是谁。";
 });
 const memoryBits = computed(() => {
   const bits: string[] = [];

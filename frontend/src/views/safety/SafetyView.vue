@@ -21,7 +21,7 @@ function play(seed: string) {
       <div class="path-stage-glow shell-stage-glow" aria-hidden="true" />
       <h1>安全边界</h1>
       <p class="lead">
-        玖伴会温和转开危险话题，并保持陪伴语气。以下示例会进入真实聊天（需后端），可自行观察回复。
+        玖伴（Everpal）会温和转开危险话题，并保持陪伴语气。以下示例会进入真实聊天（需后端），可自行观察回复。
       </p>
       <div class="path-stage-body">
         <div class="scene-grid">

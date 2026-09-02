@@ -1,4 +1,4 @@
-"""玖伴 backend 入口。
+"""玖伴（Everpal）backend 入口。
 
 约定：使用 Conda 环境 chatbot（见 docs/dev-setup.md）。
 
@@ -21,7 +21,7 @@ from src.config.settings import get_settings, load_dotenv_if_present
 def main(argv: list[str] | None = None) -> None:
     load_dotenv_if_present()
     settings = get_settings()
-    parser = argparse.ArgumentParser(description="玖伴 companion BFF")
+    parser = argparse.ArgumentParser(description="玖伴（Everpal）companion BFF")
     parser.add_argument("--host", default=settings.host)
     parser.add_argument("--port", type=int, default=settings.port)
     args = parser.parse_args(argv)

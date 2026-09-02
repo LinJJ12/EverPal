@@ -1,4 +1,4 @@
-const CLIENT_KEY = "jiuban_client_id";
+const CLIENT_KEY = "everpal_client_id";
 
 function createClientId(): string {
   return "web_" + crypto.randomUUID().replace(/-/g, "").slice(0, 16);

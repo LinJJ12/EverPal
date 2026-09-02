@@ -1,4 +1,4 @@
-const SIDEBAR_KEY = "jiuban_chat_sidebar_open";
+const SIDEBAR_KEY = "everpal_chat_sidebar_open";
 
 /** Desktop chat rail open/closed preference (mobile drawer is ephemeral). */
 export function getChatSidebarOpen(defaultOpen = true): boolean {

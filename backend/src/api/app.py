@@ -26,7 +26,7 @@ class RequestIdMiddleware(BaseHTTPMiddleware):
         return response
 
 
-app = FastAPI(title="玖伴 BFF", version="0.1.0")
+app = FastAPI(title="玖伴 Everpal BFF", version="0.1.0")
 
 settings = get_settings()
 init_db()

@@ -304,6 +304,16 @@ input:focus-visible {
   color: var(--color-foreground);
 }
 
+.shell-hero-en {
+  margin: 10px 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 2vw, 1.35rem);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: none;
+  color: var(--color-muted);
+}
+
 .shell-hero-tagline {
   margin: 14px 0 0;
   font-family: var(--font-display);

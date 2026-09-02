@@ -1,12 +1,14 @@
-# Product Constraints (玖伴)
+# Product Constraints (玖伴 / Everpal)
 
 > Binding decisions from `docs/PRD.md`. If code conflicts with this file, **this file wins** until the PRD is revised.
 
-## Brand (provisional)
+## Brand
 
-- **Name**: 玖伴
+- **Chinese name**: 玖伴（primary in UI for Chinese audience）
+- **English name**: Everpal
 - **Meaning**: 九久相伴，永远有人回应
 - **Icon**: `demo/assets/brand/logo.png` (transparent)
+- **Presentation**: hero shows 玖伴 + Everpal; nav / page titles default to 玖伴
 
 ## Audience
 

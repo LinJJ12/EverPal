@@ -1,4 +1,4 @@
-# 协作硬规则（玖伴 backend）
+# 协作硬规则（玖伴 / Everpal backend）
 
 > 给人与 AI 写代码时共用的最短约束。细则见仓库 `docs/directory-structure.md` §5 与 `src/README.md`。
 

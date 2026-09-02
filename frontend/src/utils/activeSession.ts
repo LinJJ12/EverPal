@@ -1,5 +1,5 @@
-const SESSION_KEY = "jiuban_active_session";
-const BY_COMPANION_KEY = "jiuban_sessions_by_companion";
+const SESSION_KEY = "everpal_active_session";
+const BY_COMPANION_KEY = "everpal_sessions_by_companion";
 
 export function getActiveSessionId(): string | null {
   try {

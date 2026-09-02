@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "jiuban-backend"
 version = "0.1.0"
-description = "玖伴 companion BFF"
+description = "玖伴（Everpal）companion BFF"
 requires-python = ">=3.11"
 dependencies = [
   "fastapi>=0.115.0",

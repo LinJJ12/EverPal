@@ -58,5 +58,5 @@
 | `?seed=` 留在地址栏，刷新时 `onMounted` 再清 session 并重发 | 刷新等于新开聊，旧记录「消失」 | 有活跃 session 时优先恢复并去掉 seed；仅无活跃 session 时才发 seed，并发后立刻 `replace` 掉 seed |
 | 聊天侧栏换伙伴只改 `companion_id`、不清会话 | 新伙伴气泡里仍是旧对话，人设错位 | 换伙伴后清空消息与 active session；旧线程只从历史进入 |
 | 换伙伴后仍 `resolveSessionForCompanion` 自动加载 | 用户以为「没隔离」，看到往日会话 | 切换 = 空白新对话；「新建对话」同理脱离当前 session |
-| 会话加载失败（含网络）一律 `sessionId = null` | 一次闪断就丢掉可恢复的会话指针 | 仅 `not_found` 时清除；网络错误保留 `jiuban_active_session` 以便重试 |
+| 会话加载失败（含网络）一律 `sessionId = null` | 一次闪断就丢掉可恢复的会话指针 | 仅 `not_found` 时清除；网络错误保留 `everpal_active_session` 以便重试 |
 | 场景进聊天：`save` 失败仍 `navigate` | 假成功；与写路径可见失败原则冲突 | 失败人话提示并 `return`；成功才跳转 |

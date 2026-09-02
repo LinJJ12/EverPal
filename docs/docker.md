@@ -1,6 +1,6 @@
 # Docker 试用
 
-运营 / 自建用 **Docker Compose** 一键跑起玖伴（真 LLM）。开发者日常仍用 Conda + `npm run dev`（见 [`dev-setup.md`](./dev-setup.md)）。
+运营 / 自建用 **Docker Compose** 一键跑起玖伴（Everpal）（真 LLM）。开发者日常仍用 Conda + `npm run dev`（见 [`dev-setup.md`](./dev-setup.md)）。
 
 ## 最短步骤
 

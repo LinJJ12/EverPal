@@ -5,11 +5,12 @@ import { GAME_META } from "@/utils/gamesMeta";
 
 <template>
   <div class="page-home">
-    <section class="shell-hero" aria-label="玖伴">
+    <section class="shell-hero" aria-label="玖伴 Everpal">
       <div class="shell-hero-glow" aria-hidden="true" />
       <div class="shell-hero-inner">
         <img class="shell-hero-mark" src="/brand/logo.png" alt="" width="160" height="160" />
         <h1 class="shell-hero-brand">玖伴</h1>
+        <p class="shell-hero-en">Everpal</p>
         <p class="shell-hero-tagline">九久相伴，永远有人回应</p>
         <p class="shell-hero-lead">不是更快的 ChatGPT，是更好懂的伙伴。打开就能聊。</p>
         <div class="shell-hero-actions">
