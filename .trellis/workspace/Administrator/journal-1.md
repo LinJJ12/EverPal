@@ -703,3 +703,38 @@
 ### Next Steps
 
 - None - task complete
+
+
+## Session 22: Docker / 试用包
+
+**Date**: 2026-09-02
+**Task**: Docker / 试用包
+**Branch**: `main`
+
+### Summary
+
+交付 Compose 单入口试用（api + nginx :8080）；修复生产构建误烘焙本地 API 地址；补充健康检查、绝对路径 SQLite、文档与 frontend env 约定；归档任务。
+
+### Main Changes
+
+- `docker-compose.yml` / `backend/Dockerfile` / `frontend/Dockerfile` / `deploy/nginx.conf`
+- `frontend/.env.production` 空 base；pytest 与生产 bundle 校验通过
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b0e519c` | feat: 添加 Docker Compose 单入口试用包并固化生产同源 API |
+
+### Testing
+
+- backend pytest 101 passed；生产 bundle 无 localhost:8000；wheel 含 prompts/词库
+- docker compose build：本机 Docker Hub 不可达，未跑端到端
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
