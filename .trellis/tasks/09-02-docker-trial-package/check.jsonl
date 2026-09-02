@@ -1,0 +1,4 @@
+{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/spec/guides/product-constraints.md", "reason": "Verify Docker trial still matches product boundaries"}
+{"file": ".trellis/spec/backend/directory-structure.md", "reason": "Verify Docker files match directory conventions"}
+{"file": ".trellis/tasks/09-02-docker-trial-package/research/nginx-sse.md", "reason": "Verify SSE/nginx acceptance risks covered"}

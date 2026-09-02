@@ -66,6 +66,24 @@ Key 只放 `backend/.env`，前端不持模型密钥。目录细则见 [`docs/di
 
 ## 快速开始
 
+### Docker 试用（推荐给运营 / 自建）
+
+单入口：**http://localhost:8080**（或局域网 `http://<本机IP>:8080`）。须填真 `LLM_API_KEY`；默认不要开 `ALLOW_MOCK_LLM`。
+
+```powershell
+cd backend
+copy .env.example .env
+# 编辑 .env：至少填 LLM_API_KEY（OpenAI 兼容）
+cd ..
+docker compose up --build
+```
+
+打开：**http://localhost:8080**。详见 [`docs/docker.md`](docs/docker.md)。`web` 会等待 `api` 健康后再启动。
+
+> **安全**：默认可局域网访问；**勿将端口直接暴露公网**（无登录）。Key 只放 `backend/.env`，勿写入 compose。
+
+### 本地开发（Conda + Vite）
+
 **环境**：Conda **`chatbot`**（Python ≥3.11）+ Node.js 18+。完整说明见 [`docs/dev-setup.md`](docs/dev-setup.md)。
 
 ```powershell
@@ -126,7 +144,9 @@ npm run build
 | `backend/` | 陪伴 BFF（FastAPI） |
 | `demo/` | HTML 产品壳对照 |
 | `demo/assets/brand/` | 品牌图标 |
-| `docs/` | PRD、架构图、目录约定、联调 |
+| `docs/` | PRD、架构图、目录约定、联调、Docker 试用 |
+| `deploy/` | Nginx 试用反代配置 |
+| `docker-compose.yml` | Compose 试用（api + web，:8080） |
 | `.trellis/` | Trellis 规格与工作流 |
 | `vendor/` | 第三方参考（本地，勿当运行时） |
 
@@ -156,7 +176,7 @@ npm run build
 - **近补**：安全抽检自动化基线 + 三人设/话题包轻打磨 — 已交付
 - **近补**：LLM 行为清单 §6 — 已抽跑（18/18 pass，见安全报告）
 - **另阶段**：登录 / 家庭账号、家长同意与面板；向量记忆另开任务
-- **发布前欠账**：Docker / 试用包；本地提交需 `git push`（若网络可达）
+- **Docker 试用**：已提供 Compose 单入口（`:8080`）；见 [`docs/docker.md`](docs/docker.md) / README「Docker 试用」；须 `LLM_API_KEY`，勿默认 Mock，勿暴露公网
 - **安全抽检**：词库/闸门自动化 + LLM 行为层 → [`docs/safety-audit-report.md`](docs/safety-audit-report.md)
 
 详情：[`docs/PRD.md`](docs/PRD.md) §4.2 · [`.trellis/spec/guides/product-constraints.md`](.trellis/spec/guides/product-constraints.md)
@@ -172,6 +192,7 @@ npm run build
 - [流程 / 架构图](docs/diagrams.md)
 - [目录与分层约定](docs/directory-structure.md)
 - [本地开发 / Conda](docs/dev-setup.md)
+- [Docker 试用](docs/docker.md)
 - [后端说明](backend/README.md)
 - [前端说明](frontend/README.md)
 

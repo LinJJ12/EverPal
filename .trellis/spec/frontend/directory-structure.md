@@ -32,8 +32,10 @@ encyclopedia sources UI → components/chat/ChatSources.vue
 
 ```text
 frontend/
-├── .env.example               # VITE_API_BASE_URL only
+├── .env.example               # local `npm run dev` → VITE_API_BASE_URL=http://127.0.0.1:8000
+├── .env.production            # `vite build` / Docker → empty base (same-origin via nginx)
 ├── .env                       # gitignored; never LLM/DashScope keys
+├── Dockerfile                 # multi-stage: empty VITE_API_BASE_URL → nginx + deploy/nginx.conf
 ├── src/
 │   ├── api/                   # http, chat, companions, sessions, profile, mood, speech
 │   ├── content/               # packs · openers · likes · safetySamples
@@ -50,6 +52,15 @@ frontend/
 │       └── voice/{browser,companionVoice,mediaRecorder,speakProgress}.ts
 └── package.json
 ```
+
+## Env contract (Docker / production)
+
+| File | When loaded | `VITE_API_BASE_URL` |
+|------|-------------|---------------------|
+| `.env` / `.env.example` | `npm run dev` | `http://127.0.0.1:8000` |
+| `.env.production` | `vite build` (Compose `web` image) | **empty** → browser calls `/v1` on same origin |
+
+**Pitfall**: If production build inherits local `.env` with `:8000`, the Docker single-entry trial breaks (UI hits host port 8000 instead of nginx `:8080`). Keep `.env.production` committed empty; Dockerfile also strips `.env*` before build.
 
 ## Vertical API map
 

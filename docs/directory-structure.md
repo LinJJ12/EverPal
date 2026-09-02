@@ -29,22 +29,27 @@
 ```text
 chatbot/
 ├── README.md                 # 产品简介 + 如何打开
-├── docs/                     # 跨端需求/架构（给人看）
+├── docs/                     # 跨端需求/架构（给人看）；含 docker.md
 ├── demo/                     # HTML 产品壳对照（不接真模型）
-├── frontend/                 # 正式 Web 前端
-├── backend/                  # 陪伴 BFF
+├── frontend/                 # 正式 Web 前端（含 Dockerfile）
+├── backend/                  # 陪伴 BFF（含 Dockerfile）
+├── deploy/
+│   └── nginx.conf            # Compose web 镜像：SPA + /v1 /health 反代
 ├── vendor/                   # 第三方参考（只读，非运行时）
 ├── .trellis/                 # 规格与任务
-├── .gitignore                # 忽略 `.env`；放行 `!.env.example`
-└── docker-compose.yml        # 可选：本地起 backend
+├── .gitignore                # 忽略 `.env`；放行 `!.env.example` / `!.env.production`
+├── .dockerignore             # 根构建上下文（frontend 镜像）
+└── docker-compose.yml        # 试用：api + web，对外 :8080
 ```
 
 | 路径 | 一句话职责 | 禁止 |
 |------|------------|------|
-| `docs/` | 产品与架构真相（PRD、本约定、图） | 运行时代码、密钥 |
+| `docs/` | 产品与架构真相（PRD、本约定、图、docker 试用） | 运行时代码、密钥 |
 | `demo/` | 已验证的卡通壳对照体验 | 真 API Key、当生产主路径 |
-| `frontend/` | 界面、本机状态、调 BFF | 持有 LLM Key、词库/提示词主逻辑 |
-| `backend/` | 聊天管线、安全、人设、LLM 代理、持久化 | 页面组件、卡通 CSS |
+| `frontend/` | 界面、本机状态、调 BFF；生产由 Dockerfile 多阶段构建 | 持有 LLM Key、词库/提示词主逻辑 |
+| `backend/` | 聊天管线、安全、人设、LLM 代理、持久化；容器镜像 | 页面组件、卡通 CSS |
+| `deploy/nginx.conf` | 试用入口反代与 SSE/上传限制 | 密钥、业务逻辑 |
+| `docker-compose.yml` | 单入口试用编排（`env_file: backend/.env`） | 明文 Key、默认 Mock |
 | `vendor/` | 参考实现摘录 | `import` 进生产路径 |
 | `.trellis/` | AI/研发协作规格 | 产品运行时资源 |
 
@@ -52,7 +57,8 @@ chatbot/
 
 ```text
 frontend/
-├── .env.example     # ✅ Git：仅 VITE_API_BASE_URL 等
+├── .env.example     # ✅ Git：本地 dev 用 VITE_API_BASE_URL
+├── .env.production  # ✅ Git：生产/Docker 空 base（同源反代）
 ├── .env             # ❌ Git：本地地址覆盖；禁止 LLM Key
 backend/
 ├── .env.example     # ✅ Git：变量名 + 空占位
@@ -80,13 +86,19 @@ TTS_MODEL=qwen-audio-3.0-tts-flash
 ASR_MODEL=qwen3-asr-flash
 ```
 
-**`frontend/.env.example`**
+**`frontend/.env.example`**（本地 `npm run dev`）
 
 ```bash
-VITE_API_BASE_URL=http://localhost:8000
+VITE_API_BASE_URL=http://127.0.0.1:8000
 ```
 
-根 `.gitignore` 已忽略 `.env` / `.env.*` 并放行 `!.env.example`。Docker 用 `env_file: backend/.env`，勿把 Key 写进已提交的 compose。
+**`frontend/.env.production`**（`vite build` / Docker；覆盖上面的本地地址）
+
+```bash
+VITE_API_BASE_URL=
+```
+
+根 `.gitignore` 已忽略 `.env` / `.env.*` 并放行 `!.env.example` 与 `!.env.production`。Docker Compose 用 `env_file: ./backend/.env`，勿把 Key 写进已提交的 compose；试用说明见 [`docs/docker.md`](./docker.md)。
 
 **Python 虚拟环境**：本仓库后端统一用 Conda 环境名 **`chatbot`**（勿默认再建 `backend/.venv`）。步骤见 [`docs/dev-setup.md`](./dev-setup.md)。
 
