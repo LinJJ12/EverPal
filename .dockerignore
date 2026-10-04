@@ -16,7 +16,7 @@ demo
 **/.env
 **/.env.*
 !**/.env.example
-!**/.env.production
+!frontend/.env.production
 backend/tests
 backend/docs
 backend/data/*.db

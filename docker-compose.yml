@@ -10,6 +10,7 @@ services:
       PORT: "8000"
       # Absolute path so SQLite always lands on the named volume, even if import root shifts.
       DATABASE_URL: "sqlite:////app/data/companion.db"
+    restart: unless-stopped
     volumes:
       - jiuban-data:/app/data
     healthcheck:
@@ -25,11 +26,19 @@ services:
       dockerfile: frontend/Dockerfile
       args:
         VITE_API_BASE_URL: ""
+    restart: unless-stopped
     ports:
       - "8080:80"
     depends_on:
       api:
         condition: service_healthy
+    healthcheck:
+      # nginx:alpine busybox wget exits non-zero when the origin fails.
+      test: ["CMD", "wget", "-qO", "/dev/null", "http://127.0.0.1/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
 volumes:
   jiuban-data:

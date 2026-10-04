@@ -2,13 +2,22 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
 COPY pyproject.toml ./
 COPY src ./src
 COPY main.py ./
 
-RUN pip install --no-cache-dir .
+# BuildKit cache mount keeps wheels across builds even when source changes.
+RUN --mount=type=cache,target=/root/.cache/pip pip install .
 
-RUN mkdir -p /app/data /app/resource/logs
+# Run as an unprivileged user; /app/data must be writable (SQLite + logs).
+RUN mkdir -p /app/data /app/resource/logs \
+    && useradd --system --uid 10001 --home-dir /app app \
+    && chown -R app:app /app
+
+USER app
 
 EXPOSE 8000
 

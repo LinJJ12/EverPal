@@ -17,7 +17,8 @@ coverage/
 .env
 .env.*
 !.env.example
-!.env.production
+# Narrow whitelist: only the frontend build-time file may be committed.
+!frontend/.env.production
 
 # OS / IDE
 .DS_Store
