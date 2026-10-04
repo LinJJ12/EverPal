@@ -15,8 +15,9 @@ __pycache__
 htmlcov
 tests
 docs
-data/*.db
-data/**/*.db
+# 整个 data 目录：*.db 漏掉 SQLite WAL/SHM 边车文件（同样含对话数据）
+data
+build
 resource/logs
 resource/cache
 resource/tmp

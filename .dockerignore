@@ -19,7 +19,10 @@ demo
 !frontend/.env.production
 backend/tests
 backend/docs
-backend/data/*.db
+# Runtime privacy: local chat DB (incl. WAL/SHM) and audit logs never enter build context
+backend/data
+backend/resource/logs
+backend/build
 backend/.pytest_cache
 *.log
 .DS_Store
