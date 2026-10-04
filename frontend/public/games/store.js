@@ -721,7 +721,9 @@
     const link = document.createElement("link");
     link.rel = "icon";
     link.type = "image/png";
-    link.href = prefix + "assets/brand/logo.png";
+    // Under /games/ the brand logo lives at the site root (/brand/logo.png),
+    // not at ../assets/brand/logo.png.
+    link.href = prefix ? "/brand/logo.png" : prefix + "assets/brand/logo.png";
     link.setAttribute("data-brand-icon", "1");
     document.head.appendChild(link);
   }

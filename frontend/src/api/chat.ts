@@ -56,39 +56,68 @@ export function streamChat(
     const decoder = new TextDecoder();
     let buf = "";
     let eventName = "message";
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      buf += decoder.decode(value, { stream: true });
-      const parts = buf.split("\n");
-      buf = parts.pop() || "";
-      for (const line of parts) {
-        if (line.startsWith("event:")) {
-          eventName = line.slice(6).trim();
-        } else if (line.startsWith("data:")) {
-          const raw = line.slice(5).trim();
-          if (!raw) continue;
-          let data: Record<string, unknown> = {};
-          try {
-            data = JSON.parse(raw);
-          } catch {
-            continue;
-          }
-          if (eventName === "meta") handlers.onMeta?.(data);
-          else if (eventName === "delta" && typeof data.text === "string") {
-            handlers.onDelta?.(data.text);
-          } else if (eventName === "done") handlers.onDone?.(data);
-          else if (eventName === "error") {
-            handlers.onError?.(
-              String(data.code || "error"),
-              String(data.message || "现在有点忙，稍后再试一下吧"),
-            );
-          }
-          eventName = "message";
-        } else if (line.trim() === "") {
-          eventName = "message";
-        }
+    let dataLines: string[] = [];
+
+    const dispatch = () => {
+      if (!dataLines.length) {
+        eventName = "message";
+        return;
       }
+      const raw = dataLines.join("\n");
+      dataLines = [];
+      const evt = eventName;
+      eventName = "message";
+      let data: Record<string, unknown> = {};
+      try {
+        data = JSON.parse(raw);
+      } catch {
+        return;
+      }
+      if (evt === "meta") handlers.onMeta?.(data);
+      else if (evt === "delta" && typeof data.text === "string") {
+        handlers.onDelta?.(data.text);
+      } else if (evt === "done") handlers.onDone?.(data);
+      else if (evt === "error") {
+        handlers.onError?.(
+          String(data.code || "error"),
+          String(data.message || "现在有点忙，稍后再试一下吧"),
+        );
+      }
+    };
+
+    const handleLine = (line: string) => {
+      if (line.endsWith("\r")) line = line.slice(0, -1);
+      if (line === "") {
+        dispatch();
+        return;
+      }
+      if (line.startsWith(":")) return; // SSE comment
+      if (line.startsWith("event:")) {
+        eventName = line.slice(6).trim() || "message";
+      } else if (line.startsWith("data:")) {
+        let value = line.slice(5);
+        if (value.startsWith(" ")) value = value.slice(1);
+        dataLines.push(value);
+      }
+      // id:/retry: and unknown fields are ignored.
+    };
+
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buf += decoder.decode(value, { stream: true });
+        const parts = buf.split("\n");
+        buf = parts.pop() || "";
+        for (const line of parts) handleLine(line);
+      }
+      // Stream ended: flush the decoder and any final unterminated event.
+      buf += decoder.decode();
+      if (buf) handleLine(buf);
+      dispatch();
+    } finally {
+      // Never leak the connection, even when a handler throws.
+      reader.cancel().catch(() => {});
     }
   });
 }

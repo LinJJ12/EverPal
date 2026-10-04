@@ -6,9 +6,12 @@ export function listSessions() {
 }
 
 export function getSession(id: string) {
-  return apiFetch<SessionSummary>(`/v1/sessions/${id}`);
+  // ids can come from the ?session= query — always encode before path join.
+  return apiFetch<SessionSummary>(`/v1/sessions/${encodeURIComponent(id)}`);
 }
 
 export function deleteSession(id: string) {
-  return apiFetch<{ ok: boolean }>(`/v1/sessions/${id}`, { method: "DELETE" });
+  return apiFetch<{ ok: boolean }>(`/v1/sessions/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  });
 }

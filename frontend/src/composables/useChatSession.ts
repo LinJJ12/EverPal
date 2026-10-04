@@ -61,6 +61,9 @@ export function useChatSession(opts: {
 
   async function loadSessionById(sid: string): Promise<boolean> {
     const gen = ++chatSessionLoadSeq;
+    // Kill any in-flight stream first: its callbacks must not write into the
+    // freshly loaded message list or overwrite the session pointer afterwards.
+    opts.stopStream();
     sessionLoading.value = true;
     sessionLoadError.value = "";
     opts.resetLocalUi?.();
@@ -191,6 +194,9 @@ export function useChatSession(opts: {
     if (typeof seed === "string" && seed.trim()) {
       const text = seed.trim();
       chatSessionLoadSeq += 1;
+      // A story seed is an explicit user intent: kill any in-flight stream
+      // (zombie onDone would re-attach a stale session and swallow the seed).
+      opts.stopStream();
       store.sessionId = null;
       setActiveSessionId(null);
       opts.resetLocalUi?.();

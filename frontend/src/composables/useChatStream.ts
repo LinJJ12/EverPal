@@ -48,7 +48,8 @@ export function useChatStream() {
     error.value = "";
     streaming.value = true;
     abort?.abort();
-    abort = new AbortController();
+    const myAbort = new AbortController();
+    abort = myAbort;
     opts.onUser?.(body.message);
     opts.onAssistantStart?.();
     try {
@@ -71,14 +72,17 @@ export function useChatStream() {
             }
           },
         },
-        abort.signal,
+        myAbort.signal,
       );
     } catch (e) {
       if ((e as Error).name === "AbortError") return;
       error.value = e instanceof ApiError ? e.message : "现在有点忙，稍后再试一下吧";
     } finally {
-      streaming.value = false;
-      abort = null;
+      // Only wind down if a newer send hasn't already taken over.
+      if (abort === myAbort) {
+        streaming.value = false;
+        abort = null;
+      }
     }
   }
 

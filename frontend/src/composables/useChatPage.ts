@@ -1,4 +1,4 @@
-import { nextTick, ref, watch } from "vue";
+import { nextTick, onBeforeUnmount, ref, watch } from "vue";
 import { storeToRefs } from "pinia";
 import { useProfileStore } from "@/stores/profile";
 import { useChatStream } from "@/composables/useChatStream";
@@ -18,7 +18,7 @@ type UiMessage = {
 export function useChatPage() {
   const store = useProfileStore();
   const { nickname, mode, companionId, likeLabels, sessionId, companion } = storeToRefs(store);
-  const { streaming, error, send, stop } = useChatStream();
+  const { streaming, error, send, stop: stopStream } = useChatStream();
   const { topics } = useTopicCards();
   const messages = ref<UiMessage[]>([]);
   const input = ref("");
@@ -36,6 +36,13 @@ export function useChatPage() {
     wikiMode.value = false;
   }
 
+  /**
+   * Bumped on session load / companion switch / unmount: in-flight stream
+   * callbacks from an older generation must not touch the new message list
+   * or overwrite the session pointer.
+   */
+  let uiGen = 0;
+
   async function scrollBottom() {
     await nextTick();
     if (listEl.value) listEl.value.scrollTop = listEl.value.scrollHeight;
@@ -49,6 +56,8 @@ export function useChatPage() {
     const msg = (text ?? input.value).trim();
     if (!msg || streaming.value) return;
     input.value = "";
+    const myGen = uiGen;
+    const stale = () => uiGen !== myGen;
     // Capture then clear immediately (one-shot); do not wait for SSE done/meta.
     const useWiki = opts?.useWiki ?? wikiMode.value;
     wikiMode.value = false;
@@ -68,35 +77,52 @@ export function useChatPage() {
       },
       {
         onUser: (t) => {
+          if (stale()) return;
           messages.value.push({ role: "user", content: t });
           scrollBottom();
         },
         onAssistantStart: () => {
+          if (stale()) return;
           messages.value.push({ role: "assistant", content: "" });
           assistantIdx = messages.value.length - 1;
           scrollBottom();
         },
         onDelta: (t) => {
-          if (assistantIdx >= 0) {
+          if (stale()) return;
+          if (assistantIdx >= 0 && messages.value[assistantIdx]) {
             messages.value[assistantIdx].content += t;
             scrollBottom();
           }
         },
         onDone: (sid, sources) => {
+          if (stale()) return;
           rememberSession(sid);
           if (assistantIdx >= 0 && sources?.length) {
             const cur = messages.value[assistantIdx];
-            messages.value[assistantIdx] = { ...cur, sources };
+            if (cur) messages.value[assistantIdx] = { ...cur, sources };
           }
-          if (error.value && assistantIdx >= 0 && !messages.value[assistantIdx].content) {
-            messages.value[assistantIdx].content = error.value;
+          if (
+            error.value &&
+            assistantIdx >= 0 &&
+            !messages.value[assistantIdx]?.content
+          ) {
+            const cur = messages.value[assistantIdx];
+            if (cur) messages.value[assistantIdx].content = error.value;
           }
         },
       },
     );
+    if (stale()) return;
     if (error.value && assistantIdx >= 0 && !messages.value[assistantIdx]?.content) {
-      messages.value[assistantIdx].content = error.value;
+      const cur = messages.value[assistantIdx];
+      if (cur) messages.value[assistantIdx].content = error.value;
     }
+  }
+
+  /** Stop any in-flight stream AND invalidate its UI callbacks (gen bump). */
+  function stop() {
+    uiGen += 1;
+    stopStream();
   }
 
   /** Start a blank chat: detach the *current* companion's active thread (server history kept). */
@@ -113,6 +139,12 @@ export function useChatPage() {
   // Switching companion must not keep百科 lit for the next chat.
   watch(companionId, () => {
     resetWikiMode();
+  });
+
+  // Leaving /chat must kill the SSE connection: a zombie stream would keep
+  // writing into store/localStorage after the view is gone.
+  onBeforeUnmount(() => {
+    stop();
   });
 
   return {
