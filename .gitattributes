@@ -1,0 +1,10 @@
+# AI / 工作流辅助目录（Cursor 规则、Trellis 规格/日志、编辑器与 CI 配置）
+# 不计入 GitHub Languages 统计；其 diff 在 PR 视图中默认折叠。
+.trellis/** linguist-generated
+.cursor/** linguist-generated
+.vscode/** linguist-generated
+.github/** linguist-generated
+AGENTS.md linguist-generated
+
+# 第三方参考（本地，勿当运行时）
+vendor/** linguist-vendored
