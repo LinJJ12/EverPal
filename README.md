@@ -9,6 +9,7 @@
 面向小学生与初中生的 AI 陪伴助手 · 温暖卡通 Web · 零配置开箱即用
 
 [![CI](https://github.com/LinJJ12/everpal/actions/workflows/ci.yml/badge.svg)](https://github.com/LinJJ12/everpal/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 ![Python](https://img.shields.io/badge/Python-3.11+-blue)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-red)
 ![Vue](https://img.shields.io/badge/Vue-3.5+-brightgreen)
@@ -225,5 +226,8 @@ npm run test:games
 
 ## 📄 许可证
 
-本项目暂未附带开源许可证。在许可证确定之前，代码默认保留所有权利；
-贡献者提交的代码视为同意随项目一同发布。许可证选型（如 MIT / Apache-2.0）正在进行中。
+本项目以 [Apache License 2.0](LICENSE) 开源发布。
+
+- 允许商用、修改、再分发；附带**明确专利授权**，并要求保留版权与许可证声明。
+- 修改文件时请按许可证 §4(b) 携带变更说明。
+- 向本项目提交 issue、PR 或其他形式的贡献，即表示同意该贡献以 Apache-2.0 随项目发布。
