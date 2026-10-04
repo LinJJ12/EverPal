@@ -3,6 +3,7 @@ from __future__ import annotations
 from functools import lru_cache
 from pathlib import Path
 
+from src.capabilities.safety import sanitize_nickname, sanitize_profile_likes
 from src.domain.enums import COMPANION_IDS, Mode
 from src.lib.exceptions import AppError
 
@@ -35,6 +36,15 @@ def _read(path: Path) -> str:
     return path.read_text(encoding="utf-8").strip()
 
 
+def _read_or_default(path: Path, fallback: str) -> str:
+    """A missing prompts file must not kill an in-flight SSE stream."""
+    try:
+        text = _read(path)
+        return text or fallback
+    except OSError:
+        return fallback
+
+
 def list_companions() -> list[dict]:
     return [COMPANION_META[i] for i in COMPANION_IDS]
 
@@ -51,11 +61,17 @@ def build_system(
     if cid not in COMPANION_META:
         raise AppError("invalid_companion", "伙伴不正确", 400)
     mode_e = Mode.coerce(mode)
-    companion = _read(PROMPTS / "companions" / f"{cid}.md")
-    mode_prompt = _read(PROMPTS / "modes" / f"{mode_e.value}.md")
+    companion = _read_or_default(
+        PROMPTS / "companions" / f"{cid}.md",
+        "你是小朋友的温暖陪伴伙伴，说话亲切自然，永远保持友善与安全。",
+    )
+    mode_prompt = _read_or_default(
+        PROMPTS / "modes" / f"{mode_e.value}.md",
+        "对话对象是未成年人：内容保持健康、积极、适龄。",
+    )
     parts = [companion, mode_prompt]
-    name = (nickname or "").strip() or "朋友"
-    like_bit = "、".join((likes or [])[:3])
+    name = sanitize_nickname(nickname) or "朋友"
+    like_bit = "、".join(sanitize_profile_likes(list(likes or []))[:3])
     profile = f"用户昵称：{name}。"
     if like_bit:
         profile += f" 已知喜好：{like_bit}。"

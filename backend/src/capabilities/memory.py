@@ -85,8 +85,8 @@ def snippet(
     (within category: newer first). Total memory lines capped at 5.
     """
     bits: list[str] = []
-    nick = nickname
-    like_list = list(likes or [])
+    nick = safety_cap.sanitize_nickname(nickname)
+    like_list = safety_cap.sanitize_profile_likes(list(likes or []))
     mem_bits: list[str] = []
     mood_bit = ""
     if client_id.strip():

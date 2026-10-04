@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import re
+
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
@@ -11,14 +13,22 @@ from src.api import chat, companions, health, history, mood, profile, sessions, 
 from src.config.settings import get_settings
 from src.lib.exceptions import AppError, client_error_body
 from src.lib.logging import get_logger, new_request_id, set_request_id
+from src.lib.ratelimit import SlidingWindowLimiter
 from src.storage.db import init_db
 
 log = get_logger("api")
 
+_REQUEST_ID_RE = re.compile(r"^[A-Za-z0-9_-]{1,64}$")
+_LIMITER = SlidingWindowLimiter()
+# Endpoints that trigger paid upstream calls (LLM / TTS / ASR) — abuse costs money.
+_RATE_LIMITED_PATHS = frozenset({"/v1/chat/stream", "/v1/speech/tts", "/v1/speech/asr"})
+
 
 class RequestIdMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
-        rid = (request.headers.get("X-Request-Id") or new_request_id()).strip()
+        raw = (request.headers.get("X-Request-Id") or "").strip()
+        # Only accept well-formed ids: never echo arbitrary client data into logs.
+        rid = raw if _REQUEST_ID_RE.fullmatch(raw) else new_request_id()
         set_request_id(rid)
         request.state.request_id = rid
         response = await call_next(request)
@@ -26,18 +36,61 @@ class RequestIdMiddleware(BaseHTTPMiddleware):
         return response
 
 
+class BodySizeLimitMiddleware(BaseHTTPMiddleware):
+    """Reject oversized bodies before Starlette buffers/spools them."""
+
+    async def dispatch(self, request: Request, call_next):
+        settings = get_settings()
+        raw_len = request.headers.get("content-length") or ""
+        if raw_len.isdigit() and int(raw_len) > settings.max_body_bytes:
+            return JSONResponse(
+                status_code=413,
+                content=client_error_body("payload_too_large", "内容太大啦，分几次试试吧"),
+            )
+        return await call_next(request)
+
+
+class PaidEndpointRateLimitMiddleware(BaseHTTPMiddleware):
+    """Per-IP sliding-window limit on paid upstream endpoints (fail-open off)."""
+
+    async def dispatch(self, request: Request, call_next):
+        settings = get_settings()
+        if (
+            settings.rate_limit_enabled
+            and request.method == "POST"
+            and request.url.path in _RATE_LIMITED_PATHS
+        ):
+            ip = request.client.host if request.client else "unknown"
+            key = f"{ip}|{request.url.path}"
+            if not _LIMITER.allow(
+                key, limit=settings.rate_limit_per_minute, window_seconds=60.0
+            ):
+                return JSONResponse(
+                    status_code=429,
+                    content=client_error_body("rate_limited", "休息一会儿，等下再来聊吧"),
+                )
+        return await call_next(request)
+
+
 app = FastAPI(title="玖伴 Everpal BFF", version="0.1.0")
 
 settings = get_settings()
 init_db()
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.cors_origin_list or ["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# Middleware runs outermost-last-added: CORS must stay outermost so error
+# responses (413/429) still carry CORS headers for cross-origin dev clients.
 app.add_middleware(RequestIdMiddleware)
+app.add_middleware(BodySizeLimitMiddleware)
+app.add_middleware(PaidEndpointRateLimitMiddleware)
+cors_origins = settings.cors_origin_list
+if cors_origins:
+    # No cookies are used anywhere; never combine wildcard origins with credentials.
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=cors_origins,
+        allow_credentials=False,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 app.include_router(health.router)
 app.include_router(companions.router)

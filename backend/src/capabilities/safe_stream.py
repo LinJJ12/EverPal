@@ -61,7 +61,9 @@ async def gated_llm_deltas(
         if hit and hit.action in (SafetyAction.BLOCK, SafetyAction.REWRITE):
             pending = ""
             soft = hit.reply
-            full = (released + ("\n\n" if released else "") + soft).strip()
+            # No strip(): rewrite.text must keep released as its exact prefix so the
+            # caller's rewrite.text[len(released):] offset stays correct.
+            full = released + ("\n\n" if released else "") + soft
             return None, SafeStreamResult(
                 text=full, action=hit.action, category=hit.category
             )

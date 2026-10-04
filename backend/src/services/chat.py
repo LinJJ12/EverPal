@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import json
 from collections.abc import AsyncIterator
 from dataclasses import dataclass
@@ -10,6 +11,7 @@ from src.capabilities import persona as persona_cap
 from src.capabilities import safety as safety_cap
 from src.capabilities.moderation import check_input as moderation_check
 from src.capabilities.safe_stream import gated_llm_deltas
+from src.capabilities.safety import sanitize_nickname, sanitize_profile_likes
 from src.capabilities.wiki import maybe_lookup
 from src.capabilities.wiki.lookup import sources_for_sse
 from src.config.settings import Settings, get_settings
@@ -20,6 +22,8 @@ from src.schemas.chat import ChatStreamRequest
 from src.storage import profile_repo, session_repo
 
 log = get_logger("services.chat")
+
+_GENERIC_ERROR = "现在有点忙，稍后再试一下吧"
 
 
 @dataclass
@@ -34,9 +38,10 @@ def _sync_profile_from_request(req: ChatStreamRequest) -> None:
         return
     kwargs: dict = {}
     if req.nickname.strip():
-        kwargs["nickname"] = req.nickname
+        # Lexicon-checked + clipped: this value later lands in the system prompt.
+        kwargs["nickname"] = sanitize_nickname(req.nickname)
     if req.likes:
-        kwargs["likes"] = req.likes
+        kwargs["likes"] = sanitize_profile_likes(req.likes)
     if req.mode:
         kwargs["mode"] = req.mode
     if req.companion_id:
@@ -105,6 +110,11 @@ def _persist_turn(
         log.warning("persist failed: %s", type(exc).__name__)
 
 
+async def _persist_turn_async(**kwargs) -> None:
+    # SQLite writes are blocking; keep them off the event loop.
+    await asyncio.to_thread(lambda: _persist_turn(**kwargs))
+
+
 def _audit(
     *,
     phase: str,
@@ -148,14 +158,14 @@ async def run_chat_stream(
 
     if client_id and req.persist:
         try:
-            _sync_profile_from_request(req)
+            await asyncio.to_thread(_sync_profile_from_request, req)
         except Exception as exc:  # noqa: BLE001
             log.warning("profile sync failed: %s", type(exc).__name__)
 
     session_id = None
     if client_id and req.persist:
         try:
-            session_id = _ensure_session(req, mode, companion_id)
+            session_id = await asyncio.to_thread(_ensure_session, req, mode, companion_id)
         except Exception as exc:  # noqa: BLE001
             log.warning("session ensure failed: %s", type(exc).__name__)
 
@@ -202,7 +212,7 @@ async def run_chat_stream(
             {**meta, "safety_action": hit.action.value, "category": hit.category},
         )
         yield StreamEvent("delta", {"text": hit.reply})
-        _persist_turn(
+        await _persist_turn_async(
             session_id=session_id,
             user_text=req.message,
             assistant_text=hit.reply,
@@ -220,40 +230,43 @@ async def run_chat_stream(
         )
         return
 
-    profile_nick = req.nickname
-    profile_likes = list(req.likes)
-    if client_id:
-        p = profile_repo.get_profile(client_id)
-        if p:
-            if not profile_nick:
-                profile_nick = p.get("nickname") or ""
-            if not profile_likes:
-                profile_likes = list(p.get("likes") or [])
-
-    mem = memory_cap.snippet(
-        nickname=profile_nick,
-        likes=profile_likes,
-        client_id=client_id,
-    )
-
-    wiki_sources: list[dict[str, str]] = []
-    wiki_block = ""
-    # Only when the kid explicitly taps「百科」(use_wiki); never silent auto-search.
-    allow_wiki = bool(getattr(req, "use_wiki", False)) and not (
-        hit and hit.action == SafetyAction.REWRITE
-    )
-    if allow_wiki:
-        try:
-            wiki = await maybe_lookup(req.message, mode=mode, settings=s, force=True)
-            if wiki is not None:
-                payload = sources_for_sse(wiki)
-                if payload:
-                    wiki_block = wiki.prompt_block()
-                    wiki_sources = payload
-        except Exception as exc:  # noqa: BLE001 — never break chat on wiki errors
-            log.warning("wiki lookup failed: %s", type(exc).__name__)
-
+    # ---- Prep phase: profile / memory / wiki / persona / history. ----
+    # Any failure here must surface as an SSE error event, never a dead connection.
     try:
+        profile_nick = req.nickname
+        profile_likes = list(req.likes)
+        if client_id:
+            p = await asyncio.to_thread(profile_repo.get_profile, client_id)
+            if p:
+                if not profile_nick:
+                    profile_nick = p.get("nickname") or ""
+                if not profile_likes:
+                    profile_likes = list(p.get("likes") or [])
+
+        mem = await asyncio.to_thread(
+            memory_cap.snippet,
+            nickname=profile_nick,
+            likes=profile_likes,
+            client_id=client_id,
+        )
+
+        wiki_sources: list[dict[str, str]] = []
+        wiki_block = ""
+        # Only when the kid explicitly taps「百科」(use_wiki); never silent auto-search.
+        allow_wiki = bool(getattr(req, "use_wiki", False)) and not (
+            hit and hit.action == SafetyAction.REWRITE
+        )
+        if allow_wiki:
+            try:
+                wiki = await maybe_lookup(req.message, mode=mode, settings=s, force=True)
+                if wiki is not None:
+                    payload = sources_for_sse(wiki)
+                    if payload:
+                        wiki_block = wiki.prompt_block()
+                        wiki_sources = payload
+            except Exception as exc:  # noqa: BLE001 — never break chat on wiki errors
+                log.warning("wiki lookup failed: %s", type(exc).__name__)
+
         system = persona_cap.build_system(
             companion_id=companion_id,
             mode=mode,
@@ -263,25 +276,31 @@ async def run_chat_stream(
         )
         if wiki_block:
             system = f"{system}\n\n{wiki_block}"
+
+        history_msgs: list[dict[str, str]] = []
+        if session_id and not req.history:
+            stored = await asyncio.to_thread(session_repo.get_session, session_id)
+            if stored:
+                for m in (stored.get("messages") or [])[-20:]:
+                    role = m.get("role")
+                    if role in ("user", "assistant"):
+                        history_msgs.append(
+                            {"role": role, "content": m.get("content") or ""}
+                        )
+        else:
+            for m in req.history[-20:]:
+                if m.role == "system":
+                    continue
+                role = "assistant" if m.role == "assistant" else "user"
+                history_msgs.append({"role": role, "content": m.content})
+        history_msgs.append({"role": "user", "content": req.message})
     except AppError as exc:
         yield StreamEvent("error", {"code": exc.code, "message": exc.message})
         return
-
-    history_msgs: list[dict[str, str]] = []
-    if session_id and not req.history:
-        stored = session_repo.get_session(session_id)
-        if stored:
-            for m in (stored.get("messages") or [])[-20:]:
-                role = m.get("role")
-                if role in ("user", "assistant"):
-                    history_msgs.append({"role": role, "content": m.get("content") or ""})
-    else:
-        for m in req.history[-20:]:
-            if m.role == "system":
-                continue
-            role = "assistant" if m.role == "assistant" else "user"
-            history_msgs.append({"role": role, "content": m.content})
-    history_msgs.append({"role": "user", "content": req.message})
+    except Exception as exc:  # noqa: BLE001
+        log.warning("chat prep failed: %s", type(exc).__name__)
+        yield StreamEvent("error", {"code": "internal_error", "message": _GENERIC_ERROR})
+        return
 
     token_iter = llm_cap.stream_chat_completion(
         system=system,
@@ -302,6 +321,18 @@ async def run_chat_stream(
                 assistant_out = payload.text
                 action = payload.action
                 category = payload.category
+    except asyncio.CancelledError:
+        # Client disconnected / stream aborted: keep what was already generated.
+        if session_id and assistant_out:
+            _persist_turn(
+                session_id=session_id,
+                user_text=req.message,
+                assistant_text=assistant_out,
+                safety_action=action.value,
+                client_id=client_id,
+                mode=mode,
+            )
+        raise
     except AppError as exc:
         yield StreamEvent("error", {"code": exc.code, "message": exc.message})
         return
@@ -318,7 +349,7 @@ async def run_chat_stream(
         )
         log.warning("output safety action=%s category=%s", action.value, category)
 
-    _persist_turn(
+    await _persist_turn_async(
         session_id=session_id,
         user_text=req.message,
         assistant_text=assistant_out,

@@ -19,14 +19,18 @@ def ensure_profile(client_id: str) -> dict[str, Any]:
         ).fetchone()
         if row:
             return _row_to_profile(row)
+        # Concurrent first requests race here; DO NOTHING + re-select avoids a 500.
         conn.execute(
             "INSERT INTO profiles (client_id, nickname, mode, companion_id, likes_json, updated_at) "
-            "VALUES (?, '', 'child', 'nuan', '[]', ?)",
+            "VALUES (?, '', 'child', 'nuan', '[]', ?) "
+            "ON CONFLICT(client_id) DO NOTHING",
             (cid, now),
         )
         row = conn.execute(
             "SELECT * FROM profiles WHERE client_id = ?", (cid,)
         ).fetchone()
+        if row is None:
+            raise ValueError("profile insert failed")
         return _row_to_profile(row)
 
 

@@ -10,9 +10,9 @@ router = APIRouter(prefix="/v1", tags=["sessions"])
 
 
 class SessionCreate(BaseModel):
-    companion_id: str = "nuan"
+    companion_id: Literal["nuan", "tiao", "cha"] = "nuan"
     mode: Literal["child"] = "child"
-    title: str = ""
+    title: str = Field(default="", max_length=40)
 
 
 class SessionOut(BaseModel):

@@ -269,6 +269,7 @@ async def fetch_page_extract(
     except httpx.HTTPError as exc:
         log.warning("wiki http error: %s", type(exc).__name__)
         return None
-    except (TypeError, ValueError, IndexError, KeyError) as exc:
+    except (TypeError, ValueError, IndexError, KeyError, AttributeError) as exc:
+        # AttributeError: non-MediaWiki JSON (list/str) hitting `.get(...)` chains.
         log.warning("wiki parse error: %s", type(exc).__name__)
         return None

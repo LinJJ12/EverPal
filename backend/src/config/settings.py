@@ -26,6 +26,14 @@ class Settings(BaseSettings):
     llm_api_key: str = ""
     llm_model: str = "gpt-4o-mini"
     llm_timeout_seconds: float = 60.0
+    # Cap per-reply tokens: kids replies should be short; also bounds cost per request.
+    llm_max_tokens: int = 1024
+
+    # Simple per-IP sliding-window limit on paid upstream endpoints (chat/tts/asr).
+    rate_limit_enabled: bool = True
+    rate_limit_per_minute: int = 40
+    # Reject request bodies larger than this before parsing (nginx allows 12m).
+    max_body_bytes: int = 12 * 1024 * 1024
 
     database_url: str = "sqlite:///./data/companion.db"
     allow_mock_llm: bool = False

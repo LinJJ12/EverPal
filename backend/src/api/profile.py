@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Header, HTTPException, Query
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from typing import Literal
 
-from src.capabilities.safety import sanitize_profile_likes
+from src.capabilities.safety import sanitize_nickname, sanitize_profile_likes
 from src.storage import memory_repo, profile_repo
 
 router = APIRouter(prefix="/v1", tags=["profile"])
@@ -22,8 +22,16 @@ class ProfileOut(BaseModel):
 class ProfilePatch(BaseModel):
     nickname: str | None = None
     mode: Literal["child"] | None = None
-    companion_id: str | None = None
+    companion_id: Literal["nuan", "tiao", "cha"] | None = None
     likes: list[str] | None = None
+
+    @field_validator("nickname")
+    @classmethod
+    def _clip_nickname(cls, v: str | None) -> str | None:
+        if v is None:
+            return None
+        # Clip here; lexicon filtering happens in the endpoint (sanitize_nickname).
+        return " ".join(v.split())[:24]
 
 
 def _cid(client_id: str | None, x_client_id: str | None) -> str:
@@ -62,9 +70,11 @@ def patch_profile(
 ) -> ProfileOut:
     cid = _cid(client_id, x_client_id)
     likes = None if body.likes is None else sanitize_profile_likes(body.likes)
+    # Lexicon-checked + clipped: nickname later lands in the system prompt.
+    nickname = None if body.nickname is None else sanitize_nickname(body.nickname)
     p = profile_repo.upsert_profile(
         cid,
-        nickname=body.nickname,
+        nickname=nickname,
         mode=body.mode,
         companion_id=body.companion_id,
         likes=likes,

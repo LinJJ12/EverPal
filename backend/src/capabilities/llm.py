@@ -37,6 +37,8 @@ async def stream_chat_completion(
         "stream": True,
         "messages": [{"role": "system", "content": system}, *messages],
     }
+    if s.llm_max_tokens > 0:
+        payload["max_tokens"] = int(s.llm_max_tokens)
     client = create_llm_http_client(s)
     try:
         async with client.stream("POST", "/chat/completions", json=payload) as resp:
@@ -63,11 +65,30 @@ async def stream_chat_completion(
                     obj = json.loads(data)
                 except json.JSONDecodeError:
                     continue
-                choices = obj.get("choices") or []
-                if not choices:
+                if not isinstance(obj, dict):
                     continue
-                delta = (choices[0].get("delta") or {}).get("content")
-                if delta:
+                err = obj.get("error")
+                if isinstance(err, dict):
+                    # Some OpenAI-compatible gateways stream errors as data frames.
+                    log.warning(
+                        "llm stream error: %s", str(err.get("code") or err.get("message") or "?")[:200]
+                    )
+                    raise AppError(
+                        "upstream_unavailable",
+                        "现在有点忙，稍后再试一下吧",
+                        503,
+                    )
+                choices = obj.get("choices")
+                if not isinstance(choices, list) or not choices:
+                    continue
+                first = choices[0]
+                if not isinstance(first, dict):
+                    continue
+                delta_obj = first.get("delta")
+                if not isinstance(delta_obj, dict):
+                    continue
+                delta = delta_obj.get("content")
+                if isinstance(delta, str) and delta:
                     yield delta
     except AppError:
         raise

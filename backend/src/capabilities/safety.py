@@ -77,3 +77,14 @@ def sanitize_profile_likes(likes: list[str] | None, mode: Mode | str = Mode.CHIL
         if len(safe) >= MAX_PROFILE_LIKES:
             break
     return normalize_likes(safe)
+
+
+MAX_NICKNAME_CHARS = 24
+
+
+def sanitize_nickname(nickname: str | None, mode: Mode | str = Mode.CHILD) -> str:
+    """Collapse whitespace, cap length, drop lexicon hits. Empty string when unsafe."""
+    text = " ".join(str(nickname or "").strip().split())[:MAX_NICKNAME_CHARS]
+    if not text or check_input(text, mode) is not None:
+        return ""
+    return text
