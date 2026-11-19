@@ -21,7 +21,7 @@ LLM API Key **只**放在 `backend/.env`；前端仅 `VITE_API_BASE_URL`。
 
 ```powershell
 conda activate chatbot
-cd C:\Users\Administrator\Desktop\chatbot\backend
+cd <仓库根>\backend
 pip install -e ".[dev]"
 ```
 
