@@ -44,8 +44,8 @@ backend/resource/logs/
 backend/resource/cache/
 backend/resource/tmp/
 
-# Optional: keep Trellis journals local if desired — currently versioned
-# .trellis/workspace/
+# Trellis per-developer workspace journals and AI session records are local-only
+.trellis/workspace/
 
 # Third-party reference clones (e.g. kids-ai) — local only, do not push
 vendor/*
