@@ -172,7 +172,7 @@ pytest -q
 | `frontend/src/`、`frontend/public/`、`package.json`、`package-lock.json`、`.env.example` | 正式前端 |
 | `backend/src/`、`backend/tests/`、`backend/scripts/`、`pyproject.toml`、`.env.example` | 正式后端 |
 | `docs/`、根 `README.md`、`demo/` | 文档与产品壳对照 |
-| `.trellis/tasks/`、`.trellis/spec/` | 协作任务与规格 |
+| `.trellis/tasks/`、`.trellis/spec/` | 可复用的协作任务材料与项目规格（提交前需检查内容） |
 
 **不要提交（本地 / 密钥 / 构建产物）**
 
@@ -183,6 +183,7 @@ pytest -q
 | `backend/.venv/`、`__pycache__/`、`.pytest_cache/`、`*.egg-info/` | 本地 Python 环境与缓存 |
 | `backend/data/*.db`、`backend/resource/logs/` | 运行时数据库与审计日志 |
 | `.vscode/settings.json` | 本机编辑器偏好（根 `.gitignore` 已忽略） |
+| `.trellis/workspace/` | 本地 AI 会话日志、开发者索引和工作记录（默认不提交） |
 | `vendor/*`（除 README） | 第三方参考，本仓不推送 |
 
 克隆后按本文 §1–§3 重建环境即可；勿把本机 `.env` 或 `dist` 推上远程。
