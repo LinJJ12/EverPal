@@ -8,8 +8,6 @@
   "scope": null,
   "package": null,
   "priority": "P2",
-  "creator": "Administrator",
-  "assignee": "Administrator",
   "createdAt": "2026-07-23",
   "completedAt": "2026-07-23",
   "branch": null,
@@ -20,7 +18,6 @@
   "subtasks": [],
   "children": [],
   "parent": null,
-  "relatedFiles": [],
   "notes": "",
   "meta": {}
 }
